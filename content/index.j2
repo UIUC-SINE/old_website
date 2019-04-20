@@ -1,0 +1,11 @@
+{% extends "base.j2" %}
+
+{% block main %}
+<h1>Legoman Demo</h1>
+
+<img style="margin: auto;display: block;" src="https://i.imgur.com/YR1zWRG.png">
+<h2>Projects</h2>
+{% for project in path('projects/**/*.md') %}
+<p><a href="{{ project.path }}"><code>{{ project.title }}</code></a> - {{ project.description }}</p>
+{% endfor %}
+{% endblock %}
