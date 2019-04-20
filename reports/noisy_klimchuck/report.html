@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Noised, blurred nanoflare simulations from Klimchuck simulation</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" />
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css" integrity="sha384-dbVIfZGuN1Yq7/1Ocstc1lUEm+AT+/rCkibIcC/OmWo5f0EA48Vf8CytHzGrSwbQ" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js" integrity="sha384-2BKqo+exmr9su6dir+qCw08N2ZKRucY4PrGQPPWU1A7FtlCGjmEGFqXCv5nyM5Ij" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Noised, blurred nanoflare simulations from Klimchuck simulation</h1>
+      <time datetime="2019-04-09">2019-04-09</time>
+    </header>
+    <h1 id="source">Source</h1>
+<video width="320" height="240" controls>
+  <source src="full.mp4" type="video/mp4">
+</video>
+
+<p><figure alt="Simulated nanoflare"><img src="single.png" /><figcaption>Simulated nanoflare</figcaption></figure></p>
+<ul>
+<li>33.4nm emission wavelength</li>
+<li>1s integration time</li>
+<li>50km x 50km on Sun per pixel</li>
+<li>Image 160px x 160px : 8000km x 8000km on Sun total</li>
+<li>Line of sight depth : 40,000km</li>
+<li>Number of strands : 2000 ***</li>
+</ul>
+<h1 id="measured">Measured</h1>
+<p><figure alt="Nanoflare measured through photon sieve"><img src="single_measured.png" /><figcaption>Nanoflare measured through photon sieve</figcaption></figure></p>
+<ul>
+<li>Same nanoflare parameters as above</li>
+<li>Sieve diameter : 10cm</li>
+<li>Sieve sampling interval : 3.5e-6m</li>
+<li>Smallest hole diameter : 7e-6m</li>
+</ul>
+<h1 id="measured-noise">Measured + Noise</h1>
+<p><img alt="" src="first_last_comparison.png" /></p>
+<p>Blurry photon sieve measurements at different noise levels.  For each row, the images have been scaled so that the pixel with the largest photon rate is 10, 50, 100, 500 and 1000.  All other parameters are the same as above. Dynamic range has been scaled separately for each image.</p>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>

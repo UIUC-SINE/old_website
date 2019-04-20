@@ -1,144 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=en>
 
-  <head>
-      <title>A Pelican Blog</title>
-      <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css' />
-      <link href='//fonts.googleapis.com/css?family=Merriweather:300' rel='stylesheet' type='text/css'/>
-      <link href='//fonts.googleapis.com/css?family=Source+Code+Pro:200,400,700' rel='stylesheet' type='text/css'/>
-      <link rel="stylesheet" type="text/css" href="/theme/css/icons.min.css"/>
-      <link rel="stylesheet" type="text/css" href="/theme/css/styles.css"/>
-      <meta charset="utf-8" />
-  </head>
+<head>
+  <title></title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" />
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css" integrity="sha384-dbVIfZGuN1Yq7/1Ocstc1lUEm+AT+/rCkibIcC/OmWo5f0EA48Vf8CytHzGrSwbQ" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js" integrity="sha384-2BKqo+exmr9su6dir+qCw08N2ZKRucY4PrGQPPWU1A7FtlCGjmEGFqXCv5nyM5Ij" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
 
-  <body id="index">
-    <!-- header -->
-    <header class="siteheader">
-      <!-- site image -->
-        <div class= "siteimage">
-          <a class="nodec" href=https://marcel.nlogn.org/profile.jpg>
-            <img width="200" height="200" src=https://marcel.nlogn.org/profile.jpg>
-          </a>
-        </div>
+</head>
+<body>
+<main>
+<h1>MAS - Milliarcsecond Imaging with Photon Sieves</h1>
 
-      <div class = "sitebanner">
-	      <h2><a class="sitetitle nodec" href=""><span class="bold-initial">SINE</span></a></h2>
-        <h3 class ="sitesubtitle">The official page of Signals, Inference and Networks Group at UIUC</h3>
-        <!-- nav -->
-        <nav class="menu">
-          <ul>
-            <!-- menu items-->
-              <li><a class="nodec" href="/blog/">Blog</a></li>
-              <li><a class="nodec" href="/calendar">Calendar</a></li>
-            <!--pages-->
-            <!-- services icons -->
-              <li><a class="nodec icon-github" href="http://github.com/uiuc-sine"></a></li>
-          </ul>
-        </nav>
-      </div> <!-- sitebanner -->
-    </header>
-
-    <!-- content -->
-
-<section class="content">
-
-  <ul id="postlist">
-
-    <li class="post">
-        <header class="posttitle">
-          <h3><a href="/poop.html"
-                  rel="bookmark"
-                  class="nodec"
-                  title="Permalink to poop">poop</a>
-          </h3>
-        </header>
-
-        <div class="postinfo">
-          <p class="published" title="2018-10-10T00:00:00-05:00"> Wed 10 October 2018 </p>
-        </div><!-- /.postinfo -->
-
-        <!-- <div class="postsummary"> <h1>test</h1>
-<p>fowijefowije</p>
-<ul>
-<li>foo</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-  <span class="k">print</span><span class="p">(</span><span class="s1">&#39;poop&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<p><span class="math">\(3x + 45\)</span></p>
-<div class="math">$$\oint_3^{x} butts \, ds$$</div>
-<p>The past few years have been an interesting journey. If in 1000 years there would be a museum stature showing a digital native in his natural habit I am very certain a picture of …</p><script type='text/javascript'>if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width < 768) ? "left" : align;
-        indent = (screen.width < 768) ? "0em" : indent;
-        linebreak = (screen.width < 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-</script> </div> -->
-    </li>
-
-  </ul><!-- /#post-list -->
-
-
-</section><!-- /#content -->
-
-
-    <!-- footer -->
-    <footer>
-      <p>
-        © SINE, license <a href=""> </a> Unless otherwise noted.
-        Generated by <a href= "http://docs.getpelican.com/">Pelican</a> with
-        <a href="http://github.com/porterjamesj/crowsfoot">crowsfoot</a> theme.
-      </p>
-    </footer>
-  </body>
+<img style="margin: auto;display:block; width:200px; border-radius:30px" src="https://avatars3.githubusercontent.com/u/37169265?s=400&u=149ecf6e23b2052f00d8eb3cf1bb28de314323b9&v=4">
+<h2>Reports</h2>
+<p><a href="reports/noisy_klimchuck/report.html"><code>Noised, blurred nanoflare simulations from Klimchuck simulation</code></a>  </p>
+<p><a href="reports/subpixel_tests/subpixel.html"><code>Single-step DFT subpixel registration under Poisson noise</code></a>  </p>
+<p><a href="reports/foo_proj/index.html"><code>Formatting and math demo</code></a> - Demonstrating various formatting features</p>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
 </html>
