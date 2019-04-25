@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Initial ISTA nanoflare reconstructions</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" />
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css" integrity="sha384-dbVIfZGuN1Yq7/1Ocstc1lUEm+AT+/rCkibIcC/OmWo5f0EA48Vf8CytHzGrSwbQ" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js" integrity="sha384-2BKqo+exmr9su6dir+qCw08N2ZKRucY4PrGQPPWU1A7FtlCGjmEGFqXCv5nyM5Ij" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Initial ISTA nanoflare reconstructions</h1>
+      <time datetime="2019-04-25">2019-04-25</time>
+    </header>
+    <p>These are ISTA reconstructions of nanoflares images with Poisson noise.  The sparsifying transform used in the algorithm was the Radon transform restricted to \(\theta = [-30, 30]\).</p>
+<p><figure alt="ISTA reconstruction with highest SSIM" style="max-width:100%"><img src="ista_reconstruction2.png" /><figcaption>ISTA reconstruction with highest SSIM</figcaption></figure></p>
+<p><figure alt="Best looking ISTA reconstruction" style="max-width:100%"><img src="ista_reconstruction.png" /><figcaption>Best looking ISTA reconstruction</figcaption></figure></p>
+<p><figure alt="ISTA reconstructions for various \(\lambda\), time_step.  Max photon count is 10" style="max-width:100%"><img src="ista_grid.png" /><figcaption>ISTA reconstructions for various \(\lambda\), time_step.  Max photon count is 10</figcaption></figure></p>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>

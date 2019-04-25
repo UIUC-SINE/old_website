@@ -105,7 +105,7 @@ plt.savefig('images.png', dpi=300)
 
 plt = plotter4d(
     np.abs(correlations),
-    title='Correlation stages',
+    title='Correlation maps',
     colorbar=False,
     row_labels=max_photon_count_list,
     column_labels=['coarse', 'fine'],

@@ -18,35 +18,53 @@
       <h1>Single-step DFT subpixel registration under Poisson noise</h1>
       <time datetime="2019-04-18">2019-04-18</time>
     </header>
-    <p><figure alt="pairs of images that will be used to test registration"><img src="images.png" /><figcaption>pairs of images that will be used to test registration</figcaption></figure></p>
-<p><figure alt="Coarse and fine correlation maps.  Coase is over a 160x160 region (the whole image), while fine is over a single pixel"><img src="images.png" /><figcaption>Coarse and fine correlation maps.  Coase is over a 160x160 region (the whole image), while fine is over a single pixel</figcaption></figure></p>
+    <p>Suppose \(y\) is a copy of some image \(x\) circularly-shifted by vector \(\tau\).  By the Fourier shift property we have</p>
+<p>$$Y(\omega) = X(\omega) e^{-j \omega \tau}$$</p>
+<p>Phase-correlation techniques take advantage of this property by observing that the cross-spectral density, \(R_{XY}\), has the property</p>
+<p>$$R_{XY}(\omega) = \frac{X(\omega)\overline{Y(\omega)}}{|X(\omega)\overline{Y(\omega)}|} = \frac{X(\omega) \overline{X e^{-j \tau \omega}}}{|X(\omega) X(\omega) e^{j \tau \omega}|} = e^{j \omega \tau}$$</p>
+<p>Where \(\tau\) can be extracted by simple IFFT and argmax.</p>
+<p>The naive method of extending phase-correlation for subpixel registration is to zeropad \(R_{XY}\) by a factor \(\kappa\) times the original image size before computing the IFFT to obtain a finer sampling grid.  However, when we desire finer subpixel estimates (like \(\kappa=100\)), it becomes intractible to compute and store such a large IFFT.</p>
+<p>This is a test of the subpixel phase-correlation image registration method proposed by <a href="https://www.osapublishing.org/ol/abstract.cfm?uri=ol-33-2-156">Guizar-Sicairos, Thurman, Fienup</a>.  The paper proposes that if we can roughly estimate the image offset, we need only compute a small region of the inverse fourier transform using IDFT instead of IFFT.</p>
+<p>Below is a test of the proposed algorithm on a set of Poisson-noised nanoflare images.  The image offset was first roughly estimated by IFFT of \(R_{XY}\).  Subpixel registration was then performed using IDFT with \(\kappa=100\).</p>
+<p><figure alt="pairs of images that will be used to test registration"><img src="images.png" /><figcaption>pairs of images that will be used to test registration</figcaption></figure></p>
+<p><figure alt="Coarse and fine correlation maps.  The left column is the coarse offset estimate (over a 160x160 pixel region) and the right column is a fine offset estimate (1x1 pixel region) \(\kappa=100\) "><img src="correlations.png" /><figcaption>Coarse and fine correlation maps.  The left column is the coarse offset estimate (over a 160x160 pixel region) and the right column is a fine offset estimate (1x1 pixel region) \(\kappa=100\) </figcaption></figure></p>
+<p>Note that the test images are circularly shifted.  When registering non-circularly shifted images, it will be necessary to apply a filter to reduce edge effects, such as a Log-Gabor filter proposed by <a href="http://www.jprr.org/index.php/jprr/article/viewFile/355/148">Sarvaiya, Patnaik, Kothari</a>.</p>
+<h1 id="computed-errors">Computed Errors</h1>
+<p>Offset error statistics for 10 noise realizations at each noise level are below.</p>
+<p>Error is measured linearly in pixels.</p>
 <table>
 <thead>
 <tr>
 <th>Max photon count</th>
-<th>offset error (px)</th>
+<th>offset error mean (px)</th>
+<th>offset error std. (px)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>10</td>
-<td>0.55</td>
+<td>0.544</td>
+<td>1.8e-3</td>
 </tr>
 <tr>
 <td>50</td>
-<td>0.27</td>
+<td>0.271</td>
+<td>9.6e-4</td>
 </tr>
 <tr>
 <td>100</td>
-<td>0.20</td>
+<td>0.196</td>
+<td>6.8e-4</td>
 </tr>
 <tr>
 <td>500</td>
-<td>0.09</td>
+<td>0.092</td>
+<td>2.9e-4</td>
 </tr>
 <tr>
 <td>1000</td>
-<td>0.07</td>
+<td>0.068</td>
+<td>9.4e-5</td>
 </tr>
 </tbody>
 </table>
