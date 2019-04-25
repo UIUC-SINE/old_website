@@ -1,11 +1,11 @@
 {% extends "base.j2" %}
 
 {% block main %}
-<h1>Legoman Demo</h1>
+<h1>MAS - Milliarcsecond Imaging with Photon Sieves</h1>
 
-<img style="margin: auto;display: block;" src="https://i.imgur.com/YR1zWRG.png">
-<h2>Projects</h2>
-{% for project in path('projects/**/*.md') %}
-<p><a href="{{ project.path }}"><code>{{ project.title }}</code></a> - {{ project.description }}</p>
+<img style="margin: auto;display:block; width:200px; border-radius:30px" src="https://avatars3.githubusercontent.com/u/37169265?s=400&u=149ecf6e23b2052f00d8eb3cf1bb28de314323b9&v=4">
+<h2>Reports</h2>
+{% for report in path('reports/**/*.md')|sort(attribute='date', reverse=true) %}
+<p><a href="{{ report.path }}"><code>{{ report.title }}</code></a> {% if report.description %}-{% endif %} {{ report.description }} {% if report.date %}<time datetime="{{ report.date }}"> - ({{ report.date }})</date>{% endif %}</p>
 {% endfor %}
 {% endblock %}

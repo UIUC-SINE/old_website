@@ -45,8 +45,9 @@ a:hover {
     display: inline-block;
     margin: 2rem auto;
 }
-table {
+iframe, table {
   border-collapse: collapse;
+  margin: auto;
 }
 
 table, th, td {
@@ -54,4 +55,26 @@ table, th, td {
 }
 iframe {
     border: 0;
+}
+
+img {
+    max-width: 70%;
+    display: block;
+    margin: auto;
+}
+
+figure {
+    max-width: 70%;
+    margin: 1rem auto 1rem auto;
+    border: 1px solid gray;
+    background-color: seashell;
+}
+
+figure img {
+    max-width: 100%;
+}
+
+figcaption {
+    font-style: italic;
+    text-align: center;
 }
