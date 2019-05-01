@@ -1,6 +1,6 @@
 ----
 title: Noised, blurred nanoflare simulations from Klimchuck simulation
-author: Evan
+author: Evan Widloski
 template: project.j2
 date: 2019-04-09
 ----

@@ -1,5 +1,5 @@
 ----
-author: Evan
+author: Evan Widloski
 template: project.j2
 date: 2019-04-18
 title: Single-step DFT subpixel registration under Poisson noise

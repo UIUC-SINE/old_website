@@ -4,7 +4,7 @@
   <article>
     <header>
       <h1>{{ title }}</h1>
-      <time datetime="{{ date }}">{{ date }}</time>
+      <time datetime="{{ date }}">{{ date }}</time>{% if author %} - {% endif %}{{author}}
     </header>
     {{ content }}
   </article>

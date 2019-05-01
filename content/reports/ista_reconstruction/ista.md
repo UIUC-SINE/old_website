@@ -1,5 +1,5 @@
 ---
-author: evan
+author: Evan Widloski
 title: Initial ISTA nanoflare reconstructions
 date: 2019-04-25
 template: project.j2
