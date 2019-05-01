@@ -56,5 +56,3 @@ next(x)
 # Table
 
 <iframe src="result1.html"></iframe>
-
-<link rel="import" href="result1.html">
