@@ -92,9 +92,9 @@ widths = np.repeat(image_width / np.sqrt(N), N)
 dfts = square(tops, lefts, widths)[:, np.newaxis, :, :]
 
 psfs.psf_dfts = dfts
-psfs.psfs = dfts
+psfs.psfs = np.fft.ifft2(psfs.psf_dfts)
 
 # csbs(psfs, sse_cost, 10, lam=1e-9, order=1)
-csbs(psfs, sse_cost, 10, lam=1e-55, order=0)
+csbs(psfs, sse_cost, 10, lam=1e0, order=1)
 plt, _ = fourier_slices(psfs)
 plt.show()
