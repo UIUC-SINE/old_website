@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 ps = PhotonSieve()
 wavelengths = np.array([33.4, 33.5]) * 1e-9
-sources = sources[0:-1:10].reshape((2, 1, 160, 160))
+sources = sources[np.array((0, 1))].reshape((2, 1, 160, 160))
 psfs = PSFs(
     sieve=ps,
     source_wavelengths=wavelengths,

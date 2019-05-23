@@ -64,7 +64,7 @@ img {
 }
 
 figure {
-    max-width: 70%;
+    max-width: 100%;
     margin: 1rem auto 1rem auto;
     border: 1px solid gray;
     background-color: seashell;
