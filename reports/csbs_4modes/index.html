@@ -16,16 +16,40 @@
   <article>
     <header>
       <h1>CSBS vs Naive plane selection</h1>
-      <time datetime="2019-04-30">2019-04-30</time> - Evan Widloski
+      <time datetime="2019-04-30">2019-04-30</time>
     </header>
-    <p><figure alt="Measurement contributions from each source.  Off-focus contributions are nearly DC"><img src="contributions.png" /><figcaption>Measurement contributions from each source.  Off-focus contributions are nearly DC</figcaption></figure></p>
-<p><figure alt="Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve." class="figure" style="max-width:100%"><img src="slices.png" /><figcaption>Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve.</figcaption></figure></p>
-<p><figure alt="1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency." class="figure" style="max-width:100%"><img src="sample_slices.png" /><figcaption>1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency.</figcaption></figure></p>
-<p><figure alt="Reconstructions with various methods, max count 10"><img src="reconstructions_10.png" /><figcaption>Reconstructions with various methods, max count 10</figcaption></figure>
-<figure alt="Reconstructions SSIMs, max count 10"><img src="ssim_comparison_10.png" /><figcaption>Reconstructions SSIMs, max count 10</figcaption></figure></p>
-<p><figure alt="Reconstructions with various methods, max count 500"><img src="reconstructions_500.png" /><figcaption>Reconstructions with various methods, max count 500</figcaption></figure>
-<figure alt="Reconstructions SSIMs, max count 500"><img src="ssim_comparison_500.png" /><figcaption>Reconstructions SSIMs, max count 500</figcaption></figure></p>
-<h4 id="bayesian-optimization">Bayesian Optimization</h4>
+    <h4 id="overview">Overview</h4>
+<p>In this report, we compare the reconstruction quality of 4 plane selection modes and show that CSBS focus, CSBS grid, and naive focus often yield the same reconstruction quality.  The 4 modes are described below.</p>
+<ul>
+<li>CSBS grid - CSBS with candidate planes spread on a grid from -3 DOF to +3 DOF</li>
+<li>CSBS focus - CSBS with candidate planes initialized at focal planes</li>
+<li>naive grid -  equal number of measurements spread on a grid from -3 DOF to +3 DOF</li>
+<li>naive focus - equal number of measurements at each focal plane</li>
+</ul>
+<p>Finally, we propose two situations in which CSBS might improve on the results given by the naive focus mode.</p>
+<h4 id="reconstruction-results">Reconstruction Results</h4>
+<p>Below are the reconstruction results for the four plane selection modes with 10 counts of noise and two sources.  The experiment was repeated for 100 noise realizations and the mean reconstruction SSIM for each mode has been plotted.  A 16cm sieve with 7 micron smallest hole diameter was used.</p>
+<p><figure alt="Reconstructions SSIMs, max count 10, 100 noise realizations"><img src="ssim_comparison_10.png" /><figcaption>Reconstructions SSIMs, max count 10, 100 noise realizations</figcaption></figure>
+<figure alt="Reconstructions with various methods, max count 10"><img src="reconstructions_10.png" /><figcaption>Reconstructions with various methods, max count 10</figcaption></figure></p>
+<p>Below the experiment has been repeated for 500 counts of noise.</p>
+<p><figure alt="Reconstructions SSIMs, max count 500, 100 noise realizations"><img src="ssim_comparison_500.png" /><figcaption>Reconstructions SSIMs, max count 500, 100 noise realizations</figcaption></figure>
+<figure alt="Reconstructions with various methods, max count 500"><img src="reconstructions_500.png" /><figcaption>Reconstructions with various methods, max count 500</figcaption></figure></p>
+<h4 id="rationale">Rationale</h4>
+<p>For a while now, we've hypothesized that CSBS isn't needed for our particular application (i.e. 33.4nm, 33.5nm with 16cm photon sieve) for two reasons:</p>
+<ul>
+<li>33.4 and 33.5nm have sufficient separation that contributions from one source at the focal plane of the other are effectively DC</li>
+<li>the PSFs of our photon sieves sample all spatial frequencies maximally at the focal plane</li>
+</ul>
+<p>If both of these are true then the optimal plane selection strategy is the naive focus mode.</p>
+<p>The first condition is supported if we examine a hypothetical scenario in which we are imaging two sources, with one measurement taken at the focal plane of each source.  Since each measurement is a sum of blurred sources, we can split the measurements into the contributions from each source.</p>
+<p><figure alt="Measurement contributions from each source.  Off-focus contributions are nearly DC"><img src="contributions.png" /><figcaption>Measurement contributions from each source.  Off-focus contributions are nearly DC</figcaption></figure></p>
+<p>To show the second condition, we need to demonstrate that our photon sieve gives PSF DFTs which are maximized everywhere (at all spatial frequencies) at the focal planes.  Below we have plotted horizontal slices from the PSF DFT slices plot.</p>
+<p><figure alt="Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve." class="figure" style="max-width:100%"><img src="slices.png" /><figcaption>Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve.</figcaption></figure>
+<figure alt="1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency." class="figure" style="max-width:100%"><img src="sample_slices.png" /><figcaption>1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency.</figcaption></figure></p>
+<h4 id="hypothetical-scenarios-where-csbs-might-outperform-naive-focus">Hypothetical scenarios where CSBS might outperform naive focus</h4>
+<p><figure alt="PSF DFT slices for a hypothetical element which fails the second condition"><img src="hypothetical.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the second condition</figcaption></figure>
+<figure alt="PSF DFT slices for a hypothetical element which fails the second condition"><img src="hypothetical_slices.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the second condition</figcaption></figure></p>
+<h4 id="appendix-bayesian-optimization">Appendix - Bayesian Optimization</h4>
 <p>The reconstruction parameters for the above section were all found using bayesian optimization, which is a common tool for searching hyperparameters.  Bayesian optimization is particularly well-suited to optimizing black box functions which are expensive to evaluate.  </p>
 <p>In our case, the naive focus and naive grid methods both have a single \(\lambda_{tik}\) parameter for Tikhonov regularization, while CSBS grid and CSBS focus had both a Tikhonov \(\lambda_{tik}\) and a \(\lambda_{csbs}\) used during plane selection.  It's worth noting that for CSBS grid and CSBS focus \(\lambda_{tik}\) and \(\lambda_{csbs}\) should be the same, but we found that the reconstruction were much better when these were allowed to be optimized separately.</p>
 <p>For posterity, the hyperparameter surfaces for each mode are included below.</p>
