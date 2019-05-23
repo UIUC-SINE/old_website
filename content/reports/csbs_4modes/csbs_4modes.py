@@ -142,7 +142,7 @@ plotter4d(
     row_labels=csbs_modes,
     column_labels=['33.4nm', '33.5nm'],
     sup_xlabel='Source',
-    sup_ylabel='Reconstruction method',
+    sup_ylabel='CSBS mode',
     figsize=(5, 6)
 )
 plt.savefig('reconstructions.png', dpi=300)
