@@ -12,50 +12,50 @@ from mas.plotting import plotter4d
 
 # %% annulus -----
 
-def annulus(radius, width, amplitude=1, image_width=301):
+# def annulus(radius, width, amplitude=1, image_width=301):
 
-    annulus = np.zeros((image_width, image_width))
+#     annulus = np.zeros((image_width, image_width))
 
-    x1, y1 = circle(
-        image_width / 2,
-        image_width / 2,
-        radius + width / 2,
-        shape=(image_width, image_width)
-    )
-    x2, y2 = circle(
-        image_width / 2,
-        image_width / 2,
-        radius - width / 2,
-        shape=(image_width, image_width)
-    )
+#     x1, y1 = circle(
+#         image_width / 2,
+#         image_width / 2,
+#         radius + width / 2,
+#         shape=(image_width, image_width)
+#     )
+#     x2, y2 = circle(
+#         image_width / 2,
+#         image_width / 2,
+#         radius - width / 2,
+#         shape=(image_width, image_width)
+#     )
 
-    annulus[x1, y1] = 1
-    annulus[x2, y2] = 0
-    annulus *= amplitude
+#     annulus[x1, y1] = 1
+#     annulus[x2, y2] = 0
+#     annulus *= amplitude
 
-    return annulus
+#     return annulus
 
-annulus = np.vectorize(annulus, signature='(),(),()->(i,j)')
+# annulus = np.vectorize(annulus, signature='(),(),()->(i,j)')
 
-n = np.arange(N)
-radii1 = 3 * np.abs(n - 25) + 3
-radii2 = 3 * np.abs(n - 75) + 3
-widths1 = widths2 = np.repeat(5, N)
-amplitudes1 = 1.3**(-np.abs(n - 25))
-amplitudes2 = 1.3**(-np.abs(n - 75))
+# n = np.arange(N)
+# radii1 = 3 * np.abs(n - 15) + 3
+# radii2 = 3* np.abs(n - 35) + 3
+# widths1 = widths2 = np.repeat(5, N)
+# amplitudes1 = 2.**(-np.abs(n - 15))
+# amplitudes2 = 2.**(-np.abs(n - 35))
 
-dfts1 = annulus(radii1, widths1, amplitudes1)[:, np.newaxis, :, :]
-dfts2 = annulus(radii2, widths2, amplitudes2)[:, np.newaxis, :, :]
-dfts1 = np.fft.fftshift(dfts1, axes=(2, 3))
-dfts2 = np.fft.fftshift(dfts2, axes=(2, 3))
+# dfts1 = annulus(radii1, widths1, amplitudes1)[:, np.newaxis, :, :]
+# dfts2 = annulus(radii2, widths2, amplitudes2)[:, np.newaxis, :, :]
+# dfts1 = np.fft.fftshift(dfts1, axes=(2, 3))
+# dfts2 = np.fft.fftshift(dfts2, axes=(2, 3))
 
-dfts = np.concatenate((dfts1, dfts2), axis=1)
+# dfts = np.concatenate((dfts1, dfts2), axis=1)
 
-psfs.psf_dfts = dfts
-psfs.psfs = dfts
+# psfs.psf_dfts = dfts
+# psfs.psfs = dfts
 
 # csbs(psfs, sse_cost, 10, lam=1e-2, order=0)
-fourier_slices(psfs)
+# fourier_slices(psfs)
 
 # %% ps -----
 
