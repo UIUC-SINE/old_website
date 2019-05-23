@@ -18,8 +18,25 @@
       <h1>CSBS vs Naive plane selection</h1>
       <time datetime="2019-04-30">2019-04-30</time> - Evan Widloski
     </header>
-    <p><figure alt="Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve." class="figure" style="max-width:100%"><img src="slices.png" /><figcaption>Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve.</figcaption></figure></p>
+    <p><figure alt="Measurement contributions from each source.  Off-focus contributions are nearly DC"><img src="contributions.png" /><figcaption>Measurement contributions from each source.  Off-focus contributions are nearly DC</figcaption></figure></p>
+<p><figure alt="Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve." class="figure" style="max-width:100%"><img src="slices.png" /><figcaption>Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve.</figcaption></figure></p>
 <p><figure alt="1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency." class="figure" style="max-width:100%"><img src="sample_slices.png" /><figcaption>1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency.</figcaption></figure></p>
+<p><figure alt="Reconstructions with various methods, max count 10"><img src="reconstructions_10.png" /><figcaption>Reconstructions with various methods, max count 10</figcaption></figure>
+<figure alt="Reconstructions SSIMs, max count 10"><img src="ssim_comparison_10.png" /><figcaption>Reconstructions SSIMs, max count 10</figcaption></figure></p>
+<p><figure alt="Reconstructions with various methods, max count 500"><img src="reconstructions_500.png" /><figcaption>Reconstructions with various methods, max count 500</figcaption></figure>
+<figure alt="Reconstructions SSIMs, max count 500"><img src="ssim_comparison_500.png" /><figcaption>Reconstructions SSIMs, max count 500</figcaption></figure></p>
+<h4 id="bayesian-optimization">Bayesian Optimization</h4>
+<p>The reconstruction parameters for the above section were all found using bayesian optimization, which is a common tool for searching hyperparameters.  Bayesian optimization is particularly well-suited to optimizing black box functions which are expensive to evaluate.  </p>
+<p>In our case, the naive focus and naive grid methods both have a single \(\lambda_{tik}\) parameter for Tikhonov regularization, while CSBS grid and CSBS focus had both a Tikhonov \(\lambda_{tik}\) and a \(\lambda_{csbs}\) used during plane selection.  It's worth noting that for CSBS grid and CSBS focus \(\lambda_{tik}\) and \(\lambda_{csbs}\) should be the same, but we found that the reconstruction were much better when these were allowed to be optimized separately.</p>
+<p>For posterity, the hyperparameter surfaces for each mode are included below.</p>
+<p><img alt="" src="bayesian_optimization/bayesian_tik_csbs_grid_10_split.png" />
+<img alt="" src="bayesian_optimization/bayesian_tik_csbs_focus_10_split.png" />
+<img alt="" src="bayesian_optimization/bayesian_tik_naive_grid_10.png" />
+<img alt="" src="bayesian_optimization/bayesian_tik_naive_focus_10.png" />
+<img alt="" src="bayesian_optimization/bayesian_tik_csbs_grid_500_split.png" />
+<img alt="" src="bayesian_optimization/bayesian_tik_csbs_focus_500_split.png" />
+<img alt="" src="bayesian_optimization/bayesian_tik_naive_grid_500.png" />
+<img alt="" src="bayesian_optimization/bayesian_tik_naive_focus_500.png" /></p>
   </article>
 </main>
 <footer>

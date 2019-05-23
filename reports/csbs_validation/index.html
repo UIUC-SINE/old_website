@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Validating CSBS on a hypothetical imaging element</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" />
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css" integrity="sha384-dbVIfZGuN1Yq7/1Ocstc1lUEm+AT+/rCkibIcC/OmWo5f0EA48Vf8CytHzGrSwbQ" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js" integrity="sha384-2BKqo+exmr9su6dir+qCw08N2ZKRucY4PrGQPPWU1A7FtlCGjmEGFqXCv5nyM5Ij" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Validating CSBS on a hypothetical imaging element</h1>
+      <time datetime="2019-05-15">2019-05-15</time> - Evan Widloski
+    </header>
+    <p>Here I test CSBS with SSE cost on a hypothetical imaging element with hand-crafted PSF DFTs.  Unlike a photon sieve, this element has PSF DFTs which are <em>not</em> maximized at the focal length for all frequencies.  The goal of this report is to show that our CSBS implementation chooses a sane measurement configuration when presented with a set of PSFs with very different frequency supports.</p>
+<p><figure alt="PSF DFTs of hypothetical element at 49 measurement locations."><img src="square_dfts.png" /><figcaption>PSF DFTs of hypothetical element at 49 measurement locations.</figcaption></figure></p>
+<p><figure alt="PSF DFTs of typical photon sieve at 49 measurement locations."><img src="photonsieve_dfts.png" /><figcaption>PSF DFTs of typical photon sieve at 49 measurement locations.</figcaption></figure></p>
+<h1 id="csbs-sse-cost">CSBS SSE Cost</h1>
+<p>$$\text{trace}((A^TA + \lambda^2 L^TL)^{-1})$$</p>
+<p><figure alt="CSBS result for photon sieve. \(L^TL = D_h^TD_h + D_v^TD_v\), \(\lambda = 1\).  PSFs with low frequency components are prioritized."><img src="square_csbs_order1.png" /><figcaption>CSBS result for photon sieve. \(L^TL = D_h^TD_h + D_v^TD_v\), \(\lambda = 1\).  PSFs with low frequency components are prioritized.</figcaption></figure></p>
+<p><figure alt="CSBS result for photon sieve. \(L^TL = I\), \(\lambda = 1\).  All PSFs have equal importance."><img src="square_csbs_order0.png" /><figcaption>CSBS result for photon sieve. \(L^TL = I\), \(\lambda = 1\).  All PSFs have equal importance.</figcaption></figure></p>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>
