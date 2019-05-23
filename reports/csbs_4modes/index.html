@@ -16,7 +16,7 @@
   <article>
     <header>
       <h1>CSBS vs Naive plane selection</h1>
-      <time datetime="2019-04-30">2019-04-30</time>
+      <time datetime="2019-05-20">2019-05-20</time>
     </header>
     <div class="toc">
 <ul>
@@ -35,8 +35,8 @@
 <h3 id="overview">Overview</h3>
 <p>In this report, we compare the reconstruction quality of 4 plane selection modes and show that CSBS focus, CSBS grid, and naive focus often yield the same reconstruction quality.  The 4 modes are described below.</p>
 <ul>
-<li>CSBS grid - CSBS with candidate planes spread on a grid from -3 DOF to +3 DOF</li>
-<li>CSBS focus - CSBS with candidate planes initialized at focal planes</li>
+<li>CSBS grid - CSBS with candidate measurement planes spread on a grid from -3 DOF to +3 DOF</li>
+<li>CSBS focus - CSBS with measurement candidate planes initialized at focal planes</li>
 <li>naive grid -  equal number of measurements spread on a grid from -3 DOF to +3 DOF</li>
 <li>naive focus - equal number of measurements at each focal plane</li>
 </ul>
@@ -83,8 +83,10 @@
 <img alt="" src="bayesian_optimization/bayesian_tik_naive_focus_500.png" /></p>
 <h3 id="future-work-and-ideas">Future work and Ideas</h3>
 <ul>
-<li>test CSBS grid on the two hypothetical scenarios</li>
+<li>test CSBS grid on the two hypothetical scenarios<ul>
 <li>for the scenario which fails the separation condition, how does the CSBS grid result change in extreme noise and limited samples?</li>
+</ul>
+</li>
 <li>can we take advantage of the sinc shape of the DFT slices?  i.e. sample and bandpass filter</li>
 </ul>
   </article>
