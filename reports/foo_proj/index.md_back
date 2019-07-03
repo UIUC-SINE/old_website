@@ -10,7 +10,23 @@ description: Demonstrating various formatting features
 
 # Heading 1
 
+foo
+
+## Heading 2
+
+bar
+
 ### Heading 3
+
+baz
+
+#### Heading 4
+
+spam
+
+##### Heading 5
+
+ham
 
 * bullet1
 * bullet2
