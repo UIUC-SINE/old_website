@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" type="text/css" href="/styles.css" /> 
   <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous"> 
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script> 
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body,{delimiters: [{left: '```math', right: '```', display: true}, {left: '$', right: '$', display: false}]});"></script>  
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 </head>
 <body>
@@ -22,7 +22,9 @@
 <p><figure alt="PSF DFTs of hypothetical element at 49 measurement locations."><img src="square_dfts.png" /><figcaption>PSF DFTs of hypothetical element at 49 measurement locations.</figcaption></figure></p>
 <p><figure alt="PSF DFTs of typical photon sieve at 49 measurement locations."><img src="photonsieve_dfts.png" /><figcaption>PSF DFTs of typical photon sieve at 49 measurement locations.</figcaption></figure></p>
 <h1 id="csbs-sse-cost">CSBS SSE Cost</h1>
-<p>$$\text{trace}((A^TA + \lambda^2 L^TL)^{-1})$$</p>
+<p>
+<script type="math/tex; mode=display">\text{trace}((A^TA + \lambda^2 L^TL)^{-1})</script>
+</p>
 <p><figure alt="CSBS result for photon sieve. \(L^TL = D_h^TD_h + D_v^TD_v\), \(\lambda = 1\).  PSFs with low frequency components are prioritized."><img src="square_csbs_order1.png" /><figcaption>CSBS result for photon sieve. \(L^TL = D_h^TD_h + D_v^TD_v\), \(\lambda = 1\).  PSFs with low frequency components are prioritized.</figcaption></figure></p>
 <p><figure alt="CSBS result for photon sieve. \(L^TL = I\), \(\lambda = 1\).  All PSFs have equal importance."><img src="square_csbs_order0.png" /><figcaption>CSBS result for photon sieve. \(L^TL = I\), \(\lambda = 1\).  All PSFs have equal importance.</figcaption></figure></p>
   </article>

@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" type="text/css" href="/styles.css" /> 
   <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous"> 
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script> 
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body,{delimiters: [{left: '```math', right: '```', display: true}, {left: '$', right: '$', display: false}]});"></script>  
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 </head>
 <body>
@@ -19,9 +19,13 @@
       <time datetime="2019-04-18">2019-04-18</time> - Evan Widloski
     </header>
     <p>Suppose \(y\) is a copy of some image \(x\) circularly-shifted by vector \(\tau\).  By the Fourier shift property we have</p>
-<p>$$Y(\omega) = X(\omega) e^{-j \omega \tau}$$</p>
+<p>
+<script type="math/tex; mode=display">Y(\omega) = X(\omega) e^{-j \omega \tau}</script>
+</p>
 <p>Phase-correlation techniques take advantage of this property by observing that the cross-spectral density, \(R_{XY}\), has the property</p>
-<p>$$R_{XY}(\omega) = \frac{X(\omega)\overline{Y(\omega)}}{|X(\omega)\overline{Y(\omega)}|} = \frac{X(\omega) \overline{X e^{-j \tau \omega}}}{|X(\omega) X(\omega) e^{j \tau \omega}|} = e^{j \omega \tau}$$</p>
+<p>
+<script type="math/tex; mode=display">R_{XY}(\omega) = \frac{X(\omega)\overline{Y(\omega)}}{|X(\omega)\overline{Y(\omega)}|} = \frac{X(\omega) \overline{X e^{-j \tau \omega}}}{|X(\omega) X(\omega) e^{j \tau \omega}|} = e^{j \omega \tau}</script>
+</p>
 <p>Where \(\tau\) can be extracted by simple IFFT and argmax.</p>
 <p>The naive method of extending phase-correlation for subpixel registration is to zeropad \(R_{XY}\) by a factor \(\kappa\) times the original image size before computing the IFFT to obtain a finer sampling grid.  However, when we desire finer subpixel estimates (like \(\kappa=100\)), it becomes intractible to compute and store such a large IFFT.</p>
 <p>This is a test of the subpixel phase-correlation image registration method proposed by <a href="https://www.osapublishing.org/ol/abstract.cfm?uri=ol-33-2-156">Guizar-Sicairos, Thurman, Fienup</a>.  The paper proposes that if we can roughly estimate the image offset, we need only compute a small region of the inverse fourier transform using IDFT instead of IFFT.</p>

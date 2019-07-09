@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Weekly Report</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Weekly Report</h1>
+      <time datetime="2019-07-08">2019-07-08</time> - Evan
+    </header>
+    <p>I've spent the last few days going over two phase correlation papers that I mentioned in previous reports (De Castro/Morandi and Foroosh) and translating them to use my notation.</p>
+<h1 id="de-castromorandi">De Castro/Morandi</h1>
+<p>Translating the paper by De Castro and Morandi was fairly straightforward (the result of which can be found <a href="http://localhost:8000/reports/thesis/index.html#de-castro-morandi-method">here</a>), but I ran into some minor problems that still need to be addressed.  For example, take the following excerpt from the paper (translated into my notation)</p>
+<p>
+<script type="math/tex; mode=display">
+\theta \text{ may thus be determined by varying } \hat{\theta} \text{ until the shape of } \\
+\mathcal{F}^{-1} \left[ \frac{I_2(\omega)}{I_1(R_{\hat{\theta}} \omega)}\right] \text{ gives the closest approximation of a unity pulse.}
+</script>
+</p>
+<p>The authors give no insight as to how they measure closeness to an impulse function. In my writeup I left a placeholder for this hypothetical measure and suggested one that might suffice, but there are many others that might work.</p>
+<p>Another issue that cropped up relates to the use of the quotient <script type="math/tex">\frac{I_2(\omega)}{I_1(R_{\theta} \hat{\omega})}</script> for finding rotation angle <script type="math/tex">\theta</script>.  As a reminder, as the angle being tested <script type="math/tex">\hat{\theta}</script> approaches the true angle, the quotient yields an exponential.</p>
+<p>i.e. when <script type="math/tex">\hat{\theta} \approx \theta</script>, we get</p>
+<p>
+<script type="math/tex; mode=display">
+\mathcal{F}^{-1} \left[ \frac{I_2(\omega)}{I_1(R_{\theta} \omega)}\right](x) = \mathcal{F}^{-1} \left[ e^{-j \langle \omega, c \rangle} \right](x) = \delta(x - c)
+</script>
+</p>
+<p>While this works for finding <script type="math/tex">\theta</script>, the authors explicitly state that using CPSD (which also yields an exponential when <script type="math/tex">\hat{\theta} = \theta</script>) is a more robust option.  However, when I tried to validate this mathematically I got the following result</p>
+<p>
+<script type="math/tex; mode=display">
+CPSD(\hat{I_1}, I_2) = \frac{I_1(R_{\hat{\theta}}^{-1} \omega) \overline{I_2(\omega)}}{\left| I_1(R_{\hat{\theta}}^{-1} \omega) \overline{I_2(\omega)} \right|} = 
+\frac{I_1(R_{\hat{\theta}}^{-1} \omega) \overline{I_1(R_{\theta} \omega)}}{\left| I_1(R_{\hat{\theta}}^{-1} \omega) \overline{I_1(R_{\theta} \omega)} \right|} e^{j \langle \omega, c \rangle} = e^{j \langle \omega, c \rangle}
+</script>
+</p>
+<p>In other words, CPSD will yield a complex exponential regardless of <script type="math/tex">\hat{\theta}</script>.</p>
+<h1 id="foroosh">Foroosh</h1>
+<p>The Foroosh paper is more challenging to adapt to my notation because of its use of the Log-Polar/Fourier-Mellin transform.  One of my goals is rewrite the authors' more qualitative arguments for how the Log-Polar transform turns rotation/scaling into translation into a more mathematical one.  To that end, I sketched out a straightforward proof of how rotation, scaling and translation in the spatial domain affect the Fourier domain.</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\mathcal{F}\left[ i(R_{\theta}S_s x - c) \right](\omega) &= \int i(R_{\theta}S_sx - c) e^{-j \langle \omega,\, x \rangle} dx \\
+&= \frac{1}{s^2} \int i(y) e^{-j \langle \omega,\, S_s^{-1}R_{\theta}^{-1} y \rangle} e^{-j \langle \omega,\,  S_s^{-1} R_{\theta}^{-1} c \rangle} dy \\
+&= \frac{1}{s^2} \int i(y) e^{-j \langle S_s^{-1}R_{\theta} \omega,\, y \rangle} e^{-j \langle S_s^{-1}R_{\theta} \omega,\, c \rangle} dy \\
+&= \frac{1}{s^2} e^{-j \langle S_s^{-1}R_{\theta} \omega,\, c \rangle} \int i(y) e^{-j \langle S_s^{-1}R_{\theta} \omega,\, y \rangle} dy \\
+&= \frac{1}{s^2} e^{-j \langle S_s^{-1}R_{\theta} \omega,\, c \rangle} G(S_s^{-1}R_{\theta} \omega)
+\end{aligned}
+</script>
+</p>
+<p>The next step is to show that after applying the log-polar transform to <script type="math/tex">G(S_s^{-1} R_{\theta} \omega)</script>, <script type="math/tex">S_s^{-1}</script> and <script type="math/tex">R_{\theta}</script> manifest as translations.</p>
+<h1 id="summary">Summary</h1>
+<ul>
+<li>One step of the De Castro/Morandi paper is to measure how close a function is to an impulse, but the authors don't say how.</li>
+<li>De Castro/Morandi recommends using CPSD for finding the rotation angle, but this doesn't seem to work out mathematically.</li>
+<li>I wrote a brief proof of how to express the scaled, rotated, and translated image <script type="math/tex">i(R_{\theta}S_s x - c)</script> in the Fourier domain.  Essentially just a combined proof of the Fourier shift, Fourier rotation, and Fourier scale theorems in 2D.</li>
+</ul>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>

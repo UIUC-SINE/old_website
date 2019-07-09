@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" type="text/css" href="/styles.css" /> 
   <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous"> 
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script> 
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body,{delimiters: [{left: '```math', right: '```', display: true}, {left: '$', right: '$', display: false}]});"></script>  
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 </head>
 <body>
@@ -62,27 +62,27 @@
 <figure alt="inline image" class="inline"><img src="cheetos_small.png" /><figcaption>inline image</figcaption></figure> </p>
 <p><img alt="" class="class1 class2" id="id1" src="cheetos_small.png" />  </p>
 <h1 id="math">Math</h1>
-<p>$$3x + 4y$$</p>
-<p>$$[Rf](t, \theta) = \int_{\mathbb{R}^2} f(x)\delta(N_{\theta}^T x - t)\, dx$$</p>
+<p>
+<script type="math/tex; mode=display">3x + 4y</script>
+</p>
+<p>
+<script type="math/tex; mode=display">[Rf]\(t, \theta\) = \int_{\mathbb{R}^2} f(x)\delta(N_{\theta}^T x - t)\, dx</script>
+</p>
 <h1 id="code">Code</h1>
-<p>A code snippet</p>
-<div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;hello world&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s1">&#39;my name is evan&#39;</span><span class="p">)</span>
-</pre></div>
-
-
+<p>A code snippet
+<code>python
+print('hello world')
+print('my name is evan')</code></p>
 <p><code>test.py</code></p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">fib</span><span class="p">():</span>
-    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
-    <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">a</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">fib</span><span class="p">()</span>
-<span class="nb">next</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</pre></div>
-
-
+<p>``` python
+def fib():
+    a, b = 0, 1
+    while 1:
+        yield a
+        a, b = b, a + b</p>
+<p>x = fib()
+next(x)
+```</p>
 <h1 id="table">Table</h1>
 <iframe src="result1.html"></iframe>
   </article>
