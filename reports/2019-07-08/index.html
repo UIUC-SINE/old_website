@@ -6,9 +6,10 @@
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" type="text/css" href="/styles.css" /> 
   <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
-<script type="text/javascript"
-   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+
+
 
 </head>
 <body>
@@ -20,7 +21,7 @@
     </header>
     <p>I've spent the last few days going over two phase correlation papers that I mentioned in previous reports (De Castro/Morandi and Foroosh) and translating them to use my notation.</p>
 <h1 id="de-castromorandi">De Castro/Morandi</h1>
-<p>Translating the paper by De Castro and Morandi was fairly straightforward (the result of which can be found <a href="http://localhost:8000/reports/thesis/index.html#de-castro-morandi-method">here</a>), but I ran into some minor problems that still need to be addressed.  For example, take the following excerpt from the paper (translated into my notation)</p>
+<p>Translating the paper by De Castro and Morandi was fairly straightforward (the result of which can be found <a href="http://uiuc-sine.github.io/thesis/intro.html#de-castro-morandi-method">here</a>), but I ran into some minor problems that still need to be addressed.  For example, take the following excerpt from the paper (translated into my notation)</p>
 <p>
 <script type="math/tex; mode=display">
 \theta \text{ may thus be determined by varying } \hat{\theta} \text{ until the shape of } \\
@@ -52,11 +53,11 @@ CPSD(\hat{I_1}, I_2) = \frac{I_1(R_{\hat{\theta}}^{-1} \omega) \overline{I_2(\om
 &= \frac{1}{s^2} \int i(y) e^{-j \langle \omega,\, S_s^{-1}R_{\theta}^{-1} y \rangle} e^{-j \langle \omega,\,  S_s^{-1} R_{\theta}^{-1} c \rangle} dy \\
 &= \frac{1}{s^2} \int i(y) e^{-j \langle S_s^{-1}R_{\theta} \omega,\, y \rangle} e^{-j \langle S_s^{-1}R_{\theta} \omega,\, c \rangle} dy \\
 &= \frac{1}{s^2} e^{-j \langle S_s^{-1}R_{\theta} \omega,\, c \rangle} \int i(y) e^{-j \langle S_s^{-1}R_{\theta} \omega,\, y \rangle} dy \\
-&= \frac{1}{s^2} e^{-j \langle S_s^{-1}R_{\theta} \omega,\, c \rangle} G(S_s^{-1}R_{\theta} \omega)
+&= \frac{1}{s^2} e^{-j \langle S_s^{-1}R_{\theta} \omega,\, c \rangle} I(S_s^{-1}R_{\theta} \omega)
 \end{aligned}
 </script>
 </p>
-<p>The next step is to show that after applying the log-polar transform to <script type="math/tex">G(S_s^{-1} R_{\theta} \omega)</script>, <script type="math/tex">S_s^{-1}</script> and <script type="math/tex">R_{\theta}</script> manifest as translations.</p>
+<p>The next step is to show that after applying the log-polar transform to <script type="math/tex">I(S_s^{-1} R_{\theta} \omega)</script>, <script type="math/tex">S_s^{-1}</script> and <script type="math/tex">R_{\theta}</script> manifest as translations.</p>
 <h1 id="summary">Summary</h1>
 <ul>
 <li>One step of the De Castro/Morandi paper is to measure how close a function is to an impulse, but the authors don't say how.</li>
@@ -68,5 +69,6 @@ CPSD(\hat{I_1}, I_2) = \frac{I_1(R_{\hat{\theta}}^{-1} \omega) \overline{I_2(\om
 <footer>
     <p>SINE UIUC</p>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js"></script> 
 </body>
 </html>

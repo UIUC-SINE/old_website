@@ -7,6 +7,11 @@ c = camera().astype(float)
 m = moon().astype(float)
 y1 = c + m
 y2 = np.roll(c, (-10, -15), (0, 1)) + np.roll(m, (20, 25), (0, 1))
+
+plt.subplot(2, 2, 1)
+plt.imshow(y1)
+plt.subplot(2, 2, 2)
+plt.imshow(y2)
 y1 = add_noise(y1, dbsnr=30, model='gaussian')
 y2 = add_noise(y2, dbsnr=30, model='gaussian')
 # y1 = c
@@ -60,3 +65,10 @@ A = np.array(
 A_inv = pinv(A)
 Y = np.array((np.fft.fftn(y1), np.fft.fftn(y2)))
 result = np.einsum('abcd,bcd->acd', A_inv, Y)
+
+plt.subplot(2, 2, 3)
+plt.imshow(np.fft.ifftn(result[0]).real)
+plt.subplot(2, 2, 4)
+plt.imshow(np.fft.ifftn(result[1]).real)
+
+plt.show()

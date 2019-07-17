@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Weekly Report</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+
+
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Weekly Report</h1>
+      <time datetime="2019-07-15">2019-07-15</time> - Evan
+    </header>
+    <div class="toc">
+<ul>
+<li><a href="#log-polar-transform-of-scaled-rotated-and-shifted-images">Log-Polar transform of scaled, rotated and shifted images</a></li>
+<li><a href="#summary">Summary</a></li>
+</ul>
+</div>
+<p>This week, I set out to prove some of statements in <a href="http://www.jprr.org/index.php/jprr/article/view/355">Sarvaiya, Patnaik, Kothari 2012</a>.  As I mentioned in the previous report, this paper glosses over the details of how the Log-Polar transform affects scaled/rotated images and simply states that they manifest as translations in the Log-Polar domain.  This analysis wasn't strictly necessary for the paper review, but I found it helpful nonetheless for truly understanding the effects of the Log-Polar transform.  The final analytical result may also be useful for showing how the Log-Polar transform introduces conditioning problems.  This is mentioned and accounted for in the paper, but again is not proven with much rigor.</p>
+<p>Also after working through the proofs, I made some minor refinements to my chosen mathematical notation.</p>
+<h3 id="log-polar-transform-of-scaled-rotated-and-shifted-images">Log-Polar transform of scaled, rotated and shifted images</h3>
+<p><a href="https://uiuc-sine.github.io/reports/2019-07-08/index.html#Foroosh">Previously</a>, I showed the Fourier transform of a scaled, rotated and shifted image is a scaled and rotated version of the image's Fourier transform modulated by a complex exponential.</p>
+<p>i.e.</p>
+<p>
+<script type="math/tex; mode=display">
+\mathcal{F}\left[ i(R_{\theta_0}S_{s_0} \bm{x} - \bm{c}) \right](\bm{\omega}) = \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1}R_{\theta_0} \bm{\omega},\, \bm{c} \rangle} I(S_{s_0}^{-1} R_{\theta_0} \bm{\omega})
+</script>
+</p>
+<p>where</p>
+<p>
+<script type="math/tex; mode=display">S_{s_0} = \begin{bmatrix} s_0 & 0 \\ 0 & s_0 \end{bmatrix} \tag*{scaling}</script>
+</p>
+<p>
+<script type="math/tex; mode=display">R_{\theta_0} = \begin{bmatrix}\cos \theta_0 & -\sin \theta_0 \\ \sin \theta_0 & \cos \theta_0 \end{bmatrix} \tag*{rotation}</script>
+</p>
+<p>
+<script type="math/tex; mode=display">\bm{c} = \begin{bmatrix} x_0 & y_0 \end{bmatrix}^T \tag*{translation}</script>
+</p>
+<p>
+<script type="math/tex; mode=display">\bm{x} = \begin{bmatrix} x & y \end{bmatrix}^T \tag*{spatial coordinate vector}</script>
+</p>
+<p>
+<script type="math/tex; mode=display">\bm{\omega} = \begin{bmatrix} u & v \end{bmatrix}^T \tag*{frequency coordinate vector}</script>
+</p>
+<p>Next I will show that the Log-Polar transform of a scaled, rotated image is a translated version of the image's Log-Polar transform.</p>
+<p>i.e.</p>
+<p>
+<script type="math/tex; mode=display">
+\mathcal{LP}\left[ i(R_{\theta_0}S_{s_0}\bm{x}) \right](\rho, \theta) = \mathcal{LP} \left[ i(\bm{x}) \right](\rho + \ln s_0, \theta + \theta_0)
+</script>
+</p>
+<p><br></p>
+<p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\mathcal{LP} \left[i(R_{\theta_0} S_{s_0} \bm{x}) \right](\rho, \theta) &= \mathcal{LP} \left[ i(s_0(x \cos \theta_0 - y \sin \theta_0), s_0(x \sin \theta_0 + y \cos \theta_0) \right](\rho, \theta) \\
+&= \mathcal{LP} \left[ i(e^{\ln s_0}(x \cos \theta_0 - y \sin \theta_0), e^{\ln s_0}(x \sin \theta_0 + y \cos \theta_0) \right](\rho, \theta) \\ 
+& \text{Substitute \((x, y) = (e^{\rho} \cos \theta, e^{\rho} \sin \theta)\)} \\
+&= i(e^{\ln s_0}(e^{\rho} \cos \theta \cos \theta_0 - e^{\rho} \sin \theta \sin \theta_0), e^{\ln s_0}(e^{\rho} \cos \theta \sin \theta_0 + e^{\rho} \sin \theta \cos \theta_0) \\
+& \text{Apply angle sum identities} \\
+&= i(e^{\rho + \ln s_0} \cos (\theta + \theta_0), e^{\rho + \ln s_0} \sin (\theta + \theta_0)) \\
+&= \mathcal{LP} \left[ i(x) \right](\rho + \ln s_0, \theta + \theta_0)
+\end{aligned}
+</script>
+</p>
+<p>So when we apply Log-Polar transform to a scaled and rotated image, we can simply apply these substitutions</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+s_0(x \cos \theta_0 - y \sin \theta_0) &= e^{\rho + \ln s_0} \cos(\theta + \theta_0) \\
+s_0(x \sin \theta_0 + y \cos \theta_0) &= e^{\rho + \ln s_0} \sin(\theta + \theta_0)
+\end{aligned}
+</script>
+</p>
+<p>First we define the Log-Polar transform of <script type="math/tex">I</script>.</p>
+<p>
+<script type="math/tex; mode=display">
+I_{LP}(\rho, \theta) = I(e^{\rho} \cos \theta, e^{\rho} \sin \theta)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+& \frac{1}{s_0^2} e^{j \langle S^{-1} R \omega,\, \bm{c} \rangle} I(S^{-1} R \bm{\omega}) \\ 
+&= \frac{1}{s_0^2} e^{-j \left(\frac{1}{s_0} \left[ u \cos \theta_0 - v \sin \theta_0, u \sin \theta_0 + v \cos \theta_0 \right]^T \bm{c}\right)} I(\frac{1}{s_0} \left[ u \cos \theta_0 - v \sin \theta_0, u \sin \theta_0 + v \cos \theta_0 \right]^T) \\
+&= \frac{1}{s_0^2} \text{exp} \left[ -j\left(\frac{1}{s_0} \left[ x_0 (u \cos \theta_0 - v \sin \theta_0) + y_0 (u \sin \theta_0 + v \cos \theta_0 v)\right]\right) \right] I\left(\frac{1}{s_0} (u \cos \theta_0 - v \sin \theta_0), \frac{1}{s_0} (u \sin \theta_0 + v \cos \theta_0) \right) \\
+&= \frac{1}{s_0^2} \text{exp} \left[ -j\left(x_0 \frac{1}{s_0} (u \cos \theta_0 - v \sin \theta_0) + y_0 \frac{1}{s_0} (u \sin \theta_0 + v \cos \theta_0 v)\right) \right] I\left(\frac{1}{s_0} (u \cos \theta_0 - v \sin \theta_0), \frac{1}{s_0} (u \sin \theta_0 + v \cos \theta_0) \right) \\
+& \text{Apply Log-Polar transform} \\
+&= \frac{1}{s_0^2} \text{exp} \left[ -j\left(x_0 e^{\rho + \ln \frac{1}{s_0}} \cos(\theta + \theta_0) + y_0 e^{\rho + \ln \frac{1}{s_0}} \sin(\theta + \theta_0)\right) \right] I\left(e^{\rho + \ln \frac{1}{s_0}} \cos(\theta + \theta_0), e^{\rho + \ln \frac{1}{s_0}} \sin(\theta + \theta_0) \right) \\
+& \text{Apply definition of \(I_{LP}\)} \\
+&= \frac{1}{s_0^2} \text{exp} \left[ -j\left(x_0 e^{\rho + \ln \frac{1}{s_0}} \cos(\theta + \theta_0) + y_0 e^{\rho + \ln \frac{1}{s_0}} \sin(\theta + \theta_0)\right) \right] I_{LP}\left(\rho + \ln \frac{1}{s_0}, \theta + \theta_0 \right) \\
+\end{aligned}
+</script>
+</p>
+<p>The important result here is that after taking the Log-Polar transform, the effects of <script type="math/tex">R_{\theta_0}</script> and <script type="math/tex">S_{s_0}</script> are simply translations.  We can now use the standard phase-correlation method for calculating <script type="math/tex">\ln\frac{1}{s_0}</script> and <script type="math/tex">\theta_0</script> to recover scale and rotation.
+<!-- \text{substitute } (x, y) \rightarrow (e^{\rho} \cos \theta, e^{\rho} \sin \theta) \\ --></p>
+<h3 id="summary">Summary</h3>
+<ul>
+<li>Added section on Log-Polar method to thesis introduction.</li>
+<li>Explicitly wrote out effects of Log-Polar transform on scaled/rotated/shifted images.</li>
+<li>Toyed with potential application of Prony's method idea</li>
+</ul>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js"></script> 
+</body>
+</html>

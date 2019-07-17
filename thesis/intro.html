@@ -2,25 +2,29 @@
 <html lang=en>
 
 <head>
-  <title>Thesis Introduction Draft</title>
+  <title>Introduction</title>
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" type="text/css" href="/styles.css" /> 
   <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
-<script type="text/javascript"
-   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+
+
 
 </head>
 <body>
 <main>
   <article>
     <header>
-      <h1>Thesis Introduction Draft</h1>
+      <h1>Introduction</h1>
       <time datetime="2019-06-16">2019-06-16</time>
     </header>
     <div class="toc">
 <ul>
-<li><a href="#introduction">Introduction</a></li>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#a-comment-on-notation">A Comment on Notation</a></li>
+</ul>
+</li>
 <li><a href="#area-based-registration">Area based Registration</a><ul>
 <li><a href="#correlation-like-methods">Correlation-like Methods</a><ul>
 <li><a href="#cross-correlation">Cross Correlation</a></li>
@@ -57,15 +61,15 @@
 <p>Let <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> be two images captured of a scene.  These are often called the <em>reference</em> and <em>template</em> images.  In image registration, we want to find a mapping from regions in the template image to regions in the reference image.  More formally, we want to find <script type="math/tex">f</script> such that</p>
 <p>
 <script type="math/tex; mode=display">
-i_2(x) = g(i_1(f(x))) \,\, \forall x \in X
+i_2(\bm{x}) = g(i_1(f(\bm{x}))) \,\, \forall \bm{x} \in X
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
-i_2(x) = g(i_1(f(x))) \,\, \forall x \in X
+i_2(\bm{x}) = g(i_1(f(\bm{x}))) \,\, \forall \bm{x} \in X
 </script>
 </p>
-<p>where <script type="math/tex">x</script> is a 2D coordinate in the image overlap region <script type="math/tex">X</script>, <script type="math/tex">f</script> is some unknown coordinate transform, and <script type="math/tex">g</script> is an unknown intensity mapping function.  In the simple case, <script type="math/tex">g</script> is often assumed to be unitary, but can be a very complicated function in multimodal applications like medical imaging where <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> are captured from different instruments.</p>
+<p>where <script type="math/tex">\bm{x}</script> is a 2D coordinate in the image overlap region <script type="math/tex">X</script>, <script type="math/tex">f</script> is some unknown coordinate transform, and <script type="math/tex">g</script> is an unknown intensity mapping function.  In the simple case, <script type="math/tex">g</script> is often assumed to be unitary, but can be a very complicated function in multimodal applications like medical imaging where <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> are captured from different instruments.</p>
 <p><em>Zitova, Flusser 2003</em> generalizes all image registration algorithms into 4 steps.  Note that certain algorithms omit some of these steps.</p>
 <ol>
 <li><strong>Feature detection</strong> - Distinct features (points, edges, closed regions, intersections, corners, etc.) are detected in both images.  These features may be represented by coordinates (intersections, corners, etc.), coordinate pairs (edges) or a more complex parameterization.  This step is omitted in area based registration methods.</li>
@@ -74,6 +78,17 @@ i_2(x) = g(i_1(f(x))) \,\, \forall x \in X
 <li><strong>Image transformation</strong> - The sensed image is transformed using the estimated parameters and optionally fused with the template image.  Interpolation may be necessary if the mapping function contains non-integer coordinates.</li>
 </ol>
 <p>In the next section, I highlight some classical and/or popular contemporary image registration methods and the domains in which they are applied.</p>
+<h3 id="a-comment-on-notation">A Comment on Notation</h3>
+<p>This document contains many types of variables which can represent transform parameters, placeholder variables inside optimizations, 1D vectors of parameters and 2D images.   I try to follow these guidelines for easier reading:</p>
+<ul>
+<li>bold for variables which represent 1D vectors.  e.g. <script type="math/tex">\bm{x}</script> is a coordinate vector representing position within an image</li>
+<li>subscript 0 for all parameters of <script type="math/tex">f</script>.  e.g. <script type="math/tex">s_0</script> and <script type="math/tex">\theta_0</script> are parameters controlling scaling and rotation</li>
+<li>
+<script type="math/tex">\hat{}</script> mark for placeholder variables in maximization or minimization problems. e.g. <script type="math/tex">\hat{\theta}</script> may represent the current value under test in an iterative algorithm searching for <script type="math/tex">\theta_0</script>
+</li>
+<li>superscript <script type="math/tex">*</script> for final parameter estimates obtained by registration methods. e.g. <script type="math/tex">\theta^*</script> is a best estimate for the true <script type="math/tex">\theta_0</script>
+</li>
+</ul>
 <h1 id="area-based-registration">Area based Registration</h1>
 <p>There are two overarching categories of image registration algorithms, area based and feature based.  Area based methods perform no feature detection or feature mapping and instead use all available pixels in the feature matching step <!-- not necessarily true --> to register the images.  Most classical registration methods fall into this category and they are relatively simpler than feature based methods as a result.</p>
 <p>This simplicity can sometimes come at a performance cost in certain situations, however.  If a target scene has smooth regions with few salient features to register on, an area based method may perform more poorly than a feature based method which can ignore the smooth parts of the scene that contain little alignment information.</p>
@@ -129,11 +144,16 @@ c^* = \arg \max_{\hat{c}} \frac{\sum_{x \in X} i_1(x)i_2(x - \hat{c})}{\sqrt{\su
 <p>Computing the cross-power spectral density (CPSD) we can directly obtain this complex exponential.</p>
 <p>
 <script type="math/tex; mode=display">
-CPSD(I_1, I_2)(\omega) = \frac{I_1(\omega) \overline{I_2(\omega)}}{|I_1(\omega) \overline{I_2(\omega)}|} =
+i_2(x) = i_1(x - c)
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+CPSD(i_1, i_2)(\omega) = \frac{I_1(\omega) \overline{I_2(\omega)}}{|I_1(\omega) \overline{I_2(\omega)}|} =
 \frac{I_1(\omega) \overline{I_1(\omega) e^{-j \langle \omega, c \rangle}}}{|I_1(\omega) \overline{I_1(\omega) e^{-j \langle \omega, c \rangle}}|} = e^{j \langle \omega,  c \rangle}
 </script>
 </p>
-<p>Where <script type="math/tex">I_1</script> and <script type="math/tex">I_2</script> are the Fourier transforms of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script>.  The final estimate for <script type="math/tex">c</script> is obtained by a final inverse Fourier transform of the CPSD.</p>
+<p>Where <script type="math/tex">I_1</script> and <script type="math/tex">I_2</script> are the Fourier transforms of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script>.  The final estimate for <script type="math/tex">c</script> is obtained by a final inverse Fourier transform of the CPSD, yielding a delta at location <script type="math/tex">c</script>.</p>
 <p>An important consideration here is that the Fourier Shift theorem only holds exactly when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  <a href="https://ieeexplore.ieee.org/document/988953">Foroosh, Zerubia, Berthod 2002</a> propose a prefilter which can be applied to both images before phase correlation to reduce these effects.</p>
 <h5 id="de-castro-morandi-method">De Castro, Morandi Method</h5>
 <p><a href="https://ieeexplore.ieee.org/document/4767966">De Castro, Morandi 1987</a> introduced an extension of the phase correlation method which applies to images that are translated and rotated. This method is similar in spirit to the Generalized Iterative Cross Correlation method in that it amounts to repeatedly detransforming <script type="math/tex">i_2</script> with different parameters, testing alignment with <script type="math/tex">i_1</script> using some similarity measure and repeating this process until the correct parameters are found.  Like the standard phase correlation method, this technique claims robustness against frequency dependent noise and non-uniform illumination differences between the images.</p>
@@ -191,7 +211,7 @@ I_2(\omega) = e^{-j \langle \omega, c \rangle} I_1(R_{\theta} \omega)
 <p>where <script type="math/tex">\left\Vert \right\Vert_N</script> is a placeholder for a measure which is large for unit impulses.  For example</p>
 <p>
 <script type="math/tex; mode=display">
-\left\Vert f \right\Vert_N = \left\Vert f - \delta(x - \arg \max_\hat{x} f(\hat{x})) \right\Vert_2
+\left\Vert f \right\Vert_N = \left\Vert f - \delta(x - \arg \max_{\hat{x}} f(\hat{x})) \right\Vert_2
 </script>
 </p>
 <p>When <script type="math/tex">\theta^*</script> has been found, the offset can be obtained directly from the impulse function</p>
@@ -304,5 +324,6 @@ r(x_0, y_0) &= \sum_{x, y}I_2(x - x_0, y - y_0)I_1^*(x, y) \\
 <footer>
     <p>SINE UIUC</p>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js"></script> 
 </body>
 </html>
