@@ -30,25 +30,34 @@
 </div>
 <h3 id="time-budget-model">Time Budget Model</h3>
 <p>I've worked out a model in an attempt to illustrate the tradeoff between noise reduction and image blurring when deciding on integration time.</p>
-<p>I assume the scene <script type="math/tex">i</script> is rotating at a rate of <script type="math/tex">theta</script> radians / s and translating <script type="math/tex">\bm{c}</script> pixels / s.  </p>
+<p>I assume the scene <script type="math/tex">i</script> is rotating at a rate of <script type="math/tex">\theta</script> radians per second and translating <script type="math/tex">\bm{c}</script> pixels per second relative to the CCD.  The problem is to choose an integration time <script type="math/tex">\Delta t</script> which gives the best estimate for <script type="math/tex">\theta</script> and <script type="math/tex">\bm{c}</script>.</p>
 <p><figure alt="Time plot of integrations for M=4" style="width:25em"><img src="time.png" /><figcaption>Time plot of integrations for M=4</figcaption></figure></p>
+<p>The total number of measurements <script type="math/tex">M</script> is constrained by <script type="math/tex">\Delta t</script>, the total time budget <script type="math/tex">T</script>, and the CCD readout time.  The readout time is the amount of time it takes to read and clear the charge collected on the CCD's potential wells.</p>
 <p>
 <script type="math/tex; mode=display">
-\widetilde{i}_1(\bm{x}) = \int_0^{\Delta t} i(R_{\theta t} \bm{x} - \bm{c} t) dt + \mathcal{N}(0, \sim \Delta t) \\
-\vdots \\
-\widetilde{i}_k(\bm{x}) = \int_{\frac{T + \Delta t}{M}(k - 1)}^{\frac{T + \Delta t}{M}(k - 1) + \Delta t} i(R_{\theta t} \bm{x} - \bm{c} t) dt + \mathcal{N}(0, \sim \Delta t) \\
-\vdots \\
-\widetilde{i}_M(\bm{x}) = \int_{\frac{T + \Delta t}{M}(M - 1)}^{T} i(R_{\theta t} \bm{x} - \bm{c} t) dt + \mathcal{N}(0, \sim \Delta t) \\
+M \Delta t + (M - 1) \text{(readout time)} < T
 </script>
 </p>
+<p>I define <script type="math/tex">\widetilde{i}_k</script> to be the measurement made during the <script type="math/tex">k</script>th integration.  Assuming additive Gaussian noise, these measurements have the following form:</p>
+<p>
+<script type="math/tex; mode=display">
+\widetilde{i}_1(\bm{x}) = \int_0^{\Delta t} i(R_{\theta t} \bm{x} - \bm{c} t) dt + \mathcal{N}(0, \sim 1 / \Delta t) \\
+\vdots \\
+\widetilde{i}_k(\bm{x}) = \int_{\frac{T + \Delta t}{M}(k - 1)}^{\frac{T + \Delta t}{M}(k - 1) + \Delta t} i(R_{\theta t} \bm{x} - \bm{c} t) dt + \mathcal{N}(0, \sim 1 / \Delta t) \\
+\vdots \\
+\widetilde{i}_M(\bm{x}) = \int_{\frac{T + \Delta t}{M}(M - 1)}^{T} i(R_{\theta t} \bm{x} - \bm{c} t) dt + \mathcal{N}(0, \sim 1 / \Delta t) \\
+</script>
+</p>
+<p>The Gaussian noise variance is inversely proportional to integration time and is dependent on CCD characteristics.  A larger <script type="math/tex">\Delta t</script> will result in decreased noise.</p>
 <p>For convenience, let</p>
 <p>
 <script type="math/tex; mode=display">
-\Lambda(k, \bm{x}) = \int_{(T/M)(k - 1)}^{(T/M)k} i(R_{\theta t} \bm{x} - \bm{c} t) dt
+\Lambda(k, \bm{x}) = \int_{\frac{T + \Delta t}{M}(k - 1)}^{\frac{T + \Delta t}{M}(k - 1) + \Delta t} i(R_{\theta t} \bm{x} - \bm{c} t) dt
 </script>
 </p>
-<p>This represents the energy collected by the CCD in pixel <script type="math/tex">\bm{x}</script> during the <script type="math/tex">k</script>th time integration.</p>
+<p>This represents the energy collected by the CCD in pixel <script type="math/tex">\bm{x}</script> during the <script type="math/tex">k</script>th time integration.  We can visualize each <script type="math/tex">\Lambda(k, \bm{x})</script> as a line integral over <script type="math/tex">i</script> parameterized by <script type="math/tex">t</script>.</p>
 <p><figure alt="Left: Paths traced out by pixels in a 3x3 CCD array.  Right: Two integration times traced out by two pixels."><img src="paths.png" /><figcaption>Left: Paths traced out by pixels in a 3x3 CCD array.  Right: Two integration times traced out by two pixels.</figcaption></figure></p>
+<p>It's clear from the above diagram that a larger <script type="math/tex">\Delta t</script> will increase blurring in <script type="math/tex">\widetilde{i}_k</script> from the relative motion of the CCD and scene.</p>
 <h5 id="poisson-formulation">Poisson Formulation</h5>
 <p>I also wrote the same model using Poisson noise instead of additive Gaussian noise, but it is rather more complicated and requires the <a href="https://en.wikipedia.org/wiki/Poisson_point_process#Inhomogeneous_Poisson_point_process">inhomogeneous Poisson process</a>.</p>
 <p>
@@ -64,7 +73,7 @@ P(N(k, \bm{x}) = n) = \frac{\Lambda(k, \bm{x})^n}{n!} e^{-\Lambda(k, \bm{x})} \\
 </p>
 <h5 id="assumptions-and-possible-model-deficiencies">Assumptions and Possible Model Deficiencies</h5>
 <ul>
-<li><strong>noise</strong> - AWGN and has decreasing variance with integration time.  This is not necessarily true in reality.  For example, readout noise is neither Gaussian nor does it decrease with increasing integration time.</li>
+<li><strong>noise</strong> - additive Gaussian and has decreasing variance with integration time.  This is not necessarily true in reality.  For example, readout noise is neither Gaussian nor does it decrease with increasing integration time.</li>
 <li><strong>time budget</strong> - There is only a fixed, pretermined block of <script type="math/tex">T</script> seconds to make a motion estimate.  This may an oversimplified assumption for a real mission with complex constraints.</li>
 <li><strong>motion constraints</strong> - Rotation and translation are the only motions present and have constant rate.  In real systems, more complex motion is possible which includes skew/shear and jitter.</li>
 <li><strong>image support</strong> - Images have finite support and are fully visible in the captured region.  Real registration images have pixel regions which are not common to both images, which adds error to the registration estimate that is difficult to model.
