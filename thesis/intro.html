@@ -130,7 +130,10 @@ c^* = \arg \max_{\hat{c}} \frac{\sum_{x \in X} i_1(x)i_2(x - \hat{c})}{\sqrt{\su
 </p>
 <p>The second optimization uses early stopping and requires that the above sum over <script type="math/tex">X</script> be implemented sequentially (e.g. as an iterative software loop).  For a particular candidate <script type="math/tex">\hat{c}</script>, the current value of the in-progress ASE is compared to a threshold parameter after each iteration.  If the ASE surpasses this threshold, the number of iterations is recorded and the algorithm moves on to the next candidate.  If an candidate computation never exceeds <script type="math/tex">T</script>, then the final ASE is recorded instead.</p>
 <p>Finally, the candidate with the lowest ASE is selected.  If all candidates surpassed the threshold, then the candidate with the most number of iterations before passing the threshold is selected.</p>
-<p><figure alt="Error accumulation curves for candidates \hat{c}_1, \hat{c}_2, \hat{c}_3 and \hat{c}_4.  Error computation for \hat{c}_1 and \hat{c}_2 terminated early at 7 and 9 iterations.  \hat{c}_4 is the best estimate for offset, followed by \hat{c}_3, \hat{c}_2 and \hat{c}_1."><img src="ssda.png" /><figcaption>Error accumulation curves for candidates \hat{c}_1, \hat{c}_2, \hat{c}_3 and \hat{c}_4.  Error computation for \hat{c}_1 and \hat{c}_2 terminated early at 7 and 9 iterations.  \hat{c}_4 is the best estimate for offset, followed by \hat{c}_3, \hat{c}_2 and \hat{c}_1.</figcaption></figure></p>
+<p>
+<figure><img src="ssda.png" /><figcaption>Error accumulation curves for candidates <script type="math/tex">\hat{c}_1</script>, <script type="math/tex">\hat{c}_2</script>, <script type="math/tex">\hat{c}_3</script> and <script type="math/tex">\hat{c}_4</script>.  Error computation for <script type="math/tex">\hat{c}_1</script> and <script type="math/tex">\hat{c}_2</script> terminated early at 7 and 9 iterations.  <script type="math/tex">\hat{c}_4</script> is the best estimate for offset, followed by <script type="math/tex">\hat{c}_3</script>, <script type="math/tex">\hat{c}_2</script> and <script type="math/tex">\hat{c}_1</script>.</figcaption>
+</figure>
+</p>
 <p>This algorithm offers potentially orders of magnitude speed improvements over direct cross-correlation because of early stopping, but requires selection of parameter <script type="math/tex">T</script>.  A choice of <script type="math/tex">T</script> too high limits efficiency gains while a choice of <script type="math/tex">T</script> too low can lead to suboptimal results.</p>
 <h3 id="frequency-based-methods">Frequency Based Methods</h3>
 <p>If an acceleration over correlation based methods is needed or the images were acquired under frequency dependent noise, Fourier methods are often preferred.  These methods exploit the Fourier representation of methods in the frequency domain and have shown better robustness against non-uniform illumination differences between <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script>.</p>
@@ -280,9 +283,15 @@ H = \sum_k p_k \log \frac{1}{p_k} = - \sum_i p_k \log p_k
 </p>
 <p>Like Hartley's entropy, Shannon entropy can be viewed as a measure of uncertainty.  If a particular symbol has a very high probability of occuring, our uncertainty about the message decreases and hence information decreases.  If all symbols have an equal probability of occuring, entropy is maximized.  Thus Shannon entropy may also be considered as a measure of spread of a probability distribution.  A distribution with most mass concentrated around a few peaks will have low entropy while a more uniform distribution will have higher entropy.</p>
 <p>To compute Shannon entropy of an image, all possible intensity values of the pixels can be interpreted as symbols in the message.  For an image with bit depth of 8 bits, one can collect all the intensity values into a histogram in order to compute <script type="math/tex">p_0, ..., p_{255}</script>, as shown below.</p>
-<p><figure alt="An image and its intensity histogram"><img src="histogram.png" /><figcaption>An image and its intensity histogram</figcaption></figure></p>
+<p>
+<figure><img src="histogram.png" /><figcaption>An image and its intensity histogram</figcaption>
+</figure>
+</p>
 <p>Now that we can compute entropy for images we must introduce one more concept before registration can occur, joint histograms.  A joint histogram is a 2D function which, for all possible pairs of intensities, describes how many times intensity pairs occur for a pair of registered images.  For example, if a joint histogram has value 17 at coordinate [33, 34], then for this particular registration there are 17 pixels in which the first image has intensity 33 and the second has intensity 44.  In the case of two 8 bit images, the joint histogram is a 256x256 image.  An example joint histogram for two images is shown below.</p>
-<p><figure alt="Two registered images and their joint histogram, or feature space"><img src="feature_space.png" /><figcaption>Two registered images and their joint histogram, or feature space</figcaption></figure></p>
+<p>
+<figure><img src="feature_space.png" /><figcaption>Two registered images and their joint histogram, or feature space</figcaption>
+</figure>
+</p>
 <p>The joint histogram changes with the alignment of the images.  For a correctly aligned pair of images, structures within the image align and vary with each other, so we expect the intensities to correlate which manifests as clustering in the joint histogram.  As the image pair becomes misaligned, more greyscale combinations are introduced and the joint histogram exhibits more uniformity.  By measuring this uniformity we now have a similarity measure for registration.</p>
 <p>Formally, the joint Shannon entropy for a pair of registered images</p>
 <p>

@@ -44,11 +44,19 @@
 <p>Finally, we propose two situations in which CSBS might improve on the results given by the naive focus mode.</p>
 <h3 id="reconstruction-results">Reconstruction Results</h3>
 <p>Below are the reconstruction results for the four plane selection modes with 10 counts of noise and two sources.  The experiment was repeated for 100 noise realizations and the mean reconstruction SSIM for each mode has been plotted.  A 16cm sieve with 7 micron smallest hole diameter was used.</p>
-<p><figure alt="Reconstructions SSIMs, max count 10, 100 noise realizations"><img src="ssim_comparison_10.png" /><figcaption>Reconstructions SSIMs, max count 10, 100 noise realizations</figcaption></figure>
-<figure alt="Reconstructions with various methods, max count 10"><img src="reconstructions_10.png" /><figcaption>Reconstructions with various methods, max count 10</figcaption></figure></p>
+<p>
+<figure><img src="ssim_comparison_10.png" /><figcaption>Reconstructions SSIMs, max count 10, 100 noise realizations</figcaption>
+</figure>
+<figure><img src="reconstructions_10.png" /><figcaption>Reconstructions with various methods, max count 10</figcaption>
+</figure>
+</p>
 <p>Below the experiment has been repeated for 500 counts of noise.</p>
-<p><figure alt="Reconstructions SSIMs, max count 500, 100 noise realizations"><img src="ssim_comparison_500.png" /><figcaption>Reconstructions SSIMs, max count 500, 100 noise realizations</figcaption></figure>
-<figure alt="Reconstructions with various methods, max count 500"><img src="reconstructions_500.png" /><figcaption>Reconstructions with various methods, max count 500</figcaption></figure></p>
+<p>
+<figure><img src="ssim_comparison_500.png" /><figcaption>Reconstructions SSIMs, max count 500, 100 noise realizations</figcaption>
+</figure>
+<figure><img src="reconstructions_500.png" /><figcaption>Reconstructions with various methods, max count 500</figcaption>
+</figure>
+</p>
 <h3 id="rationale">Rationale</h3>
 <p>For a while now, we've hypothesized that CSBS isn't needed for our particular application (i.e. 33.4nm, 33.5nm with 16cm photon sieve) for two reasons:</p>
 <ul>
@@ -57,22 +65,34 @@
 </ul>
 <p>If both of these are true then the optimal plane selection strategy is the naive focus mode.</p>
 <p>The first condition is supported if we examine a hypothetical scenario in which we are imaging two sources, with one measurement taken at the focal plane of each source.  Since each measurement is a sum of blurred sources, we can split the measurements into the contributions from each source.</p>
-<p><figure alt="Measurement contributions from each source.  Off-focus contributions are nearly DC"><img src="contributions.png" /><figcaption>Measurement contributions from each source.  Off-focus contributions are nearly DC</figcaption></figure></p>
+<p>
+<figure><img src="contributions.png" /><figcaption>Measurement contributions from each source.  Off-focus contributions are nearly DC</figcaption>
+</figure>
+</p>
 <p>To show the second condition, we need to demonstrate that our photon sieve gives PSF DFTs which are maximized everywhere (at all spatial frequencies) at the focal planes.  Below we have plotted horizontal slices from the PSF DFT slices plot.</p>
-<p><figure alt="Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve." class="figure" style="max-width:100%"><img src="slices.png" /><figcaption>Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve.</figcaption></figure>
-<figure alt="1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency." class="figure" style="max-width:100%"><img src="sample_slices.png" /><figcaption>1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency.</figcaption></figure></p>
+<p>
+<figure class="figure" style="max-width:100%"><img src="slices.png" /><figcaption>Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve.</figcaption></figure>
+</p>
 <h3 id="hypothetical-scenarios-where-naive-focus-is-not-optimal">Hypothetical scenarios where naive focus is not optimal</h3>
 <h4 id="failure-of-separation-condition">Failure of separation condition</h4>
 <p>Below is a plot of PSF DFT slices for a photon sieve where the sources wavelengths are very close together.  The naive focus method would select the focal planes where there is significant off-focus contributions from the other source.</p>
-<p><figure alt="PSF DFT slices for a hypothetical element which fails the first condition"><img src="hypothetical1.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the first condition</figcaption></figure>
-<figure alt="PSF DFT slices for a hypothetical element which fails the first condition"><img src="hypothetical1_slices.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the first condition</figcaption></figure></p>
+<p>
+<figure><img src="hypothetical1.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the first condition</figcaption>
+</figure>
+<figure><img src="hypothetical1_slices.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the first condition</figcaption>
+</figure>
+</p>
 <h4 id="failure-of-maximization-condition">Failure of maximization condition</h4>
 <p>Below is a plot of PSF DFT slices for some hand-crafted PSFs which fail the second condition.  The naive focus method would select the focal planes and could only sample DC for this hypothetical element.  CSBS grid might improve on the result by selecting off focus measurement planes where higher frequency content is available.</p>
-<p><figure alt="PSF DFT slices for a hypothetical element which fails the second condition"><img src="hypothetical.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the second condition</figcaption></figure>
-<figure alt="PSF DFT slices for a hypothetical element which fails the second condition"><img src="hypothetical_slices.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the second condition</figcaption></figure></p>
+<p>
+<figure><img src="hypothetical.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the second condition</figcaption>
+</figure>
+<figure><img src="hypothetical_slices.png" /><figcaption>PSF DFT slices for a hypothetical element which fails the second condition</figcaption>
+</figure>
+</p>
 <h3 id="appendix-bayesian-optimization">Appendix - Bayesian Optimization</h3>
 <p>The reconstruction parameters for the above section were all found using bayesian optimization, which is a common tool for searching hyperparameters.  Bayesian optimization is particularly well-suited to optimizing black box functions which are expensive to evaluate.  </p>
-<p>In our case, the naive focus and naive grid methods both have a single \(\lambda_{tik}\) parameter for Tikhonov regularization, while CSBS grid and CSBS focus have both a Tikhonov \(\lambda_{tik}\) and a \(\lambda_{csbs}\) used during plane selection.  It's worth noting that for CSBS grid and CSBS focus \(\lambda_{tik}\) and \(\lambda_{csbs}\) should be the same according to theory, but we found that the reconstruction were much better when these were allowed to be optimized separately.</p>
+<p>In our case, the naive focus and naive grid methods both have a single <script type="math/tex">\lambda_{tik}</script> parameter for Tikhonov regularization, while CSBS grid and CSBS focus have both a Tikhonov <script type="math/tex">\lambda_{tik}</script> and a <script type="math/tex">\lambda_{csbs}</script> used during plane selection.  It's worth noting that for CSBS grid and CSBS focus <script type="math/tex">\lambda_{tik}</script> and <script type="math/tex">\lambda_{csbs}</script> should be the same according to theory, but we found that the reconstruction were much better when these were allowed to be optimized separately.</p>
 <p>For posterity, the hyperparameter surfaces for each mode are included below.</p>
 <p><img alt="" src="bayesian_optimization/bayesian_tik_csbs_grid_10_split.png" />
 <img alt="" src="bayesian_optimization/bayesian_tik_csbs_focus_10_split.png" />

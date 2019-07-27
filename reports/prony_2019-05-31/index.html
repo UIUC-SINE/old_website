@@ -83,10 +83,18 @@ r(x_0, y_0) &= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
 <p>This method is a simple grid-search algorithm which takes advantage of the fact that zero-padding before DFT or IDFT samples the function more finely in the transform domain.</p>
 <p>The first step of the algorithm is to obtain a coarse estimate for the shift by applying IFFT to the CPSD and finding the maximum.  Next, <script type="math/tex">f</script> and <script type="math/tex">g</script> are zero-padded by a factor of <script type="math/tex">\kappa</script>, CPSD recomputed, and IDFT computed for some select values of <script type="math/tex">x_0</script> around the coarse estimate.  The maximum of these points becomes the final estimate.</p>
 <p>The main idea here is that for large values of <script type="math/tex">\kappa</script>, computing the IFFT after zero-padding is computationally infeasible and unnecessary.  Computation time is saved by computing several IDFTs instead at select candidate locations around the coarse estimate.</p>
-<p><figure alt="Illustration of algorithm for 1D signal.  Coarse estimate is obtained via IFFT then refined by zero-padding and IDFT. \kappa = 3"><img src="dft_1_step.png" /><figcaption>Illustration of algorithm for 1D signal.  Coarse estimate is obtained via IFFT then refined by zero-padding and IDFT. \kappa = 3</figcaption></figure></p>
+<p>
+<figure><img src="dft_1_step.png" /><figcaption>Illustration of algorithm for 1D signal.  Coarse estimate is obtained via IFFT then refined by zero-padding and IDFT. <script type="math/tex">\kappa = 3</script>
+</figcaption>
+</figure>
+</p>
 <h4 id="method-3-multi-step-idft">Method 3 - Multi Step IDFT</h4>
 <p>This method is same as above, but multiple stages of zero-padding and IDFT are used to obtain even finer estimates.</p>
-<p><figure alt="Illustration of algorithm for 1D signal.  Identical to above, but 2 stages of zero-padding and IDFT. \kappa = 3"><img src="dft_2_step.png" /><figcaption>Illustration of algorithm for 1D signal.  Identical to above, but 2 stages of zero-padding and IDFT. \kappa = 3</figcaption></figure></p>
+<p>
+<figure><img src="dft_2_step.png" /><figcaption>Illustration of algorithm for 1D signal.  Identical to above, but 2 stages of zero-padding and IDFT. <script type="math/tex">\kappa = 3</script>
+</figcaption>
+</figure>
+</p>
 <h4 id="conclusion">Conclusion</h4>
 <p>This paper seems to be popular because of the simplicity of methods 2 and 3.  However, selection of algorithm parameters <script type="math/tex">\kappa</script>, number of IDFT stages, and number of IDFT points are not theoretically justified and seem to be chosen by trial and error by the authors.</p>
 <h1 id="paper-review-extension-of-phase-correlation-to-subpixel-registration">Paper Review - Extension of Phase Correlation to Subpixel Registration</h1>
@@ -99,8 +107,12 @@ r(x_0, y_0) &= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
 \text{PC}_{HR}(x) = \text{IDFT}(\text{CPSD}_{HR}) = \delta(x - x_0) \\
 \text{PC}_{LR}(x) = \text{IDFT}(\text{CPSD}_{LR}) = \frac{\sin(\pi(Mx + x_0))}{\pi(Mx + x_0)}</code></p>
 <p>where <script type="math/tex">PC_{HR}</script> and <script type="math/tex">PC_{LR}</script> are the high-resolution and downsampled phase-correlation results, respectively.  This is illustrated below.</p>
-<p><figure alt="Original/shifted 1D Images and the phase correlation result. High resolution grid."><img src="extension_overview_1.png" /><figcaption>Original/shifted 1D Images and the phase correlation result. High resolution grid.</figcaption></figure>
-<figure alt="Original/shifted 1D Images and the phase correlation result. Downsampled.  Phase-correlation results in a sinc kernel."><img src="extension_overview_2.png" /><figcaption>Original/shifted 1D Images and the phase correlation result. Downsampled.  Phase-correlation results in a sinc kernel.</figcaption></figure></p>
+<p>
+<figure><img src="extension_overview_1.png" /><figcaption>Original/shifted 1D Images and the phase correlation result. High resolution grid.</figcaption>
+</figure>
+<figure><img src="extension_overview_2.png" /><figcaption>Original/shifted 1D Images and the phase correlation result. Downsampled.  Phase-correlation results in a sinc kernel.</figcaption>
+</figure>
+</p>
 <h4 id="solving-for-the-subpixel-offset">Solving for the subpixel offset</h4>
 <p>We can analytically solve for the subpixel offset by choosing two points <script type="math/tex">c_0</script> and <script type="math/tex">c_1</script> from the phase-correlation result and applying the <script type="math/tex">PC_{LR}</script> equation.</p>
 <p><code>math
@@ -129,9 +141,14 @@ x[0] &amp; \dots &amp; x[K] \\ &amp; \vdots &amp; \\ x[N - K - 1] &amp; \dots &a
 <p>then solving for the roots of the polynomial formed by <script type="math/tex">h</script>, we can find the exact <script type="math/tex">\omega_k</script>s that form <script type="math/tex">x</script>.</p>
 <h4 id="preliminary-tests">Preliminary Tests</h4>
 <p>Below are some simple tests of using Prony's method to recover offset of two 1D signals from phase-correlation.  The conclusion is that Prony's method fails to recovery the offset in the presence of large noise or when the circular-shift assumption is dropped.  I hope to address these issues this week.</p>
-<p><figure alt="1D Prony's method test for 100 pixel circular shift."><img src="prony_1d_circular.png" /><figcaption>1D Prony's method test for 100 pixel circular shift.</figcaption></figure>
-<figure alt="1D Prony's method test for 100 pixel circular shift with 10dB noise."><img src="prony_1d_circular_noise.png" /><figcaption>1D Prony's method test for 100 pixel circular shift with 10dB noise.</figcaption></figure>
-<figure alt="1D Prony's method test for 100 pixel linear shift."><img src="prony_1d_linear.png" /><figcaption>1D Prony's method test for 100 pixel linear shift.</figcaption></figure></p>
+<p>
+<figure><img src="prony_1d_circular.png" /><figcaption>1D Prony's method test for 100 pixel circular shift.</figcaption>
+</figure>
+<figure><img src="prony_1d_circular_noise.png" /><figcaption>1D Prony's method test for 100 pixel circular shift with 10dB noise.</figcaption>
+</figure>
+<figure><img src="prony_1d_linear.png" /><figcaption>1D Prony's method test for 100 pixel linear shift.</figcaption>
+</figure>
+</p>
 <h1 id="other-papers">Other Papers</h1>
 <ul>
 <li><a href="https://ieeexplore.ieee.org/document/1323100">Fundamental Performance Limits in Image Registration</a> - 2004<ul>
