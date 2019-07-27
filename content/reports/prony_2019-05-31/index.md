@@ -79,9 +79,45 @@ This paper seems to be popular because of the simplicity of methods 2 and 3.  Ho
 
 This is another popular subpixel registration method based on phase correlation.  I like this paper a bit more than the last in that there are no algorithm hyperparameters to choose.  The authors also give special statistical treatment to the error introduced when the circular-shift assumption is dropped (i.e. images are not repeated on a grid).
 
+#### Main Idea
+
+The fundamental assumption of this paper is that a subpixel shift of an image is actually an integer shift of a higher resolution image that has been subsequently downsampled.
+
+The paper then goes on to show that while phase-correlating the high resolution images results in a dirac delta corresponding to the image offset (a well known result), phase-correlation of the downsampled images yields a sinc function centered at the image offset.
+
+i.e.
+
+```math
+\text{PC}_{HR}(x) = \text{IDFT}(\text{CPSD}_{HR}) = \delta(x - x_0) \\
+\text{PC}_{LR}(x) = \text{IDFT}(\text{CPSD}_{LR}) = \frac{\sin(\pi(Mx + x_0))}{\pi(Mx + x_0)}
+```
+
+where $PC_{HR}$ and $PC_{LR}$ are the high-resolution and downsampled phase-correlation results, respectively.  This is illustrated below.
+
+![Original/shifted 1D Images and the phase correlation result. High resolution grid.](extension_overview_1.png)
+![Original/shifted 1D Images and the phase correlation result. Downsampled.  Phase-correlation results in a sinc kernel.](extension_overview_2.png)
+
+#### Solving for the subpixel offset
+
+We can analytically solve for the subpixel offset by choosing two points $c_0$ and $c_1$ from the phase-correlation result and applying the $PC_{LR}$ equation.
+
+```math
+\frac{\sin(\pi x_0)}{\pi x_0} = c_0 \text{ and } \frac{\sin(\pi (M + x_0))}{\pi (M + x_0) = c_1} \Rightarrow \frac{x_0}{M} = \frac{c_1}{c_0 - c_1}
+```
+
+A good choice for $c_0$ and $c_1$ are the highest energy points of the phase-correlation result, shown below.
+
+![](extension_overview_3.png)
+
+#### Conclusion
+
+This paper presents a computationally simple approach to subpixel registration which I like better than the more ad-hoc solution presented in Guizar-Sicairos, Thurman, Fienup 2008.  Additionally, the paper analyzes the error introduced from edge effects when the circular-shift assumption is dropped, which I have left out of this report.
+
+One potential area for improvement might be to use more points than just $c_0$ and $c_0$.  Solving the over-constrained system by using all points from $PC_{LR}$ should give better noise immunity at the expense of increased computation time.
+
 # Prony's Method Idea
 
-Both of the above methods assume that the shifted image $g$ was shifted by $(x_0^{\ast}, y_0^*)$ on a high-resolution grid and then subsequently downsampled.  They both only estimate the position of the peak of the CPSD up to the resolution of this grid.  However, there are spectral estimation techniques such as MUSIC, ESPRIT and Prony's method which make no assumption and can potentially recover the peak location to infinite precision (assuming no noise).  I haven't yet seen this approach in any papers, although Liao, Fannjiang 2014 has a similar idea for another domain (direction of arrival estimation).
+Both of the above methods assume that the shifted image $g$ was shifted by $(x_0^{\ast}, y_0^*)$ on a high-resolution grid and then subsequently downsampled.  They both only estimate the position of the peak of the CPSD up to the resolution of this grid.  However, there are spectral estimation techniques such as MUSIC, ESPRIT and Prony's method which make no such assumption and can potentially recover the peak location to infinite precision (assuming no noise).  I haven't yet seen this approach in any papers, although Liao, Fannjiang 2014 has a similar idea for another domain (direction of arrival estimation).
 
 There are a number of variations of Prony's method, but I chose the one presented in ECE551.  i.e. find an annihilating filter and compute its roots.
 

@@ -15,6 +15,6 @@ Here I test CSBS with SSE cost on a hypothetical imaging element with hand-craft
 
 $$\text{trace}((A^TA + \lambda^2 L^TL)^{-1})$$
 
-![CSBS result for photon sieve. \\(L^TL = D_h^TD_h + D_v^TD_v\\), \\(\lambda = 1\\).  PSFs with low frequency components are prioritized.](square_csbs_order1.png)
+![CSBS result for photon sieve. $L^TL = D_h^TD_h + D_v^TD_v$, $\lambda = 1$.  PSFs with low frequency components are prioritized.](square_csbs_order1.png)
 
-![CSBS result for photon sieve. \\(L^TL = I\\), \\(\lambda = 1\\).  All PSFs have equal importance.](square_csbs_order0.png)
+![CSBS result for photon sieve. $L^TL = I$, $\lambda = 1$.  All PSFs have equal importance.](square_csbs_order0.png)

@@ -45,8 +45,8 @@ The first condition is supported if we examine a hypothetical scenario in which 
 
 To show the second condition, we need to demonstrate that our photon sieve gives PSF DFTs which are maximized everywhere (at all spatial frequencies) at the focal planes.  Below we have plotted horizontal slices from the PSF DFT slices plot.
 
-![Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve.](slices.png){ .figure style=max-width:100% }
-![1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency.](sample_slices.png){ .figure style=max-width:100% }
+![Each column of pixels is a 'slice' through the center of the DFT of a PSF measured at a particular distance from the sieve.](slices.png){: .figure style=max-width:100% }
+![1D view of the above plot at some selected spatial frequencies.  Notice the DFT magnitude is always maximized at the focal plane for each spatial frequency.](sample_slices.png){: .figure style=max-width:100% }
 
 ### Hypothetical scenarios where naive focus is not optimal
 
@@ -69,7 +69,7 @@ Below is a plot of PSF DFT slices for some hand-crafted PSFs which fail the seco
 
 The reconstruction parameters for the above section were all found using bayesian optimization, which is a common tool for searching hyperparameters.  Bayesian optimization is particularly well-suited to optimizing black box functions which are expensive to evaluate.  
 
-In our case, the naive focus and naive grid methods both have a single \\(\lambda_{tik}\\) parameter for Tikhonov regularization, while CSBS grid and CSBS focus have both a Tikhonov \\(\lambda_{tik}\\) and a \\(\lambda_{csbs}\\) used during plane selection.  It's worth noting that for CSBS grid and CSBS focus \\(\lambda_{tik}\\) and \\(\lambda_{csbs}\\) should be the same according to theory, but we found that the reconstruction were much better when these were allowed to be optimized separately.
+In our case, the naive focus and naive grid methods both have a single $\lambda_{tik}$ parameter for Tikhonov regularization, while CSBS grid and CSBS focus have both a Tikhonov $\lambda_{tik}$ and a $\lambda_{csbs}$ used during plane selection.  It's worth noting that for CSBS grid and CSBS focus $\lambda_{tik}$ and $\lambda_{csbs}$ should be the same according to theory, but we found that the reconstruction were much better when these were allowed to be optimized separately.
 
 For posterity, the hyperparameter surfaces for each mode are included below.
 

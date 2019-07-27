@@ -10,7 +10,23 @@ description: Demonstrating various formatting features
 
 # Heading 1
 
+foo
+
+## Heading 2
+
+bar
+
 ### Heading 3
+
+baz
+
+#### Heading 4
+
+spam
+
+##### Heading 5
+
+ham
 
 * bullet1
 * bullet2
@@ -23,18 +39,19 @@ description: Demonstrating various formatting features
 ![inline image](cheetos_small.png){: .inline } 
 ![inline image](cheetos_small.png){: .inline } 
 
-![](cheetos_small.png){: #id1 .class1 .class2 }  
+![](cheetos_small.png){: #id1 .class1 .class2 }
 
 
 # Math
 
 $$3x + 4y$$
 
-$$[Rf]\(t, \theta\) = \int_{\mathbb{R}^2} f(x)\delta(N_{\theta}^T x - t)\, dx$$
+$$[Rf](t, \theta) = \int_{\mathbb{R}^2} f(x)\delta(N_{\theta}^T x - t)\, dx$$
 
 # Code
 
 A code snippet
+
 ``` python
 print('hello world')
 print('my name is evan')

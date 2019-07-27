@@ -8,4 +8,8 @@
 {% for report in path('reports/**/*.md')|sort(attribute='date', reverse=true) %}
 <p><a href="{{ report.path }}"><code>{{ report.title }}</code></a> {% if report.description %}-{% endif %} {{ report.description }} {% if report.date %}<time datetime="{{ report.date }}"> - ({{ report.date }})</date>{% endif %}</p>
 {% endfor %}
+<h2>Thesis</h2>
+{% for report in path('thesis/**/*.md')|sort(attribute='date', reverse=true) %}
+<p><a href="{{ report.path }}"><code>{{ report.title }}</code></a> {% if report.description %}-{% endif %} {{ report.description }} {% if report.date %}<time datetime="{{ report.date }}"> - ({{ report.date }})</date>{% endif %}</p>
+{% endfor %}
 {% endblock %}
