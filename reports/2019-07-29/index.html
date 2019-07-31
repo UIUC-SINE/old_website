@@ -19,7 +19,9 @@
       <h1>Weekly Report</h1>
       <time datetime="2019-07-29">2019-07-29</time> - Evan Widloski
     </header>
-    <h1 id="lukas-kanade-optical-flow">Lukas-Kanade Optical Flow</h1>
+    <p>This week I dove into <a href="https://journals.sagepub.com/doi/full/10.1177/0954410017691315">this paper</a> on attitude estimation by fusing sensor data from the imaging instrument, star tracker and gyro.  It uses the Lukas-Kanade method for registering images, summarized below, then fuses the three motion estimates in an extended Kalman filter.</p>
+<p>I also briefly revisited CSBS and engineered a scenario where CSBS finds a measurement configuration that outperforms the naive focus selection method.</p>
+<h1 id="lukas-kanade-optical-flow">Lukas-Kanade Optical Flow</h1>
 <p>Optical flow is a registration method geared motion estimation in video where one might have multiple objects moving in a scene.  However, it can still be applied to rigid or affine registration of a whole scene.</p>
 <p>The fundamental assumption of this method is that a stationary point in the scene will have constant intensity.  i.e.</p>
 <p>
