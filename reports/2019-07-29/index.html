@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Weekly Report</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+
+
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Weekly Report</h1>
+      <time datetime="2019-07-30">2019-07-30</time> - Evan Widloski
+    </header>
+    <h1 id="revisiting-csbs">Revisiting CSBS</h1>
+<p>In a <a href="https://uiuc-sine.github.io/reports/csbs_4modes/index.html">previous report</a>, I numerically demonstrated that under our typical simulation assumptions of 33.4 and 33.5nm sources, CSBS plane selection will at best yield a reconstruction quality that is equal to naive plane selection (measuring at focal planes only).  However, at the end of the report I hypothesized that there is a scenario where CSBS might outperform the naive method.  This scenario, which I call 'failure of the separation condition', occurs when spectral lines from two sources are very close and the out of focus contributions from either source are fairly sharp.</p>
+<p>I tested out this idea with an extreme scenario with two sources at 33.4 and 33.402nm and only 0.02nm of separation, comparing the Tikhonov reconstruction quality of naive plane selection vs CSBS under 30dB SNR Gaussian noise.</p>
+<p>
+<figure><img src="recon_focus.png" /><figcaption>Source reconstruction using naive plane selection.</figcaption>
+</figure>
+</p>
+<p>
+<figure><img src="recon_csbs.png" /><figcaption>Source reconstruction using CSBS selection</figcaption>
+</figure>
+</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Source 1 SSIM</th>
+<th>Source 2 SSIM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Naive</td>
+<td>0.651</td>
+<td>0.615</td>
+</tr>
+<tr>
+<td>CSBS</td>
+<td>0.937</td>
+<td>0.937</td>
+</tr>
+</tbody>
+</table>
+<p>Previously where reconstruction with CSBS did slightly worse than the naive selection case, CSBS now significantly outperform naive plane selection.  0.02nm of separation between sources is unrealistic, but these tests show that there are at least some situations where CSBS does better.</p>
+<p>An interesting note is that CSBS tended to choose measurement locations outside the two focal planes, rather than between them as we had predicted for a long time.  Originally I thought that making measurements where PSF pairs capture a lot of energy from both sources would be best because of high measurement SNR.  However, PSF pairs in this region are very coherent and so it becomes harder to separate the sources.  Instead CSBS opted for measurement locations where one source was in focus and the other out of focus.</p>
+<p>
+<figure><img src="fourier_slices.png" /><figcaption>CSBS plane selection result for two narrowly separated lines.  CSBS tended to choose measurement locations where only one source was in focus, rather than both.</figcaption>
+</figure>
+</p>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js"></script> 
+</body>
+</html>
