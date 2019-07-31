@@ -17,9 +17,75 @@
   <article>
     <header>
       <h1>Weekly Report</h1>
-      <time datetime="2019-07-30">2019-07-30</time> - Evan Widloski
+      <time datetime="2019-07-29">2019-07-29</time> - Evan Widloski
     </header>
-    <h1 id="revisiting-csbs">Revisiting CSBS</h1>
+    <h1 id="lukas-kanade-optical-flow">Lukas-Kanade Optical Flow</h1>
+<p>
+<script type="math/tex; mode=display">
+\frac{di}{dt}(\bm{x}) + \frac{di}{dx}(\bm{x}) u + \frac{di}{dy}(\bm{x}) v = 0
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\underbrace{
+\begin{bmatrix}
+\frac{di}{dx}(\bm{x}_1) & \frac{di}{dy}(\bm{x}_1) \\
+\frac{di}{dx}(\bm{x}_2) & \frac{di}{dy}(\bm{x}_2) \\
+\vdots & \vdots \\
+\end{bmatrix}
+}_{A}
+\underbrace{
+\begin{bmatrix}
+u \\ v
+\end{bmatrix}
+}_{\bm{v}}
+=
+\underbrace{
+\begin{bmatrix}
+- \frac{di}{dt}(\bm{x}_1) \\
+- \frac{di}{dt}(\bm{x}_2) \\
+\vdots
+\end{bmatrix}
+}_{\bm{b}}
+</script>
+</p>
+<p>Which is overdetermined and can now be solved with least-squares:</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\bm{v} &= (A^TA)^{-1} A \bm{b} \\
+&= \begin{bmatrix}\sum_{\bm{x}} \frac{di}{dx}(\bm{x})^2 & \sum_{\bm{x}} \frac{di}{dx}(\bm{x}) \frac{di}{dy}(\bm{x}) \\
+\sum_{\bm{x}} \frac{di}{dx}(\bm{x}) \frac{di}{dy}(\bm{x}) & \sum_{\bm{x}} \frac{di}{dx}(\bm{x})^2 \end{bmatrix}^{-1}
+\begin{bmatrix}
+\sum_{\bm{x}} \frac{di}{dt}(\bm{x}) \frac{di}{dx}(\bm{x}) \\
+\sum_{\bm{x}} \frac{di}{dt}(\bm{x}) \frac{di}{dy}(\bm{x})
+\end{bmatrix}
+\end{aligned}
+</script>
+</p>
+<p>We can arrive at this derivation another way, which will help with generalization later.</p>
+<p>Define <script type="math/tex">E(u, v) = \sum \left[ i_2(x + u, y + v) - i_1(x, y) \right]^2</script> as the squared error between <script type="math/tex">i_1</script> and registered <script type="math/tex">i_2</script>.  With a first order Taylor expansion, we can write</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+E(u, v) &= \sum \left[ i_2(x + u, y + v) - i_1(x, y) \right]^2 \\
+&\approx \sum \left[ i_2(x, y) + u i_{1x}(x, y) + v i_{2x}(x, y) - i_2(x, y) \right]^2 \\
+&= \sum \left[ u i_{1x}(x, y) + v i_{1y}(x, y) + D(x, y)\right]
+\end{aligned}
+</script>
+</p>
+<p>where <script type="math/tex">i_{1x}</script> and <script type="math/tex">i_{1y}</script> are the discrete derivatives of <script type="math/tex">i_1</script> in the <script type="math/tex">x</script> and <script type="math/tex">y</script> directions and <script type="math/tex">D</script> is the difference between <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script>.</p>
+<p>Taking the partial derivatives of the squared error in the x and y directions and setting to zero,</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{dE}{du} &= \sum \left[ u i_{1x}(x, y) + v i_{1y}(x, y) + D(x, y)\right] i_{1x}(x, y) = 0 \\
+\frac{dE}{dv} &= \sum \left[ u i_{1x}(x, y) + v i_{1y}(x, y) + D(x, y)\right] i_{1y}(x, y) = 0
+\end{aligned}
+</script>
+</p>
+<p>which when collected</p>
+<h1 id="revisiting-csbs">Revisiting CSBS</h1>
 <p>In a <a href="https://uiuc-sine.github.io/reports/csbs_4modes/index.html">previous report</a>, I numerically demonstrated that under our typical simulation assumptions of 33.4 and 33.5nm sources, CSBS plane selection will at best yield a reconstruction quality that is equal to naive plane selection (measuring at focal planes only).  However, at the end of the report I hypothesized that there is a scenario where CSBS might outperform the naive method.  This scenario, which I call 'failure of the separation condition', occurs when spectral lines from two sources are very close and the out of focus contributions from either source are fairly sharp.</p>
 <p>I tested out this idea with an extreme scenario with two sources at 33.4 and 33.402nm and only 0.02nm of separation, comparing the Tikhonov reconstruction quality of naive plane selection vs CSBS under 30dB SNR Gaussian noise.</p>
 <p>
