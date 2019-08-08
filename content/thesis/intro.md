@@ -31,10 +31,10 @@ In the next section, I highlight some classical and/or popular contemporary imag
 
 This document contains many types of variables which can represent transform parameters, placeholder variables inside optimizations, 1D vectors of parameters and 2D images.   I try to follow these guidelines for easier reading:
 
-* bold for variables which represent 1D vectors.  e.g. $\bm{x}$ is a coordinate vector representing position within an image
-* subscript 0 for all parameters of $f$.  e.g. $s_0$ and $\theta_0$ are parameters controlling scaling and rotation
-* $\hat{}$ mark for placeholder variables in maximization or minimization problems. e.g. $\hat{\theta}$ may represent the current value under test in an iterative algorithm searching for $\theta_0$
-* superscript $*$ for final parameter estimates obtained by registration methods. e.g. $\theta^*$ is a best estimate for the true $\theta_0$
+* bold for variables which represent 1D vectors.  For example $\bm{x}$ is a coordinate vector representing position within an image
+* subscript 0 for ground truth parameters of $f$.  For example $s_0$ and $\theta_0$ are parameters controlling scaling and rotation
+* hat $\,\hat{}\,$ for placeholder variables in maximization or minimization problems. For example $\hat{\theta}$ may represent the current value under test in an iterative algorithm searching for $\theta_0$
+* superscript $*$ for final parameter estimates obtained by registration methods. For example $\theta^*$ is a best estimate for the true $\theta_0$
 
 # Area based Registration
 
@@ -45,10 +45,10 @@ This simplicity can sometimes come at a performance cost in certain situations, 
 ### Correlation-like Methods
 
 ##### Cross Correlation
-The most straightforward of all methods, direct correlation only works when $f$ is a simple linear translation, $f(x) = x - c$.
+The most straightforward of all methods, direct correlation only works when $f$ is a simple linear translation, $f(\bm{x}) = \bm{x} - \bm{c}_0$.
 
 $$
-f^* = \arg \max_{\hat{f} \in F} \frac{\sum_{x \in X} i_1(x)i_2(\hat{f}(x))}{\sqrt{\sum_{x \in X} i_1(x)^2}}
+f^* = \arg \max_{\hat{f} \in F} \frac{\sum_{\bm{x} \in X} i_1(\bm{x})i_2(\hat{f}(\bm{x}))}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
 $$
 
 where $F$ is the set of all linear translations.
@@ -56,7 +56,7 @@ where $F$ is the set of all linear translations.
 Stated more simply
 
 $$
-c^* = \arg \max_{\hat{c}} \frac{\sum_{x \in X} i_1(x)i_2(x - \hat{c})}{\sqrt{\sum_{x \in X} i_1(x)^2}}
+\bm{c}^* = \arg \max_{\hat{\bm{c}}} \frac{\sum_{\bm{x} \in X} i_1(x)i_2(\bm{x} - \hat{\bm{c}})}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
 $$
 
 Note that the normalization here is crucial so that the intensities of $i_1$ and $i_2$ do not influence the maximum.  We call this measure normalized cross correlation (NCC).
@@ -68,13 +68,13 @@ In practice, cross correlation is still successful in the presence of slight rot
 Related similarity measures which are sometimes used in place of normalized cross correlation are sum of squared error (SSE)
 
 $$
-\sum_{x \in X} (i_1(x) - i_2(x - \hat{c}))^2
+\sum_{\bm{x} \in X} (i_1(\bm{x}) - i_2(\bm{x} - \hat{\bm{c}}))^2
 $$
 
 and correlation coefficient
 
 $$
-\frac{\text{cov}(i_1, i_2)}{\sigma_1 \sigma_2} = \frac{\sum_{x \in X} (i_1(x) - \mu_1)(i_2(x - \hat{c}) - \mu_2)}{\sqrt{\sum_{x \in X} (i_1(x) - \mu_1)^2 \sum_{x \in X}(i_2(x - \hat{c}) - \mu_2)^2}}
+\frac{\text{cov}(i_1, i_2)}{\sigma_1 \sigma_2} = \frac{\sum_{\bm{x} \in X} (i_1(\bm{x}) - \mu_1)(i_2(\bm{x} - \hat{\bm{c}}) - \mu_2)}{\sqrt{\sum_{\bm{x} \in X} (i_1(\bm{x}) - \mu_1)^2 \sum_{\bm{x} \in X}(i_2(\bm{x} - \hat{\bm{c}}) - \mu_2)^2}}
 $$
 
 where $\mu_1$ and $\mu_2$ are the means of $i_1$ and $i_2$ in $X$.
@@ -88,14 +88,14 @@ In standard correlation methods, the sum over $X$ for each candidate $\hat{f}$ m
 First, the paper uses absolute sum of errors (ASE) as a similarity measure, which requires no costly multiplications unlike NCC or SSE.
 
 $$
-\sum_{x \in X} |i_1(x) - i_2(x - \hat{c})|
+\sum_{\bm{x} \in X} |i_1(\bm{x}) - i_2(\bm{x} - \hat{\bm{c}})|
 $$
 
-The second optimization uses early stopping and requires that the above sum over $X$ be implemented sequentially (e.g. as an iterative software loop).  For a particular candidate $\hat{c}$, the current value of the in-progress ASE is compared to a threshold parameter after each iteration.  If the ASE surpasses this threshold, the number of iterations is recorded and the algorithm moves on to the next candidate.  If an candidate computation never exceeds $T$, then the final ASE is recorded instead.
+The second optimization uses early stopping and requires that the above sum over $X$ be implemented sequentially (e.g. as an iterative software loop).  For a particular candidate $\hat{\bm{c}}$, the current value of the in-progress ASE is compared to a threshold parameter after each iteration.  If the ASE surpasses this threshold, the number of iterations is recorded and the algorithm moves on to the next candidate.  If an candidate computation never exceeds $T$, then the final ASE is recorded instead.
 
 Finally, the candidate with the lowest ASE is selected.  If all candidates surpassed the threshold, then the candidate with the most number of iterations before passing the threshold is selected.
 
-![Error accumulation curves for candidates $\hat{c}_1$, $\hat{c}_2$, $\hat{c}_3$ and $\hat{c}_4$.  Error computation for $\hat{c}_1$ and $\hat{c}_2$ terminated early at 7 and 9 iterations.  $\hat{c}_4$ is the best estimate for offset, followed by $\hat{c}_3$, $\hat{c}_2$ and $\hat{c}_1$.](ssda.png)
+![Error accumulation curves for candidates $\hat{\bm{c}}_1$, $\hat{\bm{c}}_2$, $\hat{\bm{c}}_3$ and $\hat{\bm{c}}_4$.  Error computation for $\hat{\bm{c}}_1$ and $\hat{\bm{c}}_2$ terminated early at 7 and 9 iterations.  $\hat{\bm{c}}_4$ is the best estimate for offset, followed by $\hat{\bm{c}}_3$, $\hat{\bm{c}}_2$ and $\hat{\bm{c}}_1$.](ssda.png)
 
 This algorithm offers potentially orders of magnitude speed improvements over direct cross-correlation because of early stopping, but requires selection of parameter $T$.  A choice of $T$ too high limits efficiency gains while a choice of $T$ too low can lead to suboptimal results.
 
@@ -119,10 +119,11 @@ CPSD(i_1, i_2)(\bm{\omega}) = \frac{I_1(\bm{\omega}) \overline{I_2(\bm{\omega})}
 \frac{I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c} \rangle}}}{|I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c} \rangle}}|} = e^{j \langle \bm{\omega},  \bm{c} \rangle}
 $$
 
-Where $I_1$ and $I_2$ are the Fourier transforms of $i_1$ and $i_2$.  The final estimate for $c$ is obtained by a final inverse Fourier transform of the CPSD, yielding a delta at location $\bm{c}$.
+Where $I_1$ and $I_2$ are the Fourier transforms of $i_1$ and $i_2$.  The final estimate for $\bm{c}$ is obtained by a final inverse Fourier transform of the CPSD, yielding a delta at location $\bm{c}$.
 
 $$
-PC(i_1, i_2)(\bm{x}) = \mathcal{F}^{-1}\left[ CPSD(i_1, i_2) \right](\bm{x}) = \delta(\bm{x} - \bm{c})
+PC(i_1, i_2)(\bm{x}) = \mathcal{F}^{-1}\left[ CPSD(i_1, i_2) \right](\bm{x}) = \delta(\bm{x} - \bm{c}_0) \\
+\bm{c}^* = \arg \max_{\bm{x}} PC(i_1, i_2)(\bm{x})
 $$
 
 An important consideration here is that the Fourier Shift theorem only holds exactly when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  [Foroosh, Zerubia, Berthod 2002](https://ieeexplore.ieee.org/document/988953) propose a prefilter which can be applied to both images before phase correlation to reduce these effects.
@@ -134,21 +135,21 @@ An important consideration here is that the Fourier Shift theorem only holds exa
 Let $i_2$ be a translated and rotated copy of $i_1$.  Then
 
 $$
-i_2(\bm{x}) = i_1(R_{\theta} (\bm{x} - \bm{c}))
+i_2(\bm{x}) = i_1(R_{\theta_0} (\bm{x} - \bm{c_0}))
 $$
 
 where 
 
 $$
-R_{\theta} = \begin{bmatrix} \cos \theta & - \sin \theta \\ \sin \theta & \cos \theta \end{bmatrix}
+R_{\theta_0} = \begin{bmatrix} \cos \theta_0 & - \sin \theta_0 \\ \sin \theta_0 & \cos \theta_0 \end{bmatrix}
 $$
 
-is a rotation operator of angle $\theta$.
+is a rotation operator of angle $\theta_0$.
 
-From the Fourier shift theorem, we know that a shift by $c$ in the spatial domain results in a multiplication by a complex exponential in the frequency domain.  Additionally, the Fourier rotation theorem tells us that a rotation in the spatial domain is a rotation by the same angle in the frequency domain.  Therefore, the relation between $I_1$ and $I_2$ can be written
+From the Fourier shift theorem, we know that a shift by $\bm{c}_0$ in the spatial domain results in a multiplication by a complex exponential in the frequency domain.  Additionally, the Fourier rotation theorem tells us that a rotation in the spatial domain is a rotation by the same angle in the frequency domain.  Therefore, the relation between $I_1$ and $I_2$ can be written
 
 $$
-I_2(\bm{\omega}) = e^{-j \langle \bm{\omega}, \bm{c} \rangle} I_1(R_{\theta} \bm{\omega})
+I_2(\bm{\omega}) = e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle} I_1(R_{\theta_0} \bm{\omega})
 $$
 
 <!-- $$ -->
@@ -157,20 +158,20 @@ $$
 <!-- \frac{I_1(\omega) \overline{I_1(R_{\theta - \hat{\theta}} \omega)}}{|I_1(\omega) \overline{I_1(R_{\theta - \hat{\theta}} \omega)}|} = -->
 <!-- $$ -->
 
-To find $\theta$, the authors consider the expression
+To find $\theta_0$, the authors consider the expression
 
 $$
 \mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\hat{\theta}} \bm{\omega})} \right]
 $$
 
-When $\hat{\theta} = \theta$, we get
+When $\hat{\theta} = \theta_0$, we get
 
 $$
-\mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\theta} \bm{\omega})} \right] =
-\mathcal{F}^{-1} \left[ \frac{e^{-j \langle \bm{\omega}, c \rangle}I_1(R_{\theta}\bm{\omega})}{I_1(R_{\theta} \bm{\omega})} \right]  = \mathcal{F}^{-1} \left[ e^{-j \langle \bm{\omega}, c \rangle} \right] = \delta(x - c)
+\mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\hat{\theta}} \bm{\omega})} \right] =
+\mathcal{F}^{-1} \left[ \frac{e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle}I_1(R_{\theta_0}\bm{\omega})}{I_1(R_{\theta_0} \bm{\omega})} \right]  = \mathcal{F}^{-1} \left[ e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle} \right] = \delta(\bm{x} - \bm{c}_0)
 $$
 
-By testing a range of values for $\hat{\theta}$ for which results in the closest to an impulse in the above expression, an approximate for the true $\theta$ can be found.
+By testing a range of values for $\hat{\theta}$ for which results in the closest to an impulse in the above expression, an approximate for the true $\theta_0$ can be found.
 
 Formally, this is the minimization problem
 
@@ -183,16 +184,16 @@ $$
 where $\left\Vert \right\Vert_N$ is a placeholder for a measure which is large for unit impulses.  For example
 
 $$
-\left\Vert f \right\Vert_N = \left\Vert f - \delta(x - \arg \max_{\hat{x}} f(\hat{x})) \right\Vert_2
+\left\Vert f \right\Vert_N = \left\Vert f - \delta(\bm{x} - \arg \max_{\hat{\bm{x}}} f(\hat{\bm{x}})) \right\Vert_2
 $$
 
 When $\theta^*$ has been found, the offset can be obtained directly from the impulse function
 
 $$
-c^* = \arg \max_x \mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\theta^*} \bm{\omega})} \right]
+\bm{c}^* = \arg \max_\bm{x} \mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\theta^*} \bm{\omega})} \right](\bm{x})
 $$
 
-An important note here is that the denominator $I_1(R_{\hat{\theta}} \bm{\omega})$ must be evaluated using interpolation, as $R_{\hat{\theta}} \bm{\omega}$ will not coincide with the sample nodes of $I_1$ in general.
+An important note here is that the denominator $I_1(R_{\theta^*} \bm{\omega})$ must be evaluated using interpolation, as $R_{\theta^*} \bm{\omega}$ will not coincide with the sample nodes of $I_1$ in general.
 
 <!-- FIXME author somehow use window to eliminate edge effects? -->
 
@@ -213,18 +214,18 @@ $$
 If $i_2$ is a scaled, rotated and shifted copy of $i_1$,
 
 $$
-i_2(\bm{x}) = i_1(R_{\theta_0} S_{s_0} \bm{x} - \bm{c})
+i_2(\bm{x}) = i_1(R_{\theta_0} S_{s_0} \bm{x} - \bm{c}_0)
 $$
 
 $$
 \begin{aligned}
 &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_2 \right]\right] \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1(R_{\theta_0} S_{s_0} \bm{x} - \bm{c}) \right] \right] \right| \right)(x, y)  \\
+= &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1(R_{\theta_0} S_{s_0} \bm{x} - \bm{c}_0) \right] \right] \right| \right)(x, y)  \\
 &\text{Apply Fourier shift, scale, rotation properties} \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_{\theta_0} \bm{\omega}, \bm{c} \rangle} I_1(S_{s_0}^{-1} R_{\theta_0} \bm{\omega}) \right] \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_{\theta_0} \bm{\omega}, \bm{c} \rangle} \right] \mathcal{LP} \left[ I_1(S_{s_0}^{-1} R_{\theta_0} \bm{\omega}) \right] \right| \right)(x, y) \\
+= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_{\theta_0} \bm{\omega}, \bm{c}_0 \rangle} I_1(S_{s_0}^{-1} R_{\theta_0} \bm{\omega}) \right] \right| \right)(x, y) \\
+= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_{\theta_0} \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1(S_{s_0}^{-1} R_{\theta_0} \bm{\omega}) \right] \right| \right)(x, y) \\
 &\text{Apply Log-Polar shift property} \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_{\theta_0} \bm{\omega}, \bm{c} \rangle} \right] \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s_0}, \theta + \theta_0) \right| \right)(x, y) \\
+= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_{\theta_0} \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s_0}, \theta + \theta_0) \right| \right)(x, y) \\
 = &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s_0}, \theta + \theta_0) \right| \right)(x, y) \\
 = &\delta \left(x - \ln \frac{1}{s_0}, y - \theta_0 \right)
 \end{aligned}
@@ -338,7 +339,7 @@ With this partial derivative (and a similar for $y_0$) we can use standard conju
 
 # Summary
 
-Area based methods are preferred when images have salient details and information is provided by pixel intensities rather than shapes and structures in the imae.  The images' intensities must be similar or at least statistically ..  The set of candidate $f$ that can be searched is generally limited to translation with small amounts of rotation or skew, but there are some extensions to methods that support large rotations or skews so long as the degrees of freedom of $f$ remains small.  Pyramid search techniques and sophisticated optimization strategies are available to more quickly find extrema of the similarity measure.
+Area based methods are preferred when images have salient details and information is provided by pixel intensities rather than shapes and structures in the imae.  The images' intensities must be similar or at least statistically related.  The set of candidate transformations $f$ that can be searched is generally limited to translation with small amounts of rotation or skew, but there are some extensions to methods that support large rotations or skews so long as the degrees of freedom of $f$ remains small.  Pyramid search techniques and sophisticated optimization strategies are available to more quickly find extrema of the similarity measure.
 
 Feature based methods are generally utilized when shapes in structures in the image pair contain more alignment information than the pixel intensities, such as between a picture of an object and a computer model of an object.  The drawback of these methods is that such features can be hard to detect and match with each other.  It is critical that chosen feature detector be robust against any differences between the images.
 
