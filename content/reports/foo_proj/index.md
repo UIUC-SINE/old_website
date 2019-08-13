@@ -46,7 +46,9 @@ ham
 
 $$3x + 4y$$
 
-$$[Rf](t, \theta) = \int_{\mathbb{R}^2} f(x)\delta(N_{\theta}^T x - t)\, dx$$
+$$[Rf](t, \theta) = \int_{\mathbb{R}^2} f(x)\delta(N_{\theta}^T x - t)\, dx$$ 
+
+This is called a Radon transform. [^1]
 
 # Code
 
@@ -73,3 +75,7 @@ next(x)
 # Table
 
 <iframe src="result1.html"></iframe>
+
+# Bibliography
+
+[^1]: Test, Foo, Bar

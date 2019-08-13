@@ -8,17 +8,19 @@ title: Introduction
 
 # Introduction
 
-Image registration is the process of overlaying two images of the same scene taken at different times, different viewpoints, or with different imaging equipment.  Registration is an important step in countless fields in remote sensing.  Geographic information systems (GIS), medical computer tomography (CT), cartography and computer vision all make extensive use of image registration for the purposes of image fusion and denoising, change detection or super-resolution.
+*Motion estimation*, a related field, is the process of identifying motion captured in a series of images (usually frames of a video).  This motion may be due to motion of the camera which causes the whole scene to appear to move (*apparent motion*), or individual objects moving independently within the frame.  In motion fields, a velocity vector is associated with each pixel in a particular region of the image (*local* motion estimation) or the image as a whole (*global* motion estimation).  These motion vectors usually represent 2D motion across the image, but are sometimes 3D to capture movement in 3D space.  When a motion field for individual pixels has been computed it is common to group motion vectors that belong to the same moving object, a process known as *motion segmentation*. [^1]
+
+*Image registration* is the process of overlaying two images of the same scene taken at different times, different viewpoints, or with different imaging equipment.  Registration is an important step in countless fields in remote sensing.  Geographic information systems (GIS), medical computer tomography (CT), cartography and computer vision all make extensive use of image registration for the purposes of image fusion and denoising, change detection or super-resolution.
 
 Let $i_1$ and $i_2$ be two images captured of a scene.  These are often called the *reference* and *template* images.  In image registration, we want to find a mapping from regions in the template image to regions in the reference image.  More formally, we want to find $f$ such that
 
 $$
-i_2(\bm{x}) = g(i_1(f(\bm{x}))) \,\, \forall \bm{x} \in X
+i_2(\bm{x}) = g(i_1(f(\bm{x})), \bm{x}) \,\, \forall \bm{x} \in X
 $$
 
-where $\bm{x}$ is a 2D coordinate in the image overlap region $X$, $f$ is some unknown coordinate transform, and $g$ is an unknown intensity mapping function.  In the simple case, $g$ is often assumed to be unitary, but can be a very complicated function in multimodal applications like medical imaging where $i_1$ and $i_2$ are captured from different instruments.
+where $\bm{x}$ is a 2D coordinate in the image overlap region $X$, $f$ is some unknown coordinate transform, and $g$ is an unknown intensity mapping function.  $g$ is often assumed to be unitary, but can be a very complicated function in multimodal applications like medical imaging where $i_1$ and $i_2$ are captured from different instruments.
 
-*Zitova, Flusser 2003* generalizes all image registration algorithms into 4 steps.  Note that certain algorithms omit some of these steps.
+*Zitova, Flusser 2003* generalizes all image registration algorithms into 4 steps. [^2]  Note that certain algorithms omit some of these steps.
 
 1. **Feature detection** - Distinct features (points, edges, closed regions, intersections, corners, etc.) are detected in both images.  These features may be represented by coordinates (intersections, corners, etc.), coordinate pairs (edges) or a more complex parameterization.  This step is omitted in area based registration methods.
 2. **Feature Matching** - Correspondence is established between features detected in the images.  Feature similarity measures or feature positions within the images may be used to do this.  This step is omitted in area based registration methods.
@@ -59,7 +61,7 @@ $$
 \bm{c}^* = \arg \max_{\hat{\bm{c}}} \frac{\sum_{\bm{x} \in X} i_1(x)i_2(\bm{x} - \hat{\bm{c}})}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
 $$
 
-Note that the normalization here is crucial so that the intensities of $i_1$ and $i_2$ do not influence the maximum.  We call this measure normalized cross correlation (NCC).
+Note that the normalization here is crucial so that the intensities of $i_1$ and $i_2$ do not influence the maximum.  We call this measure normalized cross correlation (NCC). [^3]
 
 <!-- $$ f^* = \arg \max_{\hat{f}} \sum_x i_1(x)i_2(\hat{f}(x)) = \arg \min_{\hat{f}} \sum_x e(x)^2 $$ --> 
 
@@ -83,7 +85,7 @@ where $\mu_1$ and $\mu_2$ are the means of $i_1$ and $i_2$ in $X$.
 
 ##### Selective Similary Detection Algorithm (SSDA)
 
-In standard correlation methods, the sum over $X$ for each candidate $\hat{f}$ must be computed in full before a maximum is found.  [Barnea, Silverman 1972](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5008923) proposes a class alternative schemes which greatly improve computation time in two ways.  The paper calls these algorithms selective similarity detection algorithms (SSDAs), of which one is presented here.
+In standard correlation methods, the sum over $X$ for each candidate $\hat{f}$ must be computed in full before a maximum is found.  Barnea, Silverman [^4] propose a class alternative schemes which greatly improve computation time in two ways.  The paper calls these algorithms selective similarity detection algorithms (SSDAs), of which one is presented here.
 
 First, the paper uses absolute sum of errors (ASE) as a similarity measure, which requires no costly multiplications unlike NCC or SSE.
 
@@ -102,7 +104,7 @@ This algorithm offers potentially orders of magnitude speed improvements over di
 
 ### Frequency Based Methods
 
-If an acceleration over correlation based methods is needed or the images were acquired under frequency dependent noise, Fourier methods are often preferred.  These methods exploit the Fourier representation of methods in the frequency domain and have shown better robustness against non-uniform illumination differences between $i_1$ and $i_2$.
+If an acceleration over correlation based methods is needed or the images were acquired under frequency dependent noise, Fourier methods are often preferred.  These methods exploit the Fourier representation of images in the frequency domain and have shown better robustness against illumination differences between $i_1$ and $i_2$.
 
 ##### Phase Correlation
 
@@ -111,37 +113,37 @@ Phase correlation was originally proposed for registering linearly translated im
 Computing the cross-power spectral density (CPSD) we can directly obtain this complex exponential.
 
 $$
-i_2(\bm{x}) = i_1(\bm{x} - \bm{c})
+i_2(\bm{x}) = i_1(\bm{x} - \bm{c}_0)
 $$
 
 $$
 CPSD(i_1, i_2)(\bm{\omega}) = \frac{I_1(\bm{\omega}) \overline{I_2(\bm{\omega})}}{|I_1(\bm{\omega}) \overline{I_2(\bm{\omega})}|} =
-\frac{I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c} \rangle}}}{|I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c} \rangle}}|} = e^{j \langle \bm{\omega},  \bm{c} \rangle}
+\frac{I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle}}}{|I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle}}|} = e^{j \langle \bm{\omega},  \bm{c}_0 \rangle}
 $$
 
-Where $I_1$ and $I_2$ are the Fourier transforms of $i_1$ and $i_2$.  The final estimate for $\bm{c}$ is obtained by a final inverse Fourier transform of the CPSD, yielding a delta at location $\bm{c}$.
+Where $I_1$ and $I_2$ are the Fourier transforms of $i_1$ and $i_2$.  The final estimate for $\bm{c}_0$ is obtained by a final inverse Fourier transform of the CPSD, yielding a delta at location $\bm{c}_0$.
 
 $$
 PC(i_1, i_2)(\bm{x}) = \mathcal{F}^{-1}\left[ CPSD(i_1, i_2) \right](\bm{x}) = \delta(\bm{x} - \bm{c}_0) \\
 \bm{c}^* = \arg \max_{\bm{x}} PC(i_1, i_2)(\bm{x})
 $$
 
-An important consideration here is that the Fourier Shift theorem only holds exactly when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  [Foroosh, Zerubia, Berthod 2002](https://ieeexplore.ieee.org/document/988953) propose a prefilter which can be applied to both images before phase correlation to reduce these effects.
+An important consideration here is that the Fourier Shift theorem only holds exactly when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  Foroosh, Zerubia, Berthod [^7] propose a prefilter which can be applied to both images before phase correlation to reduce these effects.
 
 ##### De Castro, Morandi Method
 
-[De Castro, Morandi 1987](https://ieeexplore.ieee.org/document/4767966) introduced an extension of the phase correlation method which applies to images that are translated and rotated. This method is similar in spirit to the Generalized Iterative Cross Correlation method in that it amounts to repeatedly detransforming $i_2$ with different parameters, testing alignment with $i_1$ using some similarity measure and repeating this process until the correct parameters are found.  Like the standard phase correlation method, this technique claims robustness against frequency dependent noise and non-uniform illumination differences between the images.
+De Castro, Morandi [^5] introduced an extension of the phase correlation method which applies to images that are translated and rotated. This method is similar in spirit to the Generalized Iterative Cross Correlation method in that it amounts to repeatedly detransforming $i_2$ with different parameters, testing alignment with $i_1$ using some similarity measure and repeating this process until the correct parameters are found.  Like the standard phase correlation method, this technique claims robustness against frequency dependent noise and non-uniform illumination differences between the images.
 
 Let $i_2$ be a translated and rotated copy of $i_1$.  Then
 
 $$
-i_2(\bm{x}) = i_1(R_{\theta_0} (\bm{x} - \bm{c_0}))
+i_2(\bm{x}) = i_1(R_0 (\bm{x} - \bm{c_0}))
 $$
 
 where 
 
 $$
-R_{\theta_0} = \begin{bmatrix} \cos \theta_0 & - \sin \theta_0 \\ \sin \theta_0 & \cos \theta_0 \end{bmatrix}
+R_0 = \begin{bmatrix} \cos \theta_0 & - \sin \theta_0 \\ \sin \theta_0 & \cos \theta_0 \end{bmatrix}
 $$
 
 is a rotation operator of angle $\theta_0$.
@@ -149,7 +151,7 @@ is a rotation operator of angle $\theta_0$.
 From the Fourier shift theorem, we know that a shift by $\bm{c}_0$ in the spatial domain results in a multiplication by a complex exponential in the frequency domain.  Additionally, the Fourier rotation theorem tells us that a rotation in the spatial domain is a rotation by the same angle in the frequency domain.  Therefore, the relation between $I_1$ and $I_2$ can be written
 
 $$
-I_2(\bm{\omega}) = e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle} I_1(R_{\theta_0} \bm{\omega})
+I_2(\bm{\omega}) = e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle} I_1(R_0 \bm{\omega})
 $$
 
 <!-- $$ -->
@@ -168,7 +170,7 @@ When $\hat{\theta} = \theta_0$, we get
 
 $$
 \mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\hat{\theta}} \bm{\omega})} \right] =
-\mathcal{F}^{-1} \left[ \frac{e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle}I_1(R_{\theta_0}\bm{\omega})}{I_1(R_{\theta_0} \bm{\omega})} \right]  = \mathcal{F}^{-1} \left[ e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle} \right] = \delta(\bm{x} - \bm{c}_0)
+\mathcal{F}^{-1} \left[ \frac{e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle}I_1(R_0\bm{\omega})}{I_1(R_0 \bm{\omega})} \right]  = \mathcal{F}^{-1} \left[ e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle} \right] = \delta(\bm{x} - \bm{c}_0)
 $$
 
 By testing a range of values for $\hat{\theta}$ for which results in the closest to an impulse in the above expression, an approximate for the true $\theta_0$ can be found.
@@ -209,23 +211,23 @@ $$
 S_{s_0} = \begin{bmatrix}s_0 & 0 \\ 0 & s_0\end{bmatrix}
 $$
 
-[Sarvaiya, Patnaik, Kothari 2012](http://www.jprr.org/index.php/jprr/article/view/355) introduced a new method which is capable of registering images that have been translated, rotated and scaled.  They make use of the Fourier scale, Fourier shift and Fourier rotation properties and also the Log-Polar transform (also known as Fourier-Mellin transform), where rotation and scaling in the original domain manifest as translation in the Log-Polar domain.  Their approach is broken into two applications of the phase correlation method, where the first application is used to recover scale and rotation, and the second, translation.
+Sarvaiya, Patnaik, Kothari [^8] introduced a new method which is capable of registering images that have been translated, rotated and scaled.  They make use of the Fourier scale, Fourier shift and Fourier rotation properties and also the Log-Polar transform (also known as Fourier-Mellin transform), where rotation and scaling in the original domain manifest as translation in the Log-Polar domain.  Their approach is broken into two applications of the phase correlation method, where the first application is used to recover scale and rotation, and the second, translation.
 
 If $i_2$ is a scaled, rotated and shifted copy of $i_1$,
 
 $$
-i_2(\bm{x}) = i_1(R_{\theta_0} S_{s_0} \bm{x} - \bm{c}_0)
+i_2(\bm{x}) = i_1(R_0 S_{s_0} \bm{x} - \bm{c}_0)
 $$
 
 $$
 \begin{aligned}
 &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_2 \right]\right] \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1(R_{\theta_0} S_{s_0} \bm{x} - \bm{c}_0) \right] \right] \right| \right)(x, y)  \\
+= &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1(R_0 S_{s_0} \bm{x} - \bm{c}_0) \right] \right] \right| \right)(x, y)  \\
 &\text{Apply Fourier shift, scale, rotation properties} \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_{\theta_0} \bm{\omega}, \bm{c}_0 \rangle} I_1(S_{s_0}^{-1} R_{\theta_0} \bm{\omega}) \right] \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_{\theta_0} \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1(S_{s_0}^{-1} R_{\theta_0} \bm{\omega}) \right] \right| \right)(x, y) \\
+= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_0 \bm{\omega}, \bm{c}_0 \rangle} I_1(S_{s_0}^{-1} R_0 \bm{\omega}) \right] \right| \right)(x, y) \\
+= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_0 \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1(S_{s_0}^{-1} R_0 \bm{\omega}) \right] \right| \right)(x, y) \\
 &\text{Apply Log-Polar shift property} \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_{\theta_0} \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s_0}, \theta + \theta_0) \right| \right)(x, y) \\
+= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_0 \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s_0}, \theta + \theta_0) \right| \right)(x, y) \\
 = &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s_0}, \theta + \theta_0) \right| \right)(x, y) \\
 = &\delta \left(x - \ln \frac{1}{s_0}, y - \theta_0 \right)
 \end{aligned}
@@ -271,7 +273,7 @@ To compute Shannon entropy of an image, all possible intensity values of the pix
 
 ![An image and its intensity histogram](histogram.png)
 
-Now that we can compute entropy for images we must introduce one more concept before registration can occur, joint histograms.  A joint histogram is a 2D function which, for all possible pairs of intensities, describes how many times intensity pairs occur for a pair of registered images.  For example, if a joint histogram has value 17 at coordinate [33, 34], then for this particular registration there are 17 pixels in which the first image has intensity 33 and the second has intensity 44.  In the case of two 8 bit images, the joint histogram is a 256x256 image.  An example joint histogram for two images is shown below.
+Now that we can compute entropy for images we must introduce one more concept before registration can occur, joint histograms.  A joint histogram is a 2D function which, for all possible pairs of intensities, describes how many times intensity pairs occur for a pair of registered images.  For example, if a joint histogram has value 17 at coordinate [33, 34], then for this particular registration there are 17 pixels in which the first image has intensity 33 and the second has intensity 34.  In the case of two 8 bit images, the joint histogram is a 256x256 image.  An example joint histogram for two images is shown below.
 
 ![Two registered images and their joint histogram, or feature space](feature_space.png)
 
@@ -301,7 +303,7 @@ Many of the above methods introduce various similarity metrics as measures of al
 
 <!-- FIXME assumes linear shift, but this section is about high dimensional f -->
 
-The first method, presented by [Guizar-Sicairos, Thurman, Fienup 2008](https://www.osapublishing.org/ol/viewmedia.cfm?uri=ol-33-2-156&seq=0),  is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image $f$ and a copy $g$ shifted by $(x_0^{\ast}, y_0^*)$.
+The first method, presented by Guizar-Sicairos, Thurman, Fienup [^6],  is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image $f$ and a copy $g$ shifted by $(x_0^{\ast}, y_0^*)$.
 
 $$
 f^*_{NMSRE} = \min_{\hat{f}} \frac{\sum_{x} |i_2(\hat{f}(x)) - i_1(x)|^2}{\sum_{x}|i_1(x)|^2}
@@ -346,6 +348,20 @@ Feature based methods are generally utilized when shapes in structures in the im
 
 
 # References
-- [Image registration methods: a survey](https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&pid=1-s2.0-S0262885603001379-main.pdf) - Zitova, Flusser 2003
 - [A Survey of Mutual Information Based Registration](https://www.google.com/search?q=survey%20of%20mutual%20information%20based%20registration) - Pluim, Maintz, Viergever 2003
 
+[^1]: Motion Estimation Konrad
+
+[^2]: [Image registration methods: a survey](https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&pid=1-s2.0-S0262885603001379-main.pdf) - Zitova, Flusser 2003
+
+[^3]: Brown Survey Paper
+
+[^4]: [Barnea, Silverman 1972](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5008923)
+
+[^5]: [De Castro, Morandi 1987](https://ieeexplore.ieee.org/document/4767966)
+
+[^6]: [Guizar-Sicairos, Thurman, Fienup 2008](https://www.osapublishing.org/ol/viewmedia.cfm?uri=ol-33-2-156&seq=0)
+
+[^7]: [Foroosh, Zerubia, Berthod 2002](https://ieeexplore.ieee.org/document/988953)
+
+[^8]: [Sarvaiya, Patnaik, Kothari 2012](http://www.jprr.org/index.php/jprr/article/view/355)
