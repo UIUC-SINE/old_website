@@ -25,7 +25,7 @@ Ulas and I drafted an outline for what a conference presentation on CSBS might l
     - Solar Dynamics Observatory (2010, reflective) - 0.6 arcsec resolution
     - Solar and Heliospheric Observatory (1995, reflective) - ??? arcsec resolution
 - Very difficult to manufacture reflective optics at the required tolerance - especially at UV wavelengths
-    
+
 
 ![Conventional optical telescopes don't have enough angular resolution for photon sieves to be visible.](wavelengths.jpg)
 
@@ -54,10 +54,14 @@ Ulas and I drafted an outline for what a conference presentation on CSBS might l
 
 ##### Slide 2 - Diffractive Optics
 
-- 
+-
 
 ![](diffraction_ps_rgb.png)
-  
+![](apertureFunction_zone_plate.png)
+
+- diffractive lenses use diffraction to focus light
+- they have wavelength dependent focal length
+
 ##### Slide 3 - Choice of Measurement Locations
 
 - where should measurements be taken
@@ -68,19 +72,15 @@ Ulas and I drafted an outline for what a conference presentation on CSBS might l
 - N candidate measurement locations, K measurements
     - *N^K* measurement combinations to test
     - for our particular problem this is a large number
-  
+
 ##### Slide 5 - CSBS: A Greedy Algorithm
 
 - CSBS works by eliminating 1 candidate measurement location at a time
 - the measurement location which contributes the least to image quality is selected for elimination
     - multiple cost metrics, e.g. SSE cost
-  
+
 ##### Slide 6 - SSE Cost
 
 - not sure whether to include this
 
 ##### Slide 7 - Numerical Results
-
-
-
-
