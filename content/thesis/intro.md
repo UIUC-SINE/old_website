@@ -31,12 +31,13 @@ In the next section, I highlight some classical and/or popular contemporary imag
 
 ### A Comment on Notation
 
-This document contains many types of variables which can represent transform parameters, placeholder variables inside optimizations, 1D vectors of parameters and 2D images.   I try to follow these guidelines for easier reading:
+This document contains many types of variables which can represent transform parameters, <!-- placeholder variables inside optimizations, --> 1D vectors of parameters and 2D images.   I try to follow these guidelines for easier reading:
 
 * bold for variables which represent 1D vectors.  For example $\bm{x}$ is a coordinate vector representing position within an image
-* subscript 0 for ground truth parameters of $f$.  For example $s_0$ and $\theta_0$ are parameters controlling scaling and rotation
-* hat $\,\hat{}\,$ for placeholder variables in maximization or minimization problems. For example $\hat{\theta}$ may represent the current value under test in an iterative algorithm searching for $\theta_0$
-* superscript $*$ for final parameter estimates obtained by registration methods. For example $\theta^*$ is a best estimate for the true $\theta_0$
+* superscript $*$ for ground truth parameters of $f$.  For example $s^*$ and $\theta^*$ are parameters controlling scaling and rotation
+* hat $\,\hat{}\,$ for algorithmic estimates of ground truth parameters. For example $\hat{\theta}$ may represent the best estimate for $\theta^*$ found by an algorithm
+<!-- * hat $\,\hat{}\,$ for placeholder variables in maximization or minimization problems. For example $\hat{\theta}$ may represent the current value under test in an iterative algorithm searching for $\theta_0$ -->
+<!-- * superscript $*$ for final parameter estimates obtained by registration methods. For example $\theta^*$ is a best estimate for the true $\theta_0$ -->
 
 # Area based Registration
 
@@ -47,57 +48,63 @@ This simplicity can sometimes come at a performance cost in certain situations, 
 ### Correlation-like Methods
 
 ##### Cross Correlation
-The most straightforward of all methods, direct correlation only works when $f$ is a simple linear translation, $f(\bm{x}) = \bm{x} - \bm{c}_0$.
-
-$$
-f^* = \arg \max_{\hat{f} \in F} \frac{\sum_{\bm{x} \in X} i_1(\bm{x})i_2(\hat{f}(\bm{x}))}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
-$$
-
-where $F$ is the set of all linear translations.
-
-Stated more simply
-
-$$
-\bm{c}^* = \arg \max_{\hat{\bm{c}}} \frac{\sum_{\bm{x} \in X} i_1(x)i_2(\bm{x} - \hat{\bm{c}})}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
-$$
+The most straightforward of all methods, direct correlation, is conceptually simple and works for many classes of transformations.
 
 Note that the normalization here is crucial so that the intensities of $i_1$ and $i_2$ do not influence the maximum.  We call this measure normalized cross correlation (NCC). [^3]
 
-<!-- $$ f^* = \arg \max_{\hat{f}} \sum_x i_1(x)i_2(\hat{f}(x)) = \arg \min_{\hat{f}} \sum_x e(x)^2 $$ --> 
+<!-- only works when $f$ is a simple linear translation, $f(\bm{x}) = \bm{x} - \bm{c}^*$. -->
 
-In practice, cross correlation is still successful in the presence of slight rotation or scaling.
+$$
+\begin{aligned}
+\hat{f} &= \arg \max_{f \in F} \text{NCC}(i_1, i_2(f)) \\
+&= \arg \max_{f \in F} \frac{\sum_{\bm{x} \in X} i_1(\bm{x})i_2(f(\bm{x}))}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
+\end{aligned}
+$$
+
+where $F$ is the set of all linear translations.  Practically, the time required to search the space of all possible transformations for a given application makes this approach infeasible, so $F$ is often restricted to translations.
+
+$$
+\hat{c} = \arg \max_{\bm{c}} \frac{\sum_{\bm{x} \in X} i_1(\bm{x})i_2(\bm{x} - \bm{c})}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
+$$
+
+
+<!-- $$ f^* = \arg \max_{\hat{f}} \sum_x i_1(x)i_2(\hat{f}(x)) = \arg \min_{\hat{f}} \sum_x e(x)^2 $$ --> 
 
 Related similarity measures which are sometimes used in place of normalized cross correlation are sum of squared error (SSE)
 
 $$
-\sum_{\bm{x} \in X} (i_1(\bm{x}) - i_2(\bm{x} - \hat{\bm{c}}))^2
+\text{SSE}(i_1, i_2(f)) = \sum_{\bm{x} \in X} (i_1(\bm{x}) - i_2(f(\bm{x})))^2
 $$
 
 and correlation coefficient
 
 $$
-\frac{\text{cov}(i_1, i_2)}{\sigma_1 \sigma_2} = \frac{\sum_{\bm{x} \in X} (i_1(\bm{x}) - \mu_1)(i_2(\bm{x} - \hat{\bm{c}}) - \mu_2)}{\sqrt{\sum_{\bm{x} \in X} (i_1(\bm{x}) - \mu_1)^2 \sum_{\bm{x} \in X}(i_2(\bm{x} - \hat{\bm{c}}) - \mu_2)^2}}
+\text{Corr}(i_1, i_2(f)) = \frac{\text{cov}(i_1, i_2(f))}{\sigma_1 \sigma_2} = \frac{\sum_{\bm{x} \in X} (i_1(\bm{x}) - \mu_1)(i_2(f(\bm{x})) - \mu_2)}{\sqrt{\sum_{\bm{x} \in X} (i_1(\bm{x}) - \mu_1)^2 \sum_{\bm{x} \in X}(i_2(f(\bm{x})) - \mu_2)^2}}
 $$
 
-where $\mu_1$ and $\mu_2$ are the means of $i_1$ and $i_2$ in $X$.
+where $\mu_1$, $\mu_2$, $\sigma_1$, $\sigma_2$ are the means and variances of $i_1$ and $i_2$ over $X$.
+
+While cross correlation methods are very old, they continue to see widespread use because of ease of implementation in hardware (NCC can be efficiently implemented using multiply-accumulate hardware) and because limiting $f$ to translations isn't significantly restrictive for many scenarios.
+
+In practice though, cross correlation is still successful in the presence of slight rotation, scaling or even non-affine transformation. <!-- need to find citation -->
 
 ##### Generalized Iterative Cross Correlation
 
 ##### Selective Similary Detection Algorithm (SSDA)
 
-In standard correlation methods, the sum over $X$ for each candidate $\hat{f}$ must be computed in full before a maximum is found.  Barnea, Silverman [^4] propose a class alternative schemes which greatly improve computation time in two ways.  The paper calls these algorithms selective similarity detection algorithms (SSDAs), of which one is presented here.
+In standard correlation methods, the sum over $X$ for each candidate $f$ must be computed in full before a maximum is found.  Barnea, Silverman [^4] propose a class alternative schemes which greatly improve computation time in two ways.  The paper calls these algorithms selective similarity detection algorithms (SSDAs), of which one is presented here.
 
 First, the paper uses absolute sum of errors (ASE) as a similarity measure, which requires no costly multiplications unlike NCC or SSE.
 
 $$
-\sum_{\bm{x} \in X} |i_1(\bm{x}) - i_2(\bm{x} - \hat{\bm{c}})|
+ASE(i_1, i_2(f)) = \sum_{\bm{x} \in X} |i_1(\bm{x}) - i_2(\bm{x} - \bm{c})|
 $$
 
-The second optimization uses early stopping and requires that the above sum over $X$ be implemented sequentially (e.g. as an iterative software loop).  For a particular candidate $\hat{\bm{c}}$, the current value of the in-progress ASE is compared to a threshold parameter after each iteration.  If the ASE surpasses this threshold, the number of iterations is recorded and the algorithm moves on to the next candidate.  If an candidate computation never exceeds $T$, then the final ASE is recorded instead.
+The second optimization uses early stopping and requires that the sum over $X$ be implemented sequentially (e.g. as an iterative software loop).  For a particular candidate $\bm{c}$, the current value of the sum is compared to a threshold parameter after each iteration.  If the ASE surpasses this threshold, the number of iterations is recorded and the algorithm moves on to the next candidate.  If an candidate computation never exceeds $T$, then the final ASE is recorded instead.
 
 Finally, the candidate with the lowest ASE is selected.  If all candidates surpassed the threshold, then the candidate with the most number of iterations before passing the threshold is selected.
 
-![Error accumulation curves for candidates $\hat{\bm{c}}_1$, $\hat{\bm{c}}_2$, $\hat{\bm{c}}_3$ and $\hat{\bm{c}}_4$.  Error computation for $\hat{\bm{c}}_1$ and $\hat{\bm{c}}_2$ terminated early at 7 and 9 iterations.  $\hat{\bm{c}}_4$ is the best estimate for offset, followed by $\hat{\bm{c}}_3$, $\hat{\bm{c}}_2$ and $\hat{\bm{c}}_1$.](ssda.png)
+![Error accumulation curves for candidates $\bm{c}_1$, $\bm{c}_2$, $\bm{c}_3$ and $\bm{c}_4$.  Error computation for $\bm{c}_1$ and $\bm{c}_2$ terminated early at 7 and 9 iterations.  $\bm{c}_4$ is the best estimate for offset, followed by $\bm{c}_3$, $\bm{c}_2$ and $\bm{c}_1$.](ssda.png)
 
 This algorithm offers potentially orders of magnitude speed improvements over direct cross-correlation because of early stopping, but requires selection of parameter $T$.  A choice of $T$ too high limits efficiency gains while a choice of $T$ too low can lead to suboptimal results.
 
@@ -113,19 +120,19 @@ Phase correlation was originally proposed for registering linearly translated im
 Computing the cross-power spectral density (CPSD) we can directly obtain this complex exponential.
 
 $$
-i_2(\bm{x}) = i_1(\bm{x} - \bm{c}_0)
+i_2(\bm{x}) = i_1(\bm{x} - \bm{c}^*)
 $$
 
 $$
 CPSD(i_1, i_2)(\bm{\omega}) = \frac{I_1(\bm{\omega}) \overline{I_2(\bm{\omega})}}{|I_1(\bm{\omega}) \overline{I_2(\bm{\omega})}|} =
-\frac{I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle}}}{|I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle}}|} = e^{j \langle \bm{\omega},  \bm{c}_0 \rangle}
+\frac{I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c}^* \rangle}}}{|I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c}^* \rangle}}|} = e^{j \langle \bm{\omega},  \bm{c}^* \rangle}
 $$
 
 Where $I_1$ and $I_2$ are the Fourier transforms of $i_1$ and $i_2$.  The final estimate for $\bm{c}_0$ is obtained by a final inverse Fourier transform of the CPSD, yielding a delta at location $\bm{c}_0$.
 
 $$
-PC(i_1, i_2)(\bm{x}) = \mathcal{F}^{-1}\left[ CPSD(i_1, i_2) \right](\bm{x}) = \delta(\bm{x} - \bm{c}_0) \\
-\bm{c}^* = \arg \max_{\bm{x}} PC(i_1, i_2)(\bm{x})
+PC(i_1, i_2)(\bm{x}) = \mathcal{F}^{-1}\left[ CPSD(i_1, i_2) \right](\bm{x}) = \delta(\bm{x} - \bm{c}^*) \\
+\hat{c} = \arg \max_{\bm{x}} PC(i_1, i_2)(\bm{x})
 $$
 
 An important consideration here is that the Fourier Shift theorem only holds exactly when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  Foroosh, Zerubia, Berthod [^7] propose a prefilter which can be applied to both images before phase correlation to reduce these effects.
@@ -137,21 +144,21 @@ De Castro, Morandi [^5] introduced an extension of the phase correlation method 
 Let $i_2$ be a translated and rotated copy of $i_1$.  Then
 
 $$
-i_2(\bm{x}) = i_1(R_0 (\bm{x} - \bm{c_0}))
+i_2(\bm{x}) = i_1(R_{\theta^*} (\bm{x} - \bm{c^*}))
 $$
 
 where 
 
 $$
-R_0 = \begin{bmatrix} \cos \theta_0 & - \sin \theta_0 \\ \sin \theta_0 & \cos \theta_0 \end{bmatrix}
+R_{\theta^*} = \begin{bmatrix} \cos \theta^* & - \sin \theta^* \\ \sin \theta^* & \cos \theta^* \end{bmatrix}
 $$
 
-is a rotation operator of angle $\theta_0$.
+is a rotation operator of angle $\theta^*$.
 
-From the Fourier shift theorem, we know that a shift by $\bm{c}_0$ in the spatial domain results in a multiplication by a complex exponential in the frequency domain.  Additionally, the Fourier rotation theorem tells us that a rotation in the spatial domain is a rotation by the same angle in the frequency domain.  Therefore, the relation between $I_1$ and $I_2$ can be written
+From the Fourier shift theorem, we know that a shift by $\bm{c}^*$ in the spatial domain results in a multiplication by a complex exponential in the frequency domain.  Additionally, the Fourier rotation theorem tells us that a rotation in the spatial domain is a rotation by the same angle in the frequency domain.  Therefore, the relation between $I_1$ and $I_2$ can be written
 
 $$
-I_2(\bm{\omega}) = e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle} I_1(R_0 \bm{\omega})
+I_2(\bm{\omega}) = e^{-j \langle \bm{\omega}, \bm{c}^* \rangle} I_1(R_{\theta^*} \bm{\omega})
 $$
 
 <!-- $$ -->
@@ -160,26 +167,26 @@ $$
 <!-- \frac{I_1(\omega) \overline{I_1(R_{\theta - \hat{\theta}} \omega)}}{|I_1(\omega) \overline{I_1(R_{\theta - \hat{\theta}} \omega)}|} = -->
 <!-- $$ -->
 
-To find $\theta_0$, the authors consider the expression
+To find $\theta^*$, the authors consider the expression
 
 $$
-\mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\hat{\theta}} \bm{\omega})} \right]
+\mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\theta} \bm{\omega})} \right]
 $$
 
-When $\hat{\theta} = \theta_0$, we get
+When $\theta = \theta^*$, we get
 
 $$
-\mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\hat{\theta}} \bm{\omega})} \right] =
-\mathcal{F}^{-1} \left[ \frac{e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle}I_1(R_0\bm{\omega})}{I_1(R_0 \bm{\omega})} \right]  = \mathcal{F}^{-1} \left[ e^{-j \langle \bm{\omega}, \bm{c}_0 \rangle} \right] = \delta(\bm{x} - \bm{c}_0)
+\mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\theta} \bm{\omega})} \right] =
+\mathcal{F}^{-1} \left[ \frac{e^{-j \langle \bm{\omega}, \bm{c}^* \rangle}I_1(R_{\theta^*}\bm{\omega})}{I_1(R_{\theta^*} \bm{\omega})} \right]  = \mathcal{F}^{-1} \left[ e^{-j \langle \bm{\omega}, \bm{c}^* \rangle} \right] = \delta(\bm{x} - \bm{c}^*)
 $$
 
-By testing a range of values for $\hat{\theta}$ for which results in the closest to an impulse in the above expression, an approximate for the true $\theta_0$ can be found.
+By testing a range of values for $\theta$ for which results in the closest to an impulse in the above expression, an approximate for the true $\theta^*$ can be found.
 
 Formally, this is the minimization problem
 
 $$
-\theta^* = \arg \min_{\hat{\theta}} \left\Vert \mathcal{F}^{-1} \left[ 
-\frac{I_2(\bm{\omega})}{I_1(R_{\hat{\theta}}\bm{\omega})}
+\hat{\theta} = \arg \min_{\theta} \left\Vert \mathcal{F}^{-1} \left[ 
+\frac{I_2(\bm{\omega})}{I_1(R_{\theta}\bm{\omega})}
 \right] \right\Vert_N
 $$
 
@@ -189,13 +196,13 @@ $$
 \left\Vert f \right\Vert_N = \left\Vert f - \delta(\bm{x} - \arg \max_{\hat{\bm{x}}} f(\hat{\bm{x}})) \right\Vert_2
 $$
 
-When $\theta^*$ has been found, the offset can be obtained directly from the impulse function
+When $\hat{\theta}$ has been found, the offset can be obtained directly from the impulse function
 
 $$
-\bm{c}^* = \arg \max_\bm{x} \mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\theta^*} \bm{\omega})} \right](\bm{x})
+\hat{\bm{c}} = \arg \max_\bm{x} \mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\hat{\theta}} \bm{\omega})} \right](\bm{x})
 $$
 
-An important note here is that the denominator $I_1(R_{\theta^*} \bm{\omega})$ must be evaluated using interpolation, as $R_{\theta^*} \bm{\omega}$ will not coincide with the sample nodes of $I_1$ in general.
+Note that the denominator $I_1(R_{\hat{\theta}} \bm{\omega})$ must be evaluated using interpolation, as $R_{\hat{\theta}} \bm{\omega}$ will not coincide with the sample nodes of $I_1$ in general.
 
 <!-- FIXME author somehow use window to eliminate edge effects? -->
 
@@ -208,7 +215,7 @@ An important note here is that the denominator $I_1(R_{\theta^*} \bm{\omega})$ m
 Phase correlation in its original form is an elegant method of registering translated images.  The method introduced by De Castro and Morandi provides a way to detect and correct for rotation in images before applying phase correlation.  However, another common transformation in imaging systems is scaling, which can occur when the target scene moves closer to the imaging device or if the imager has zoom capabilities.  Like rotation, scaling by a factor $s_0$ can also be written as a matrix operator like so
 
 $$
-S_{s_0} = \begin{bmatrix}s_0 & 0 \\ 0 & s_0\end{bmatrix}
+S_{s^*} = \begin{bmatrix}s^* & 0 \\ 0 & s^*\end{bmatrix}
 $$
 
 Sarvaiya, Patnaik, Kothari [^8] introduced a new method which is capable of registering images that have been translated, rotated and scaled.  They make use of the Fourier scale, Fourier shift and Fourier rotation properties and also the Log-Polar transform (also known as Fourier-Mellin transform), where rotation and scaling in the original domain manifest as translation in the Log-Polar domain.  Their approach is broken into two applications of the phase correlation method, where the first application is used to recover scale and rotation, and the second, translation.
@@ -216,20 +223,20 @@ Sarvaiya, Patnaik, Kothari [^8] introduced a new method which is capable of regi
 If $i_2$ is a scaled, rotated and shifted copy of $i_1$,
 
 $$
-i_2(\bm{x}) = i_1(R_0 S_{s_0} \bm{x} - \bm{c}_0)
+i_2(\bm{x}) = i_1(R_{\theta^*} S_{s^*} \bm{x} - \bm{c}_0)
 $$
 
 $$
 \begin{aligned}
 &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_2 \right]\right] \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1(R_0 S_{s_0} \bm{x} - \bm{c}_0) \right] \right] \right| \right)(x, y)  \\
+= &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1(R_{\theta^*} S_{s^*} \bm{x} - \bm{c}_0) \right] \right] \right| \right)(x, y)  \\
 &\text{Apply Fourier shift, scale, rotation properties} \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_0 \bm{\omega}, \bm{c}_0 \rangle} I_1(S_{s_0}^{-1} R_0 \bm{\omega}) \right] \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_0 \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1(S_{s_0}^{-1} R_0 \bm{\omega}) \right] \right| \right)(x, y) \\
+= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s^{*2}} e^{-j \langle S_{s^*}^{-1} R_{\theta^*} \bm{\omega}, \bm{c}_0 \rangle} I_1(S_{s^*}^{-1} R_{\theta^*} \bm{\omega}) \right] \right| \right)(x, y) \\
+= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s^{*2}} e^{-j \langle S_{s^*}^{-1} R_{\theta^*} \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1(S_{s^*}^{-1} R_{\theta^*} \bm{\omega}) \right] \right| \right)(x, y) \\
 &\text{Apply Log-Polar shift property} \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ \frac{1}{s_0^2} e^{-j \langle S_{s_0}^{-1} R_0 \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s_0}, \theta + \theta_0) \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s_0}, \theta + \theta_0) \right| \right)(x, y) \\
-= &\delta \left(x - \ln \frac{1}{s_0}, y - \theta_0 \right)
+= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ \frac{1}{s^{*2}} e^{-j \langle S_{s^*}^{-1} R_{\theta^*} \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s^*}, \theta + \theta_0) \right| \right)(x, y) \\
+= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s^*}, \theta + \theta_0) \right| \right)(x, y) \\
+= &\delta \left(x - \ln \frac{1}{s^*}, y - \theta_0 \right)
 \end{aligned}
 $$
 
@@ -282,22 +289,22 @@ The joint histogram changes with the alignment of the images.  For a correctly a
 Formally, the joint Shannon entropy for a pair of registered images
 
 $$
-H(i_1, \hat{i_2}) = -\sum_{m, n} p(m, n) \log p(m, n)
+H(i_1, i_2(f)) = -\sum_{m, n} p(m, n) \log p(m, n)
 $$
 
-where $p(i, j)$ is the joint histogram of $i_1$ and candidate registered $\hat{i_2}$ in the region of overlap $X$. <!-- FIXME -->
+where $p(i, j)$ is the joint histogram of $i_1$ and candidate registered $i_2(f)$ in the region of overlap $X$. <!-- FIXME -->
 
 However, a problem that can occur when joint entropy is used directly is that low entropy (high degree of reported alignment) can occur for invalid registrations if the images contain large regions of uniform intensity.  For example, if the images in the figure above are aligned so that only their corners containing background overlap, the joint histogram will have approximately a single peak and the joint entropy will be very low.  To account for this, one can make use of the marginal entropies to penalize alignments where the region $X$ contains little information in the images.  This is known as mutual information.
 
 $$
-MI(i_1, \hat{i_2}) = H(i_1) + H(\hat{i_2}) - H(i_1, \hat{i_2})
+MI(i_1, i_2(f)) = H(i_1) + H(i_2(f)) - H(i_1, i_2(f))
 $$
 
-With this new measure, if the overlap region contains little information, terms $H(i_1)$ and $H(\hat{i_2})$ will be small and counteract joint entropy.  Also note that since mutual information contains $-H(i_1, \hat{i_2})$, minimizing joint entropy is related to maximizing mutual information.
+With this new measure, if the overlap region contains little information, terms $H(i_1)$ and $H(i_2(f))$ will be small and counteract joint entropy.  Also note that since mutual information contains $-H(i_1, i_2(f))$, minimizing joint entropy is related to maximizing mutual information.
 
 ### Optimization Based Methods
 
-Many of the above methods introduce various similarity metrics as measures of alignment between registration candidates.  They mostly rely on an exhaustive search through all potential registration candidates and as such are restricted to situations where the set of all possible $\hat{f}$ candidates are small, usually simple translation.  In situations where the number of parameters controlling $f$ is large, such as elastic transformation, it is appropriate to make use optimization methods that can find minima or maxima in the chosen similarity measure in a feasible amount of time.
+Many of the above methods introduce various similarity metrics as measures of alignment between registration candidates.  They mostly rely on an exhaustive search through all potential registration candidates and as such are restricted to situations where the set of all possible $f$ candidates are small, usually simple translation.  In situations where the number of parameters controlling $f$ is large, such as elastic transformation, it is appropriate to make use optimization methods that can find minima or maxima in the chosen similarity measure in a feasible amount of time.
 
 ##### NMSRE Conjugate Descent
 
@@ -339,18 +346,28 @@ With this partial derivative (and a similar for $y_0$) we can use standard conju
 
 # Feature Based Registration
 
+Feature based methods involve a preprocessing step known as *feature detection*, where notable structures in both images are located and recorded.  Detected structures come in a variety of forms, such as polygons (forests, lakes, fields), line segments (roads, buildings), or single points (street intersections, region corners).  There are many algorithms capable of extracting these features and the optimal choice of algorithm is highly dependent on the target scene.  In general, a desirable property of these algorithms is that the same features can be detected in both images and that these features are robust against corruption introduced by function $g$ or noise. [^2]
+
+In the next stage, *feature matching*, detected features are corresponded from both images.
+
+##### Harris Corner Detection and RANSAC
+
 # Summary
 
 Area based methods are preferred when images have salient details and information is provided by pixel intensities rather than shapes and structures in the imae.  The images' intensities must be similar or at least statistically related.  The set of candidate transformations $f$ that can be searched is generally limited to translation with small amounts of rotation or skew, but there are some extensions to methods that support large rotations or skews so long as the degrees of freedom of $f$ remains small.  Pyramid search techniques and sophisticated optimization strategies are available to more quickly find extrema of the similarity measure.
 
 Feature based methods are generally utilized when shapes in structures in the image pair contain more alignment information than the pixel intensities, such as between a picture of an object and a computer model of an object.  The drawback of these methods is that such features can be hard to detect and match with each other.  It is critical that chosen feature detector be robust against any differences between the images.
 
+| Method | Application |   |
+|--------|-------------|---|
+| foo    |             |   |
+|        |             |   |
 
 
 # References
 - [A Survey of Mutual Information Based Registration](https://www.google.com/search?q=survey%20of%20mutual%20information%20based%20registration) - Pluim, Maintz, Viergever 2003
 
-[^1]: Motion Estimation Konrad
+[^1]: Motion Estimation - Konrad
 
 [^2]: [Image registration methods: a survey](https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&pid=1-s2.0-S0262885603001379-main.pdf) - Zitova, Flusser 2003
 
@@ -365,3 +382,7 @@ Feature based methods are generally utilized when shapes in structures in the im
 [^7]: [Foroosh, Zerubia, Berthod 2002](https://ieeexplore.ieee.org/document/988953)
 
 [^8]: [Sarvaiya, Patnaik, Kothari 2012](http://www.jprr.org/index.php/jprr/article/view/355)
+
+[^9]: Feature-Based Deformable Image Registration with RANSAC Based Search Correspondence - Colleu, Shen, Matuszewski, Shark, Cariou
+
+[^10]: An Automatic Satellite Image Registration Technique Based on Harris Corner Detection and Random Sample Consensus (RANSAC) Outlier Rejection Model - Misra, Moorthi, Dhar, Ramakrishnan
