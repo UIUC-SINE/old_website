@@ -40,8 +40,8 @@ def get_psfs(*, separation, diameter):
 
 
 result = pd.DataFrame()
-for diameter in np.logspace(-2, -1, 4):
-    for separation in np.logspace(-12, -9, 4):
+for diameter in np.logspace(-2, -1, 20):
+    for separation in np.logspace(-12, -9, 20):
 
         psfs_focus, psfs_csbs = get_psfs(separation=separation, diameter=diameter)
 
@@ -80,6 +80,7 @@ for diameter in np.logspace(-2, -1, 4):
 
 # %% plot
 
-ax = sns.lineplot(x='separation', y='ratio', hue='diameter', data=result)
-ax.set(xscale='log')
-plt.show()
+# ax = sns.lineplot(x='separation', y='ratio', hue='diameter', data=result)
+# ax.set(xscale='log')
+# plt.show()
+# plt.savefig('test.png')
