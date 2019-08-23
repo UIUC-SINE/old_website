@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Weekly Report</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js" defer></script> 
+
+
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Weekly Report</h1>
+      <time datetime="2019-08-05">2019-08-05</time> - Evan Widloski
+    </header>
+    <h3 id="csbs-presentation-outline">CSBS Presentation Outline</h3>
+<p>Ulas and I drafted an outline for what a conference presentation on CSBS might look like.  We want to write a conference paper draft before the Summer is up, but thought it would be easier to get ideas down in presentation form first.</p>
+<h5 id="title-a-greedy-algorithm-for-measurement-configuration-selection-in-spectral-imaging">Title: A Greedy Algorithm for Measurement Configuration Selection in Spectral Imaging</h5>
+<h5 id="slide-0-coronal-heating-problem">Slide 0 - Coronal Heating Problem</h5>
+<p>
+<figure><img src="corona_diagram.png" /><figcaption>Hypothesized small scale <em>nanoflares</em> in a quiet region of the corona</figcaption>
+</figure>
+</p>
+<ul>
+<li>coronal heating problem has been an open problem in heliophysics for decades:<ul>
+<li>why is the corona 300X hotter than the photosphere?</li>
+</ul>
+</li>
+<li>perhaps this is due to unobserved 'nanoflares' beyond our current imaging capabilities</li>
+</ul>
+<h5 id="slide-1-towards-the-diffraction-limit">Slide 1 - Towards the Diffraction Limit</h5>
+<ul>
+<li>Conventional telescopes don't have resolution necessary for imaging these small structures<ul>
+<li>Solar Dynamics Observatory (2010, reflective) - 0.6 arcsec resolution</li>
+<li>Solar and Heliospheric Observatory (1995, reflective) - ??? arcsec resolution</li>
+</ul>
+</li>
+<li>Very difficult to manufacture reflective optics at the required tolerance - especially at UV wavelengths</li>
+</ul>
+<p>
+<figure><img src="wavelengths.jpg" /><figcaption>Conventional optical telescopes don't have enough angular resolution for photon sieves to be visible.</figcaption>
+</figure>
+</p>
+<p><em>comments about the above diagram</em></p>
+<ul>
+<li>secondary vertical axis and information about solar diameters should be removed --&gt; irrelevant to this slide</li>
+<li>what telescope dimension do the 1m/3m/5m diffraction limit lines refer to?</li>
+<li>remove 'classical dissipation scale' and 'collisionless dissipation scale' and rename to simply 'nanoflares' or similar</li>
+</ul>
+<!-- ##### Slide 1 - Motivation -->
+
+<!-- - heliophysicists interested in multi wavelength imaging because: -->
+
+<!--     - foo -->
+
+<!--     - bar -->
+
+<!-- - this is called spectral imaging -->
+
+<!-- ##### Slide 2 - Spectral Imaging -->
+
+<!-- ![Filter wheel aboard Solar Dynamics Observatory](filter_wheel.jpg) -->
+
+<!-- - several types of spectral imaging -->
+
+<!--     - filter wheel -->
+
+<!--     - moving slit -->
+
+<!--     - diffractive element + moving imager -->
+
+<h5 id="slide-2-diffractive-optics">Slide 2 - Diffractive Optics</h5>
+<p>-</p>
+<p><img alt="" src="diffraction_ps_rgb.png" />
+<img alt="" src="apertureFunction_zone_plate.png" /></p>
+<ul>
+<li>diffractive lenses use diffraction to focus light</li>
+<li>they have wavelength dependent focal length</li>
+</ul>
+<h5 id="slide-3-choice-of-measurement-locations">Slide 3 - Choice of Measurement Locations</h5>
+<ul>
+<li>where should measurements be taken</li>
+<li>is it always best to take measurements at the focal planes?</li>
+</ul>
+<h5 id="slide-4-extremely-high-dimensional-search-space">Slide 4 - Extremely High Dimensional Search Space</h5>
+<ul>
+<li>N candidate measurement locations, K measurements<ul>
+<li><em>N^K</em> measurement combinations to test</li>
+<li>for our particular problem this is a large number</li>
+</ul>
+</li>
+</ul>
+<h5 id="slide-5-csbs-a-greedy-algorithm">Slide 5 - CSBS: A Greedy Algorithm</h5>
+<ul>
+<li>CSBS works by eliminating 1 candidate measurement location at a time</li>
+<li>the measurement location which contributes the least to image quality is selected for elimination<ul>
+<li>multiple cost metrics, e.g. SSE cost</li>
+</ul>
+</li>
+</ul>
+<h5 id="slide-6-sse-cost">Slide 6 - SSE Cost</h5>
+<ul>
+<li>not sure whether to include this</li>
+</ul>
+<h5 id="slide-7-numerical-results">Slide 7 - Numerical Results</h5>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>

@@ -8,6 +8,7 @@
   <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js" defer></script> 
 
 
 
@@ -62,22 +63,27 @@
 <p>This paper presents 3 subpixel registration methods all based on phase-correlation.  The second of these methods seems to be widely cited because of it's simplicity.</p>
 <h4 id="method-1-conjugate-descent">Method 1 - Conjugate Descent</h4>
 <p>The first method presented is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image <script type="math/tex">f</script> and a copy <script type="math/tex">g</script> shifted by <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
-<p><code>math
-NMSRE^2 = \min_{x_0, y_0}\frac{\sum_{x,y} |g(x - x_0, y - y_0) - f(x, y)|^2}{\sum_{x,y}|f(x, y)|^2}</code></p>
+<div class="codehilite"><pre><span></span>NMSRE^2 = \min_{x_0, y_0}\frac{\sum_{x,y} |g(x - x_0, y - y_0) - f(x, y)|^2}{\sum_{x,y}|f(x, y)|^2}
+</pre></div>
+
+
 <p>By minimizing the NMSRE over <script type="math/tex">(x_0, y_0)</script>, the true offset of <script type="math/tex">g</script> can be found.  This is not mentioned in the paper, but this error formulation implicitly assumes a circular image shift.</p>
 <p>Rewriting the above definition into a maximization problem, we can achieve a more useful formulation</p>
-<p>```math
-NMSRE^2 = 1 - \frac{\max_{x_0, y_0} |r(x_0, y_0)|^2}{\sum_{x, y}|f(x, y)|^2 \sum_{x, y}|g(x, y)|^2} \</p>
-<p>
-<script type="math/tex; mode=display">\begin{aligned}
-r(x_0, y_0) &= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
-&= \sum_{u, v} F(u, v)G^*(u, v) \text{exp}\left[ j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right]
-\end{aligned}</script>
-```</p>
+<div class="codehilite"><pre><span></span>NMSRE^2 = 1 - \frac{\max_{x_0, y_0} |r(x_0, y_0)|^2}{\sum_{x, y}|f(x, y)|^2 \sum_{x, y}|g(x, y)|^2} \\
+
+\begin{aligned}
+r(x_0, y_0) &amp;= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
+&amp;= \sum_{u, v} F(u, v)G^*(u, v) \text{exp}\left[ j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right]
+\end{aligned}
+</pre></div>
+
+
 <p>where <script type="math/tex">r</script> is cross correlation and <script type="math/tex">F</script> and <script type="math/tex">G</script> are the image DFTs of size <script type="math/tex">M \times N</script>.</p>
 <p>Since all other terms are constant, we need only minimize <script type="math/tex">|r(x_0, y_0)|^2</script>.</p>
-<p><code>math
-\frac{d(r(x_0, y_0))}{dx_0} = 2 \text{Im} \left(r(x_0, y_0) \sum_{u, v} \frac{2 \pi u}{M} F^*(u, v) \times G(u, v) \text{exp} \left[-j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right] \right)</code></p>
+<div class="codehilite"><pre><span></span>\frac{d(r(x_0, y_0))}{dx_0} = 2 \text{Im} \left(r(x_0, y_0) \sum_{u, v} \frac{2 \pi u}{M} F^*(u, v) \times G(u, v) \text{exp} \left[-j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right] \right)
+</pre></div>
+
+
 <p>With this partial derivative (and a similar for <script type="math/tex">y_0</script>) we can use standard conjugate descent to solve for <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
 <h4 id="method-2-single-step-idft">Method 2 - Single Step IDFT</h4>
 <p>This method is a simple grid-search algorithm which takes advantage of the fact that zero-padding before DFT or IDFT samples the function more finely in the transform domain.</p>
@@ -103,9 +109,11 @@ r(x_0, y_0) &= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
 <p>The fundamental assumption of this paper is that a subpixel shift of an image is actually an integer shift of a higher resolution image that has been subsequently downsampled.</p>
 <p>The paper then goes on to show that while phase-correlating the high resolution images results in a dirac delta corresponding to the image offset (a well known result), phase-correlation of the downsampled images yields a sinc function centered at the image offset.</p>
 <p>i.e.</p>
-<p><code>math
-\text{PC}_{HR}(x) = \text{IDFT}(\text{CPSD}_{HR}) = \delta(x - x_0) \\
-\text{PC}_{LR}(x) = \text{IDFT}(\text{CPSD}_{LR}) = \frac{\sin(\pi(Mx + x_0))}{\pi(Mx + x_0)}</code></p>
+<div class="codehilite"><pre><span></span>\text{PC}_{HR}(x) = \text{IDFT}(\text{CPSD}_{HR}) = \delta(x - x_0) \\
+\text{PC}_{LR}(x) = \text{IDFT}(\text{CPSD}_{LR}) = \frac{\sin(\pi(Mx + x_0))}{\pi(Mx + x_0)}
+</pre></div>
+
+
 <p>where <script type="math/tex">PC_{HR}</script> and <script type="math/tex">PC_{LR}</script> are the high-resolution and downsampled phase-correlation results, respectively.  This is illustrated below.</p>
 <p>
 <figure><img src="extension_overview_1.png" /><figcaption>Original/shifted 1D Images and the phase correlation result. High resolution grid.</figcaption>
@@ -115,8 +123,10 @@ r(x_0, y_0) &= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
 </p>
 <h4 id="solving-for-the-subpixel-offset">Solving for the subpixel offset</h4>
 <p>We can analytically solve for the subpixel offset by choosing two points <script type="math/tex">c_0</script> and <script type="math/tex">c_1</script> from the phase-correlation result and applying the <script type="math/tex">PC_{LR}</script> equation.</p>
-<p><code>math
-\frac{\sin(\pi x_0)}{\pi x_0} = c_0 \text{ and } \frac{\sin(\pi (M + x_0))}{\pi (M + x_0) = c_1} \Rightarrow \frac{x_0}{M} = \frac{c_1}{c_0 - c_1}</code></p>
+<div class="codehilite"><pre><span></span>\frac{\sin(\pi x_0)}{\pi x_0} = c_0 \text{ and } \frac{\sin(\pi (M + x_0))}{\pi (M + x_0) = c_1} \Rightarrow \frac{x_0}{M} = \frac{c_1}{c_0 - c_1}
+</pre></div>
+
+
 <p>A good choice for <script type="math/tex">c_0</script> and <script type="math/tex">c_1</script> are the highest energy points of the phase-correlation result, shown below.</p>
 <p><img alt="" src="extension_overview_3.png" /></p>
 <h4 id="conclusion_1">Conclusion</h4>
@@ -127,17 +137,21 @@ r(x_0, y_0) &= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
 <p>There are a number of variations of Prony's method, but I chose the one presented in ECE551.  i.e. find an annihilating filter and compute its roots.</p>
 <h4 id="overview">Overview</h4>
 <p>Prony's method is capable of recovering a signal of the form</p>
-<p><code>math
-x(t) = \sum_{k=0}^{K-1} e^{j 2 \pi \omega_k t}</code></p>
+<div class="codehilite"><pre><span></span>x(t) = \sum_{k=0}^{K-1} e^{j 2 \pi \omega_k t}
+</pre></div>
+
+
 <p>exactly given a finite number of samples.</p>
 <p>By solving the following system for the FIR filter <script type="math/tex">h</script>
 </p>
-<p><code>math
-\begin{bmatrix}
+<div class="codehilite"><pre><span></span>\begin{bmatrix}
 x[0] &amp; \dots &amp; x[K] \\ &amp; \vdots &amp; \\ x[N - K - 1] &amp; \dots &amp; x[N - 1]
 \end{bmatrix}
 \begin{bmatrix}h[K] \\ \vdots \\ h[0] \end{bmatrix} =
-\begin{bmatrix} 0 \\ \vdots \\ 0 \end{bmatrix}</code></p>
+\begin{bmatrix} 0 \\ \vdots \\ 0 \end{bmatrix}
+</pre></div>
+
+
 <p>then solving for the roots of the polynomial formed by <script type="math/tex">h</script>, we can find the exact <script type="math/tex">\omega_k</script>s that form <script type="math/tex">x</script>.</p>
 <h4 id="preliminary-tests">Preliminary Tests</h4>
 <p>Below are some simple tests of using Prony's method to recover offset of two 1D signals from phase-correlation.  The conclusion is that Prony's method fails to recovery the offset in the presence of large noise or when the circular-shift assumption is dropped.  I hope to address these issues this week.</p>
@@ -175,6 +189,5 @@ x[0] &amp; \dots &amp; x[K] \\ &amp; \vdots &amp; \\ x[N - K - 1] &amp; \dots &a
 <footer>
     <p>SINE UIUC</p>
 </footer>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js"></script> 
 </body>
 </html>
