@@ -56,15 +56,17 @@ Ulas and I drafted an outline for what a conference presentation on CSBS might l
 
 -
 
-![](diffraction_ps_rgb.png)
-![](apertureFunction_zone_plate.png)
+![diffractive lens working principle](diffraction_ps_rgb.png)
+![2D diffractive lens - zone plate](apertureFunction_zone_plate.png)
 
 - diffractive lenses use diffraction to focus light
 - they have wavelength dependent focal length
 
 ##### Slide 3 - Choice of Measurement Locations
 
-- where should measurements be taken
+![candidate CCD locations](candidate_locations.png)
+
+- where should measurements be taken to maximize resolution?
 - is it always best to take measurements at the focal planes?
 
 ##### Slide 4 - Extremely High Dimensional Search Space
