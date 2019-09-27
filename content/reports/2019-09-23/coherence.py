@@ -33,7 +33,7 @@ energy_separated = np.sum(
 separability_separated = np.linalg.norm(
     prod_separated[:, 0, 0] * prod_separated[:, 1, 1] - prod_separated[:, 0, 1] * prod_separated[:, 1, 0],
     axis=(1, 2)
-).reshape((32, 32)) / energy
+).reshape((32, 32)) / energy_separated
 product_separated = energy_separated * separability_separated
 
 prod_close = np.array(list(product(psfs_close.psfs, psfs_close.psfs)))
@@ -44,7 +44,7 @@ energy_close = np.sum(
 separability_close = np.linalg.norm(
     prod_close[:, 0, 0] * prod_close[:, 1, 1] - prod_close[:, 0, 1] * prod_close[:, 1, 0],
     axis=(1, 2)
-).reshape((32, 32)) / energy
+).reshape((32, 32)) / energy_close
 product_close = energy_close * separability_close
 
 plt.figure()
