@@ -260,7 +260,7 @@ The number of unique messages that can be encoded given a message length of $n$ 
 He therefore settled on the following measure of information:
 
 $$
-H = n \log s = \log s^n
+H = \log s^n = n \log s
 $$
 
 From the first formulation, it is apparent that information grows linearly with $n$.  Another interesting feature of this measure is that if there is only one symbol, we know exactly what the message will be and so it contains no information $(H = n \log 1 = 0)$.  This suggests that entropy can also be viewed as a measure of uncertainty.
@@ -358,10 +358,10 @@ Area based methods are preferred when images have salient details and informatio
 
 Feature based methods are generally utilized when shapes in structures in the image pair contain more alignment information than the pixel intensities, such as between a picture of an object and a computer model of an object.  The drawback of these methods is that such features can be hard to detect and match with each other.  It is critical that chosen feature detector be robust against any differences between the images.
 
-| Method | Application |   |
-|--------|-------------|---|
-| foo    |             |   |
-|        |             |   |
+| Method | Application | Noise |
+|--------|-------------|-------|
+| foo    |             |       |
+|        |             |       |
 
 
 # References
