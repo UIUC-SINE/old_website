@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Analyzing SSE Cost</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js" defer></script> 
+
+
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Analyzing SSE Cost</h1>
+      <time datetime="2019-09-23">2019-09-23</time> - Evan Widloski
+    </header>
+    <div class="toc">
+<ul>
+<li><a href="#writing-sse-cost-in-terms-of-psf-dfts">Writing SSE cost in terms of PSF DFTs</a></li>
+<li><a href="#measuring-separability">Measuring separability</a></li>
+<li><a href="#summary">Summary</a></li>
+</ul>
+</div>
+<p>In previous reports (<a href="http://uiuc-sine.github.io/reports/2019-07-29/index.html#Revisiting%20CSBS">1</a>, <a href="http://uiuc-sine.github.io/reports/2019-08-19/index.html">2</a>), we showed that there are situations in which CSBS outperforms the naive case and demonstrated numerically that for a particular noise setting the performance boost can be predicted from a single problem parameter, source separation (in DOF).  In particular, we demonstrated that when two sources are sufficiently close, CSBS tends to choose measurement locations that are outside the two focal planes, rather than between them or at the focal planes themselves.</p>
+<p>In a meeting, it was suggested that we try to explain why</p>
+<p>
+<script type="math/tex; mode=display">
+\text{sse cost} = \frac{1}{\text{sse gain}} = \frac{
+|\Lambda_{11}|^2 + |\Lambda_{22}|^2 + |\Lambda_{12}|^2 + |\Lambda_{21}|^2
+}{|\Lambda_{11} \Lambda_{22} - \Lambda_{12} \Lambda_{21}|}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\sqrt{\text{sse gain}} =
+\underbrace{
+\sqrt{|\Lambda_{11}|^2 + |\Lambda_{22}|^2 + |\Lambda_{12}|^2 + |\Lambda_{21}|^2}
+}_{\text{total collected energy}} \cdot
+\underbrace{
+\frac{|\Lambda_{11} \Lambda_{22} - \Lambda_{12} \Lambda_{21}|}{|\Lambda_{11}|^2 + |\Lambda_{22}|^2 + |\Lambda_{12}|^2 + |\Lambda_{21}|^2}
+}_{\text{separability}}
+</script>
+</p>
+<h1 id="writing-sse-cost-in-terms-of-psf-dfts">Writing SSE cost in terms of PSF DFTs</h1>
+<p>This is an old result, but I am including it for posterity.  It describes how to go from the initial formulation of SSE cost to a close form which is in terms of the PSF DFTs for a two-source/two-measurement scenario.</p>
+<p>In Sharif's paper, sse cost is given as <script type="math/tex">\text{tr} (\Sigma_e) = \text{tr} ((A^TA + \lambda L^T L)^{-1})</script>
+</p>
+<p>For simplicity, we will assume that there are two sources, two measurement locations, and that <script type="math/tex">\lambda = 0</script>.</p>
+<p>If we also assume that the measurement process is a circular convolution, we can write</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+A^TA &= F^{-1} \Lambda^T \Lambda F = 
+F^{-1} 
+\begin{bmatrix}
+  \Lambda_{11} & \Lambda_{21} \\
+  \Lambda_{12} & \Lambda_{22}
+\end{bmatrix} 
+\begin{bmatrix}
+  \Lambda_{11} & \Lambda_{12} \\
+  \Lambda_{21} & \Lambda_{22}
+\end{bmatrix} 
+F \\
+&= F^{-1} 
+\begin{bmatrix}
+\Lambda_{11}^2 + \Lambda_{21}^2 & \Lambda_{11} \Lambda_{12} + \Lambda_{21} \Lambda_{22} \\
+\Lambda_{11} \Lambda_{12} + \Lambda_{21} \Lambda_{22} & \Lambda_{12}^2 + \Lambda_{22}^2
+\end{bmatrix}
+F
+\end{aligned} \\
+</script>
+</p>
+<p>where <script type="math/tex">F</script> is a 2D DFT matrix and <script type="math/tex">\Lambda_{ij}</script> are the PSF DFTs.</p>
+<p>In order to compute <script type="math/tex">\text{tr}(\Sigma_e) = \text{tr}((A^TA)^{-1})</script>, we will use some placeholder variables.
+Define <script type="math/tex">\Gamma_{11}, \Gamma_{12}, \Gamma_{21}, \Gamma_{22}</script> such that</p>
+<p>
+<script type="math/tex; mode=display">
+A^TA = F^{-1}
+</script>
+</p>
+<p>Finally, we end up with the cost</p>
+<p>
+<script type="math/tex; mode=display">
+\text{tr}(\Sigma_e) = \frac{\Lambda_{11}^2 + \Lambda_{12}^2 + \Lambda_{21}^2 + \Lambda_{22}^2}{(\Lambda_{11} \Lambda_{22} - \Lambda_{12} \Lambda_{21})}
+</script>
+</p>
+<h1 id="measuring-separability">Measuring separability</h1>
+<p>two examples which are considered inseparable (for small values of <script type="math/tex">\epsilon</script>)</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+\Lambda_1 & \Lambda_2 \\
+(1 + \epsilon) \Lambda_1 & (1 + \epsilon) \Lambda_2
+\end{bmatrix}
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+\Lambda_1 & (1 + \epsilon) \Lambda_1 \\
+\Lambda_2 & (1 + \epsilon) \Lambda_2
+\end{bmatrix}
+</script>
+</p>
+<p>desirable properties of this measure</p>
+<ul>
+<li>invariant to matrix scaling - why?</li>
+</ul>
+<h1 id="summary">Summary</h1>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>
