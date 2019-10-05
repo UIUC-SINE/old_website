@@ -22,34 +22,128 @@
     </header>
     <div class="toc">
 <ul>
-<li><a href="#writing-sse-cost-in-terms-of-psf-dfts">Writing SSE cost in terms of PSF DFTs</a></li>
-<li><a href="#measuring-separability">Measuring separability</a></li>
+<li><a href="#notation">Notation</a></li>
+<li><a href="#measuring-separability">Measuring separability</a><ul>
+<li><a href="#coherence">Coherence</a></li>
+<li><a href="#determinant">Determinant</a></li>
+<li><a href="#factoring-sse-cost">Factoring SSE cost</a></li>
+</ul>
+</li>
 <li><a href="#summary">Summary</a></li>
+<li><a href="#appendix-writing-sse-cost-in-terms-of-psf-dfts">Appendix: Writing SSE cost in terms of PSF DFTs</a></li>
 </ul>
 </div>
-<p>In previous reports (<a href="http://uiuc-sine.github.io/reports/2019-07-29/index.html#Revisiting%20CSBS">1</a>, <a href="http://uiuc-sine.github.io/reports/2019-08-19/index.html">2</a>), we showed that there are situations in which CSBS outperforms the naive case and demonstrated numerically that for a particular noise setting the performance boost can be predicted from a single problem parameter, source separation (in DOF).  In particular, we demonstrated that when two sources are sufficiently close, CSBS tends to choose measurement locations that are outside the two focal planes, rather than between them or at the focal planes themselves.</p>
-<p>In a meeting, it was suggested that we try to explain why</p>
+<p>In previous reports (<a href="http://uiuc-sine.github.io/reports/2019-07-29/index.html#Revisiting%20CSBS">1</a>, <a href="http://uiuc-sine.github.io/reports/2019-08-19/index.html">2</a>), we showed that there are situations in which CSBS outperforms the naive case and demonstrated numerically that for a particular noise setting the performance boost can be predicted from a single problem parameter (source separation in DOF).  In particular, we demonstrated that when two sources are sufficiently close, CSBS tends to choose measurement locations that are outside the two focal planes, rather than between them or at the focal planes themselves.</p>
+<p>For a while now, we've said that there seems to be a tradeoff between total energy collected and the ability to distinguish which source a particular feature belongs to.  We predicted that the SSE cost in CSBS was somehow balancing between <em>energy capture</em> and some notion of measurement <em>separability</em>.</p>
+<p>In the next section, I define 4 properties that an ideal separability metric should have and describe some candidates for this metric that were considered, but failed to meet the  4 criterion.  Finally, I look at the SSE cost directly and factor out a term which has all 4 properties.</p>
+<h1 id="notation">Notation</h1>
+<p>I use the following notation in this document:</p>
+<p>
+<script type="math/tex">A_{ij}</script> are toeplitz matrices containing the PSFs and <script type="math/tex">A</script> is the full measurement matrix containing toeplitz blocks.</p>
+<p>
+<script type="math/tex">\Lambda_{ij}</script> are diagonal matrices whose diagonals contain the PSF DFTs and <script type="math/tex">\Lambda</script> is the full block matrix.</p>
+<h1 id="measuring-separability">Measuring separability</h1>
+<p>We established 4 properties that a separability metric should have.  They are listed below along with a rationale.</p>
+<ol>
+<li>
+<p>Matrices with row-rank less than number of sources have separability of 0 (inseparable).</p>
+<ul>
+<li>Rationale: Sources cannot be distinguished when number of independent rows is less than the number of sources, so these matrices should have separability 0.</li>
+</ul>
+</li>
+<li>
+<p>Invariant to matrix scaling</p>
+<ul>
+<li>Rationale: A scaling of all elements in <script type="math/tex">\Lambda</script> corresponds to the PSFs capturing more energy.  The energy capture term should take this into account, not separability.</li>
+</ul>
+</li>
+<li>
+<p>Works for non-square <script type="math/tex">\Lambda</script>
+</p>
+<ul>
+<li>Rationale: For our particular application, <script type="math/tex">\Lambda</script> is usually over-determined, so our separability metric should be able to measure it.</li>
+</ul>
+</li>
+<li>
+<p>Duplicating rows of a separable <script type="math/tex">\Lambda</script> does not cause inseparability.</p>
+<ul>
+<li>Rationale:  If we start with a measurement configuration which can differentiate between the sources, simply repeating a measurement (i.e. duplicating a row) should not reduce the abiliity to differentiate.</li>
+</ul>
+</li>
+</ol>
+<h4 id="coherence">Coherence</h4>
+<p>In a meeting, it was suggested that we try to explain why CSBS behaves this way and I posited that it was due to measurement diversity and that coherence might be a way to measure this.</p>
+<p>Mutual incoherence of a matrix <script type="math/tex">\Lambda</script> with columns <script type="math/tex">a_1, ..., a_m</script> is defined as</p>
 <p>
 <script type="math/tex; mode=display">
-\text{sse cost} = \frac{1}{\text{sse gain}} = \frac{
+\text{incoherence}(\Lambda) = \frac{1}{\max_{1 \leq i \neq j \leq m} \left| a_i^Ha_j \right|}
+</script>
+</p>
+<p>As a curiosity, I plotted coherence for each candidate measurement plane for a system with small source separation in wavelength.</p>
+<p>
+<figure style="width:450px"><img src="coherence.png" /><figcaption>Coherence plot for a two-source/two-measurement scenario with small source separation.  PSF pairs with poor measurement diversity should have high coherence.  Source wavelengths are marked in red.</figcaption></figure>
+</p>
+<p>While this indicates that coherence drops towards the outside of the focal planes (where CSBS is currently choosing measurements), it fails the first two properties.</p>
+<h4 id="determinant">Determinant</h4>
+<p>Another potential metric we considered early on was <script type="math/tex">\text{det}(\Lambda)</script>.</p>
+<p>However, it was quickly discarded as it clearly violates condition 3, since determinant is only defined for square matrices.</p>
+<p>A well known property of determinants is that scaling a row or column of the matrix also scales the determinant.  Clearly scaling the matrix itself will affect the determinant, so this metric also fails condition 2.</p>
+<h4 id="factoring-sse-cost">Factoring SSE cost</h4>
+<p>Since the above two metrics failed to have the desired properties, we turned to looking at the SSE cost itself to see if we could split it apart in a meaningful way.</p>
+<p>From earlier work, we have the SSE cost for a two-measurement/two-source system in terms of the PSF DFTs.</p>
+<p>
+<script type="math/tex; mode=display">
+\text{SSE cost} = \frac{
 |\Lambda_{11}|^2 + |\Lambda_{22}|^2 + |\Lambda_{12}|^2 + |\Lambda_{21}|^2
-}{|\Lambda_{11} \Lambda_{22} - \Lambda_{12} \Lambda_{21}|}
+}{
+|\Lambda_{11} \Lambda_{22} - \Lambda_{12} \Lambda_{21}|
+}
+</script>
+</p>
+<p>Since separability is something that we want to maximize, we rewrote SSE cost as SSE gain instead.</p>
+<p>
+<script type="math/tex; mode=display">
+\text{SSE gain} = \frac{1}{\text{SSE cost}} = \frac{
+|\Lambda_{11} \Lambda_{22} - \Lambda_{12} \Lambda_{21}|
+}{
+|\Lambda_{11}|^2 + |\Lambda_{22}|^2 + |\Lambda_{12}|^2 + |\Lambda_{21}|^2
+}
 </script>
 </p>
 <p>
 <script type="math/tex; mode=display">
-\sqrt{\text{sse gain}} =
+\text{SSE gain} =
 \underbrace{
-\sqrt{|\Lambda_{11}|^2 + |\Lambda_{22}|^2 + |\Lambda_{12}|^2 + |\Lambda_{21}|^2}
-}_{\text{total collected energy}} \cdot
+|\Lambda_{11}|^2 + |\Lambda_{22}|^2 + |\Lambda_{12}|^2 + |\Lambda_{21}|^2
+}_{\text{collected energy}} \cdot
 \underbrace{
 \frac{|\Lambda_{11} \Lambda_{22} - \Lambda_{12} \Lambda_{21}|}{|\Lambda_{11}|^2 + |\Lambda_{22}|^2 + |\Lambda_{12}|^2 + |\Lambda_{21}|^2}
 }_{\text{separability}}
 </script>
 </p>
-<h1 id="writing-sse-cost-in-terms-of-psf-dfts">Writing SSE cost in terms of PSF DFTs</h1>
-<p>This is an old result, but I am including it for posterity.  It describes how to go from the initial formulation of SSE cost to a close form which is in terms of the PSF DFTs for a two-source/two-measurement scenario.</p>
-<p>In Sharif's paper, sse cost is given as <script type="math/tex">\text{tr} (\Sigma_e) = \text{tr} ((A^TA + \lambda L^T L)^{-1})</script>
+<p>At first glance, it appears the numerator of the separability term is really <script type="math/tex">\text{det}(\Lambda)^2</script>.  However, since we already know that determinant isn't a good separability metric, I hypothesize that the numerator is actually <script type="math/tex">\text{det}(\Lambda^T \Lambda)</script>.  This means that the SSE gain should have two terms of the form</p>
+<p>
+<script type="math/tex; mode=display">
+\text{SSE gain} = 
+\underbrace{
+\left( \sum_{i,j} \Lambda_{ij}^2 \right)
+}_{\text{collected energy}} \cdot
+\underbrace{
+\frac{\text{det}(\Lambda^T \Lambda)}{\left( \sum_{i,j} \Lambda_{ij}^2 \right)^2}
+}_{\text{separability}}
+</script>
+</p>
+<p>Further work is needed to show rigorously that this holds for more than two sources.</p>
+<h1 id="summary">Summary</h1>
+<ul>
+<li>We hypothesize that SSE cost has a <em>collected energy</em> term and a <em>separability</em> term which work together to penalize poor measurement configurations.</li>
+<li>I defined 4 properties that I would like such a separability metric to have.</li>
+<li>I show that two previously considered metrics for separability, mutual coherence and determinant, fail these 4 conditions.</li>
+<li>By factoring the <em>collected energy</em> term (which is well defined) out of SSE cost, we end up with a new term which we call <em>separability</em>.  I show that this metric satisfies the 4 desired properties of a separability metric.</li>
+</ul>
+<h1 id="appendix-writing-sse-cost-in-terms-of-psf-dfts">Appendix: Writing SSE cost in terms of PSF DFTs</h1>
+<p>This is an old result, but I am including it for completeness.  It describes how to go from the initial formulation of SSE cost in the Sharif paper to a closed form which is in terms of the PSF DFTs for a two-source/two-measurement scenario.</p>
+<p>In Sharif's paper, SSE cost is given as <script type="math/tex">\text{tr} (\Sigma_e) = \text{tr} ((A^TA + \lambda L^T L)^{-1})</script>
 </p>
 <p>For simplicity, we will assume that there are two sources, two measurement locations, and that <script type="math/tex">\lambda = 0</script>.</p>
 <p>If we also assume that the measurement process is a circular convolution, we can write</p>
@@ -90,29 +184,16 @@ A^TA = F^{-1}
 \text{tr}(\Sigma_e) = \frac{\Lambda_{11}^2 + \Lambda_{12}^2 + \Lambda_{21}^2 + \Lambda_{22}^2}{(\Lambda_{11} \Lambda_{22} - \Lambda_{12} \Lambda_{21})}
 </script>
 </p>
-<h1 id="measuring-separability">Measuring separability</h1>
-<p>two examples which are considered inseparable (for small values of <script type="math/tex">\epsilon</script>)</p>
-<p>
-<script type="math/tex; mode=display">
-\begin{bmatrix}
-\Lambda_1 & \Lambda_2 \\
-(1 + \epsilon) \Lambda_1 & (1 + \epsilon) \Lambda_2
-\end{bmatrix}
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
-\begin{bmatrix}
-\Lambda_1 & (1 + \epsilon) \Lambda_1 \\
-\Lambda_2 & (1 + \epsilon) \Lambda_2
-\end{bmatrix}
-</script>
-</p>
-<p>desirable properties of this measure</p>
-<ul>
-<li>invariant to matrix scaling - why?</li>
-</ul>
-<h1 id="summary">Summary</h1>
+<!-- <script type="math/tex; mode=display"> -->
+  <!-- A = \begin{bmatrix} -->
+  <!-- \Lambda_1 & \Lambda_2 \\ -->
+  <!-- c \Lambda_1 & c \Lambda_2 -->
+  <!-- \end{bmatrix} \\\, \\ -->
+  <!-- B = \begin{bmatrix} -->
+  <!-- \Lambda_1 & c \Lambda_1 \\ -->
+  <!-- \Lambda_2 & c \Lambda_2 -->
+  <!-- \end{bmatrix} -->
+  <!-- </script> -->
   </article>
 </main>
 <footer>

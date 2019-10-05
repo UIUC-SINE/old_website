@@ -9,6 +9,7 @@ from mas.measure import compare_ssim
 from mas import sse_cost
 from mas.csbs import csbs
 from itertools import product
+from mas.decorators import _vectorize
 
 # %% psfs
 
