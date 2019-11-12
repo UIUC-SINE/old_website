@@ -4,10 +4,15 @@
 <h1>MAS - Milliarcsecond Imaging with Photon Sieves</h1>
 
 <img style="margin: auto;display:block; width:200px; border-radius:30px" src="https://avatars3.githubusercontent.com/u/37169265?s=400&u=149ecf6e23b2052f00d8eb3cf1bb28de314323b9&v=4">
+
 <h2>Reports</h2>
-{% for report in path('reports/**/*.md')|sort(attribute='date', reverse=true) %}
+{% for report in path('reports/**/*.md')|selectattr('date')|sort(attribute='date', reverse=true) %}
 <p><a href="{{ report.path }}"><code>{{ report.title }}</code></a> {% if report.description %}-{% endif %} {{ report.description }} {% if report.date %}<time datetime="{{ report.date }}"> - ({{ report.date }})</date>{% endif %}</p>
 {% endfor %}
+{% for report in path('reports/**/*.md')|rejectattr('date') %}
+<p><a href="{{ report.path }}"><code>{{ report.title }}</code></a> {% if report.description %}-{% endif %} {{ report.description }} {% if report.date %}<time datetime="{{ report.date }}"> - ({{ report.date }})</date>{% endif %}</p>
+{% endfor %}
+
 <h2>Thesis</h2>
 {% for report in path('thesis/**/*.md')|sort(attribute='date', reverse=true) %}
 <p><a href="{{ report.path }}"><code>{{ report.title }}</code></a> {% if report.description %}-{% endif %} {{ report.description }} {% if report.date %}<time datetime="{{ report.date }}"> - ({{ report.date }})</date>{% endif %}</p>
