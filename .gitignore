@@ -3,3 +3,8 @@ output
 srv.pid
 pelican.pid
 *.pyc
+*.aux
+*.pdf
+*.bbl
+*.blg
+*.log

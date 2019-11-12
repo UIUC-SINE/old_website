@@ -12,6 +12,8 @@ from mas.misc import experiment
 import numpy as np
 import pandas as pd
 
+# evaluate CSBS reconstruction improvement for many sieve diameters and many separations
+
 sources = strands[:2]
 
 def get_psfs(*, separation, diameter):
@@ -37,7 +39,6 @@ def get_psfs(*, separation, diameter):
     return psfs_focus, psfs_csbs
 
 # %% measure
-
 
 result = pd.DataFrame()
 for diameter in np.logspace(-2, -1, 20):
