@@ -12,6 +12,7 @@ from mas.psf_generator import PSFs, PhotonSieve, circ_incoherent_psf
 from mas.forward_model import get_measurements, add_noise, size_equalizer, rectangle_adder
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
+from skimage.feature import register_translation
 
 # %% scene
 resolution_ratio = 5 # resolution_ratio = ccd_pixel_size / simulated_scene_pixel_size
@@ -29,12 +30,12 @@ frame_rate = 4 # in Hz
 num_frames = int(total_exp_time*frame_rate)
 
 # drift parameters
-drift_angle = -40 * (2*np.pi/360) # in radians
-drift_velocity = 0.1e-3 # in meter/second
+drift_angle = 10 * (2*np.pi/360) # in radians
+drift_velocity = 0.2e-3 # in meter/second
 # drift_velocity = 0 # in meter/second
 
 # signal & noise parameters
-max_count_rate = 40 # count/second/pixel
+max_count_rate = 20 # count/second/pixel
 read_noise = 10 # std deviation for count/read/pixel
 dark_current = 8 # in count/second/pixel
 background_noise = 2 # in count/second/pixel
@@ -103,11 +104,12 @@ if nonoise is False:
     )
     frames = np.random.normal(loc=frames, scale=read_noise)
 
-
 # %% plot
 pixel_arcsec = 72e-3
-fig, ax = plt.subplots(1,2, figsize=(10,6))
+fig, ax = plt.subplots(1,2, figsize=(10.1,4.6))
 ax[0].imshow(scene, cmap='gist_heat')
+# ax[0].set_xticklabels([np.round(i*pixel_arcsec/resolution_ratio, decimals=1) for i in ax[0].get_xticks()])
+# ax[0].set_yticklabels([np.round(i*pixel_arcsec/resolution_ratio, decimals=1) for i in ax[0].get_yticks()])
 aa, bb = ccd_size[0] * resolution_ratio, ccd_size[1] * resolution_ratio
 topleft = [list(topleft_coords[0]), list(topleft_coords[-1])]
 topright = copy.deepcopy(topleft); topright[0][1] += bb; topright[1][1] += bb
@@ -126,10 +128,48 @@ else:
     ax[0].plot([topleft[0][1], topright[0][1]], [topleft[0][0], topright[0][0]], 'b--', lw=2)
     ax[0].plot([botleft[1][1], botright[1][1]], [botleft[1][0], botright[1][0]], 'b--', lw=2)
 for i in range(len(frames)):
-    ax[1].imshow(frames[i], cmap='gist_heat', extent=[0,pixel_arcsec*ccd_size[1],0,pixel_arcsec*ccd_size[1]], origin='lower')
+    ax[1].imshow(frames[i], cmap='gist_heat')
+    # ax[1].set_xticklabels([np.round(i*pixel_arcsec, decimals=1) for i in ax[1].get_xticks()])
+    # ax[1].set_yticklabels([np.round(i*pixel_arcsec, decimals=1) for i in ax[1].get_yticks()])
     patch = Rectangle((topleft_coords[i][1],topleft_coords[i][0]),aa,bb,color='blue',alpha=0.4)
     ax[0].add_patch(patch)
     plt.pause(0.05)
     patch.remove()
     if i is not len(frames) - 1:
         plt.cla()
+
+
+# %% registration --------------------------------------------------------------
+true_pixel_drift = drift_velocity / frame_rate * np.array([
+    np.cos(drift_angle),
+    np.sin(drift_angle)
+]) / pixel_size # true drift from one to the next frame. notation: (x,y)
+
+# form the array that will hold all the estimated pairwise shifts between the frames
+est_pixel_drift = np.zeros((int(num_frames * (num_frames-1) / 2), 2)) # notation: (rows,cols) (-y,x)
+counter = 0
+for i in range(num_frames-1):
+    for j in np.arange(i+1, num_frames):
+        est_pixel_drift[counter], _, _ = register_translation(frames[i], frames[j])
+        est_pixel_drift[counter] = est_pixel_drift[counter] / (j-i)
+        counter += 1
+
+est_pixel_drift_refined = copy.deepcopy(est_pixel_drift)
+plt.figure()
+plt.scatter(est_pixel_drift_refined[:,1], -est_pixel_drift_refined[:,0], s=3) # notation: plt.scatter(x,y)
+for i in range(10):
+    est_pixel_drift_refined = est_pixel_drift_refined[np.linalg.norm(
+        est_pixel_drift_refined - np.mean(est_pixel_drift_refined, axis=0),
+        axis=1
+    ) < 40 * 2**(-i)
+    ]
+    plt.scatter(est_pixel_drift_refined[:,1], -est_pixel_drift_refined[:,0], s=3)
+    print(np.mean(est_pixel_drift_refined, axis=0))
+
+registered = np.zeros_like(frames[0])
+for i in range(num_frames):
+    registered += np.fft.ifft2(fourier_shift(np.fft.fft2(frames[i]), i*np.mean(est_pixel_drift_refined, axis=0))).real
+
+plt.figure()
+plt.imshow(registered, cmap='gist_heat')
+plt.title('Registered Image')
