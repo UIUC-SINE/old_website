@@ -20,99 +20,101 @@ from mas.deconvolution import tikhonov, admm
 from mas.deconvolution.admm import bm3d_pnp
 from functools import partial
 
-
-# %% scene
-ccd_size = [750,750] # number of (rows,columns) in the photodetector array
-resolution_ratio = 2 # resolution_ratio = ccd_pixel_size / simulated_scene_pixel_size
-fov_ratio = 2 # fov_ratio = simulated_imge_fov / ccd_fov
-scene = strands(num_strands=int(100*fov_ratio*ccd_size[0]/160), thickness=22*resolution_ratio, min_angle=-20, max_angle=20,
-            image_width=ccd_size[0]*resolution_ratio*fov_ratio, initial_width=int(ccd_size[0]*512/160)*resolution_ratio*fov_ratio)
-
-plt.imshow(scene, cmap='gist_heat')
-plt.show()
-
-# %% params
-# exposure parameters
-total_exp_time = 10 # in seconds
-frame_rate = 8 # in Hz
-num_frames = int(total_exp_time*frame_rate)
-
-# drift parameters
-drift_angle = 10 * (2*np.pi/360) # in radians
-drift_velocity = 0.3e-3 # in meter/second
-# drift_velocity = 0 # in meter/second
-
-# signal & noise parameters
-max_count_rate = 20 # count/second/pixel
-read_noise = 10 # std deviation for count/read/pixel
-dark_current = 8 # in count/second/pixel
-background_noise = 2 # in count/second/pixel
-nonoise = False # test parameter to simulate noise-free frames
-
-# ccd parameters
-pixel_size = 14e-6 # in meters
-
-# sieve parameters
-diameter = 75e-3 # in meters
-smallest_hole_diameter = 17e-6 # in meters
-wavelengths = np.array([30.4e-9])
-
 # %% forward
-ps = PhotonSieve(diameter=diameter, smallest_hole_diameter=smallest_hole_diameter)
 
-# generate psfs
-psfs = PSFs(
-    ps,
-    sampling_interval=pixel_size/resolution_ratio,
-    measurement_wavelengths=wavelengths,
-    source_wavelengths=wavelengths,
-    psf_generator=circ_incoherent_psf,
-    cropped_width=101,
-    num_copies=1
+exp_time=10 # s
+drift_angle=np.deg2rad(10) # radians
+drift_velocity=0.2e-3 # meters / s
+max_count=20
+wavelengths=np.array([30.4e-9])
+# CCD parameters
+frame_rate=8 # Hz
+ccd_size=(750, 750)
+start=(400,0)
+pixel_size=14e-6 # meters
+# simulation subpixel parameters
+resolution_ratio=2 # CCD pixel_size / simulation pixel_size
+fov_ratio=2 # simulated FOV / CCD FOV
+# sieve parameters
+diameter=75e-3 # meters
+smallest_hole_diameter=17e-6 # meters
+ps = PhotonSieve(diameter=17e-6, smallest_hole_diameter=17e-6)
+
+frames, frames_clean, scene, topleft_coords = strand_video(
+        # experiment parameters
+        exp_time=exp_time, # s
+        drift_angle=drift_angle, # radians
+        drift_velocity=drift_velocity, # meters / s
+        max_count=max_count,
+        wavelengths=wavelengths,
+        # CCD parameters
+        frame_rate=frame_rate, # Hz
+        ccd_size=ccd_size,
+        start=start,
+        pixel_size=pixel_size, # meters
+        # simulation subpixel parameters
+        resolution_ratio=resolution_ratio, # CCD pixel_size / simulation pixel_size
+        fov_ratio=fov_ratio, # simulated FOV / CCD FOV
+        # sieve parameters
+        diameter=diameter, # meters
+        smallest_hole_diameter=smallest_hole_diameter # meters
 )
 
-# convolve the high resolution scene with the photon sieve PSF
-# FIXME convolve this additionally with a Gaussian to simulate S/C jitter
-convolved = get_measurements(sources=scene[np.newaxis,:,:], mode='circular', psfs=psfs)[0]
-
-[r0, c0] = (400,0) # pick the topleft point for the initial frame
-topleft_coords = [ # calculate the topleft points for all frames
-    (
-        int(r0 - k/frame_rate*drift_velocity*np.sin(drift_angle)/pixel_size*resolution_ratio),
-        int(c0 + k/frame_rate*drift_velocity*np.cos(drift_angle)/pixel_size*resolution_ratio)
-    )
-    for k in range(num_frames+1)
-]
-
-frames_clean = np.zeros((num_frames, ccd_size[0], ccd_size[1])) # initialize the frame images
-
-# calculate each frame by integrating high resolution image along the drift
-# direction
-for frame in range(num_frames):
-    temp = np.zeros((ccd_size[0]*resolution_ratio, ccd_size[1]*resolution_ratio))
-    # calculate topleft coordinates for the shortest line connecting the
-    # topleft coordinates of the consecutive frames
-    path_rows, path_cols = line(
-        topleft_coords[frame][0],
-        topleft_coords[frame][1],
-        topleft_coords[frame+1][0],
-        topleft_coords[frame+1][1]
-    )
-    if len(path_rows) > 1:
-        path_rows, path_cols = path_rows[:-1], path_cols[:-1]
-    for row,col in zip(path_rows, path_cols):
-        temp += convolved[row:row+temp.shape[0], col:col+temp.shape[1]]
-    frames_clean[frame] = rescale(temp, 1/resolution_ratio, anti_aliasing=False)
-
-# add noise to the frames
-if nonoise is False:
-    frames = poisson.rvs(
-        frames_clean / frames_clean.max() * (max_count_rate / frame_rate) +
-        (dark_current + background_noise) / frame_rate
-    )
-    frames = np.random.normal(loc=frames, scale=read_noise)
-    # set the negative values to zero
-    frames[frames < 0] = 0
+# ps = PhotonSieve(diameter=diameter, smallest_hole_diameter=smallest_hole_diameter)
+#
+# # generate psfs
+# psfs = PSFs(
+#     ps,
+#     sampling_interval=pixel_size/resolution_ratio,
+#     measurement_wavelengths=wavelengths,
+#     source_wavelengths=wavelengths,
+#     psf_generator=circ_incoherent_psf,
+#     cropped_width=101,
+#     num_copies=1
+# )
+#
+# # convolve the high resolution scene with the photon sieve PSF
+# # FIXME convolve this additionally with a Gaussian to simulate S/C jitter
+# convolved = get_measurements(sources=scene[np.newaxis,:,:], mode='circular', psfs=psfs)[0]
+#
+# [r0, c0] = (400,0) # pick the topleft point for the initial frame
+# topleft_coords = [ # calculate the topleft points for all frames
+#     (
+#         int(r0 - k/frame_rate*drift_velocity*np.sin(drift_angle)/pixel_size*resolution_ratio),
+#         int(c0 + k/frame_rate*drift_velocity*np.cos(drift_angle)/pixel_size*resolution_ratio)
+#     )
+#     for k in range(num_frames+1)
+# ]
+#
+# frames_clean = np.zeros((num_frames, ccd_size[0], ccd_size[1])) # initialize the frame images
+#
+# # calculate each frame by integrating high resolution image along the drift
+# # direction
+# for frame in range(num_frames):
+#     temp = np.zeros((ccd_size[0]*resolution_ratio, ccd_size[1]*resolution_ratio))
+#     # calculate topleft coordinates for the shortest line connecting the
+#     # topleft coordinates of the consecutive frames
+#     path_rows, path_cols = line(
+#         topleft_coords[frame][0],
+#         topleft_coords[frame][1],
+#         topleft_coords[frame+1][0],
+#         topleft_coords[frame+1][1]
+#     )
+#     if len(path_rows) > 1:
+#         path_rows, path_cols = path_rows[:-1], path_cols[:-1]
+#     for row,col in zip(path_rows, path_cols):
+#         temp += convolved[row:row+temp.shape[0], col:col+temp.shape[1]]
+#     frames_clean[frame] = rescale(temp, 1/resolution_ratio, anti_aliasing=False)
+#
+# # add noise to the frames
+# if nonoise is False:
+#     frames = poisson.rvs(
+#         frames_clean / frames_clean.max() * (max_count_rate / frame_rate) +
+#         (dark_current + background_noise) / frame_rate
+#     )
+#     frames = np.random.normal(loc=frames, scale=read_noise)
+#     # set the negative values to zero
+#     frames[frames < 0] = 0
 
 # %% plot
 pixel_arcsec = 72e-3
@@ -150,6 +152,7 @@ for i in range(len(frames)):
 
 
 # %% register --------------------------------------------------------------
+num_frames = frames.shape[0]
 true_shift = drift_velocity / frame_rate * np.array([
     np.cos(drift_angle),
     np.sin(drift_angle)
