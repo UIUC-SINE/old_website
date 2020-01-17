@@ -10,11 +10,10 @@ from itertools import product
 
 # %% load
 
-result = pd.read_pickle('/vault/evan/result2.pkl')
+result = pd.read_pickle('result.pkl')
 
 # %% plot
 
-# result = result.query('drift_velocity == 0.0002 and max_count == 20')
 result =  result.melt(
     id_vars=['max_count', 'drift_velocity', 'drift_angle', 'repetition'],
     value_vars=['guizar_error', 'ulas_error1', 'ulas_error2'],
@@ -24,6 +23,5 @@ result =  result.melt(
 
 plt.close()
 grid = sns.FacetGrid(result, row='drift_velocity', col='max_count', margin_titles=True)
-grid.map(sns.lineplot, y='pixel_err', x='drift_angle', hue='method', data=result)
-# ax = sns.lineplot(y='pixel_err', x='drift_angle', hue='method', data=result)
+grid.map(sns.lineplot, 'drift_angle', 'pixel_err', 'method', data=result)
 plt.show()

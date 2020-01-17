@@ -36,21 +36,4 @@ result = combination_experiment(
     # repetition=np.arange(1)
 )
 
-result.to_pickle('/tmp/result.pkl')
-
-
-# %% plot
-
-result = pd.read_pickle('/tmp/result.pkl')
-
-result_long =  result.melt(
-    id_vars=['max_count', 'drift_velocity', 'drift_angle', 'repetition'],
-    value_vars=['guizar_error', 'ulas_error1', 'ulas_error2'],
-    value_name='pixel_err',
-    var_name='method'
-)
-
-plt.close()
-grid = sns.FacetGrid(result, row='drift_velocity', col='max_count', margin_titles=True)
-grid.map(sns.lineplot, y='pixel_err', x='drift_angle', hue='method', data=result)
-plt.show()
+result.to_pickle('result.pkl')
