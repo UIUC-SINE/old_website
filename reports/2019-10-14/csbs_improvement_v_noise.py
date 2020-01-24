@@ -15,8 +15,11 @@ import pandas as pd
 # evaluate CSBS reconstruction improvement for many sieve diameters and many separations
 
 sources = strands[:2]
+# 2019-08-19 report showed that CSBS improvement only depends on DOF, not diameter
+#   so do all tests with same diameter
+diameter = 8e-2
 
-def get_psfs(*, separation, diameter):
+def get_psfs(*, separation):
     ps = PhotonSieve(diameter=diameter)
     wavelengths = np.array([33.4e-9, 33.4e-9 + separation])
 
@@ -41,10 +44,13 @@ def get_psfs(*, separation, diameter):
 # %% measure
 
 result = pd.DataFrame()
-for diameter in np.logspace(-2, -1, 20):
-    for separation in np.logspace(-12, -9, 20):
+for separation in np.logspace(-12, -9, 20):
 
-        psfs_focus, psfs_csbs = get_psfs(separation=separation, diameter=diameter)
+    print(f'------------------- Separation {separation}')
+    psfs_focus, psfs_csbs = get_psfs(separation=separation)
+
+    for noise in (5, 15, 25):
+        print(f'---------- Noise {noise}')
 
         def measure_reconstruct():
 
@@ -67,9 +73,9 @@ for diameter in np.logspace(-2, -1, 20):
 
         exp_result = experiment(measure_reconstruct, iterations=20)
         exp_result['separation'] = separation
-        exp_result['diameter'] = diameter
+        exp_result['noise'] = noise
         result = result.append(
-            exp_result[['separation', 'ratio', 'diameter']]
+            exp_result[['separation', 'ratio', 'noise']]
         )
         print(
             'separation:{:.3E}\tratio_mean:{:.3E}\tratio_std:{:.3E}'.format(
@@ -81,7 +87,7 @@ for diameter in np.logspace(-2, -1, 20):
 
 # %% plot
 
-# ax = sns.lineplot(x='separation', y='ratio', hue='diameter', data=result)
-# ax.set(xscale='log')
-# plt.show()
-# plt.savefig('test.png')
+ax = sns.lineplot(x='separation', y='ratio', hue='noise', data=result)
+ax.set(xscale='log')
+plt.show()
+plt.savefig('test.png')
