@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Weekly Report</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js" defer></script> 
+
+
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Weekly Report</h1>
+      <time datetime="2020-01-30">2020-01-30</time> - Evan
+    </header>
+    <p>A copy of the outline is <a href="https://uiuc-sine.github.io/thesis/outline.html">here</a>.</p>
+<p>Most of my time this week was spent revising the ICASSP paper for submission to ICIP.  The biggest complaint from reviewers was that our experimental results were not extensive enough and should have been tested at different source separations and SNRs.  In an <a href="https://uiuc-sine.github.io/reports/2019-08-19/index.html">earlier report</a>, I had actually run these experiments with different separations for a fixed SNR, but we cut it from the ICASSP draft because of space constraints.</p>
+<p>In that report, I plotted the ratio of CSBS reconstruction SSIM to focal reconstruction SSIM as a way of illustrating the relative reconstruction improvement.  However, we decided it would be clearer to plot the SSIMs directly rather than their ratio, shown below:</p>
+<p>
+<figure><img src="ssims.png" /><figcaption>Comparison of SSIMs of reconstruction obtained from CSBS measurement configuration and focal plane measurement configuration. Tested under 2, 3, and 4 sources with 3 levels of Gaussian noise.</figcaption>
+</figure>
+</p>
+<h1 id="dc-penalization">DC Penalization</h1>
+<p>An interesting result from the ICASSP paper is that CSBS often chose measurement locations at the upper and lower limits of the candidate planes.  At these locations, the sensor is only capturing DC from both sources.</p>
+<p>
+<figure><img src="csbs.png" /><figcaption>Standard CSBS configuration result for 2 sources.</figcaption>
+</figure>
+</p>
+<p>In this case, CSBS is using 8 out of our 12 measurements just to capture the DC value of the sources.  If the goal of the project is to detect the presence of nanoflares, we may not care about the overall intensity of the recovered image.  I was interested in seeing what CSBS chose if I ignored DC reconstruction error.</p>
+<p>Mathematically, this is equivalent to changing the cost function to</p>
+<p>
+<script type="math/tex; mode=display">\mathbb{E}\left[ \left| \left| \bm{H} \bm{e} \right| \right|_2^2 \right]</script>
+</p>
+<p>where <script type="math/tex">\bm{H}</script> is a high pass filter blocking DC.</p>
+<p>
+<figure><img src="csbs_nodc.png" /><figcaption>CSBS configuration result for 2 sources with no penalization of DC reconstruction error</figcaption>
+</figure>
+</p>
+<p>Now we can see that CSBS has put all measurements at locations where spatial information is actually captured.  If we compare the reconstructions of standard CSBS with no DC penalization CSBS, the nanoflare structures are more apparent in the latter.</p>
+<p>
+<figure><img src="compare.png" /><figcaption>Reconstruction comparison of the two cost functions</figcaption>
+</figure>
+</p>
+<p>Counterintuitively, the SSIM for the bottom right image is lower than the SSIM of the top right image (even after zeroing the means of each reconstruction).  This warrants further investigation.</p>
+<!-- ![Comparison of SSIMs of reconstruction obtained from CSBS measurement configuration and focal plane measurement configuration with no DC penalization.](ssims_nodc.png) -->
+
+<h1 id="summary">Summary</h1>
+<ul>
+<li>plotted CSBS and focal plane reconstruction SSIMs for a variety of scenarios <ul>
+<li>num_sources={2, 3, 4}</li>
+<li>SNR={5, 15, 25}</li>
+<li>source_separation={0.1, ..., 10} DOF</li>
+</ul>
+</li>
+<li>tested modified SSE cost function where DC reconstruction errors are not penalized<ul>
+<li>reconstructions are visualizer cleaner compared to standard SSE cost, but reconstruction SSIM is lower for an unknown reason</li>
+</ul>
+</li>
+</ul>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>
