@@ -14,14 +14,18 @@ result = pd.read_pickle('result.pkl')
 
 # %% plot
 
-result =  result.melt(
+
+result_long =  result.melt(
     id_vars=['max_count', 'drift_velocity', 'drift_angle', 'repetition'],
     value_vars=['guizar_error', 'ulas_error1', 'ulas_error2'],
     value_name='pixel_err',
     var_name='method'
 )
 
+# result_long = result_long.query('drift_velocity == 5e-5 or drift_velocity == 2e-4')
+
 plt.close()
-grid = sns.FacetGrid(result, row='drift_velocity', col='max_count', margin_titles=True)
+grid = sns.FacetGrid(result_long, row='drift_velocity', col='max_count', margin_titles=True)
 grid.map(sns.lineplot, 'drift_angle', 'pixel_err', 'method', data=result)
+# grid.add_legend()
 plt.show()
