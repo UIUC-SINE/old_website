@@ -41,9 +41,8 @@ def get_psfs(*, separation, diameter):
 # %% measure
 
 result = pd.DataFrame()
-# for diameter in np.logspace(-2, -1, 20):
-for diameter in np.logspace(-1, -1, 1):
-    for separation in np.logspace(-12, -10, 20):
+for diameter in np.logspace(-2, -1, 20):
+    for separation in np.logspace(-12, -9, 20):
 
         psfs_focus, psfs_csbs = get_psfs(separation=separation, diameter=diameter)
 
@@ -59,8 +58,8 @@ for diameter in np.logspace(-1, -1, 1):
 
             recon_focus = tikhonov(psfs=psfs_focus, measurements=meas_focus, tikhonov_lam=1e-3)
             recon_csbs = tikhonov(psfs=psfs_csbs, measurements=meas_csbs, tikhonov_lam=1e-3)
-            result_focus = np.sum(compare_ssim(truth=sources, estimate=recon_focus))
-            result_csbs = np.sum(compare_ssim(truth=sources, estimate=recon_csbs))
+            result_focus = np.sum(compare_ssim(sources, recon_focus))
+            result_csbs = np.sum(compare_ssim(sources, recon_csbs))
 
             ratio = result_csbs / result_focus
 
@@ -82,7 +81,7 @@ for diameter in np.logspace(-1, -1, 1):
 
 # %% plot
 
-ax = sns.lineplot(x='separation', y='ratio', hue='diameter', data=result)
-ax.set(xscale='log')
-plt.show()
-plt.savefig('test.png')
+# ax = sns.lineplot(x='separation', y='ratio', hue='diameter', data=result)
+# ax.set(xscale='log')
+# plt.show()
+# plt.savefig('test.png')

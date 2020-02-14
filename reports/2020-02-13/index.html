@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Weekly Report</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js" defer></script> 
+
+
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Weekly Report</h1>
+      <time datetime="2020-02-13">2020-02-13</time> - Evan
+    </header>
+    <p>This is an overview of the Structured Low-Rank survey paper by Jacob Mathews.</p>
+<p>The main idea of the paper is that a 1D signal exhibiting compactness properties sparsity or smoothness can be "lifted" to a matrix which is low-rank.  If the signal is missing values due to non-uniform sampling, "matrix completion" can be performed on the lifted matrix by exploiting these compactness properties.  Matrix completion is a well studied problem with lots of literature involving performance bounds and efficient algorithms.</p>
+<p>The lifted matrix is defined simply as a matrix whose entries "are functions of the signal samples", but from examining the examples, this is almost always the Hankel/Toeplitz matrix of the signal with some window size N.</p>
+<p>
+<figure><img src="lifting.png" /><figcaption>Using structured low-rank matrix completion for interpolating missing values in a non-uniformly sampled signal</figcaption>
+</figure>
+</p>
+<p>The impetus for studying this paper is Figure 6a (shown below) which ostensibly shows 3 instances of multiple frames of MRI being registered using structured low-rank matrix completion, so I put effort into understanding what this example was illustrating.</p>
+<p><img alt="" src="artifact.png" /></p>
+<p>In MRI, samples are acquired in k-space (Fourier domain).  In order to speed up a lengthy acquisition, multiple shots are taken where only a few k-space samples are acquired in each shot (shown below).  </p>
+<p>
+<figure style="max-width:800px"><img src="4shot.png" /><figcaption>In accelerated MRI, only a few K-space samples are measured in each shot, shown as solid bars in each frame.</figcaption></figure>
+</p>
+<p>In a setting with a stationary patient, these incomplete frames could simply be stacked together and an inverse Fourier transform taken to recover the image.  However, stacking like this when there is subject motion or physiological motion (e.g. heartbeat, breathing) between frames result in phase errors that give the ghosting effect mentioned previously <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.
+<!-- <img alt="" src="4shot_lifting.png" />{: style="max-width:800px"} --></p>
+<p><a href="https://people.eecs.berkeley.edu/~yima/matrix-rank/rasl.html">Robust Alignment by Sparse and Low-Rank Decomposition</a> by Yi Ma</p>
+<p><a href="https://ieeexplore.ieee.org/document/8048348">A Novel Image Registration Method Based on Phase Correlation Using Low-Rank Matrix Factorization With Mixture of Gaussian</a></p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5336529/">Multi-Shot Sensitivity-Encoded Difusion DAta Recovery Using Structured Low-Rank Matrix Completion</a> - M Mani, M Jacob, D Kelley, V Magnotta&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>
