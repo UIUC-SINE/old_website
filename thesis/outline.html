@@ -24,22 +24,39 @@
 <ul>
 <li><a href="http://hdl.handle.net/2142/55634">MRI Registration and Segmentation for Machine Learning Diagnosis of Parkinson's Disease</a></li>
 </ul>
+<!--
+
+- is [^1] equivalent to Prony's method when using all image pixels?
+- Guizar-Sicairos multiframe extension
+    - can we estimate expected registration error?  [ argmax(sum) ] vs [ mean(argmax, argmax, ...) ]
+
+-->
+
 <h4 id="outline">Outline</h4>
-<p>Goal: combine work from <em>Guizar-Sicairos, Thurman, Fienup</em> <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">2</a></sup> (linear subpixel registration), <em>Sarvaiya, Patnaik, Kothari</em> <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">3</a></sup> (rotational, scaling registration), and extend to a multiframe setting</p>
+<p>Goal: combine work from <em>Guizar-Sicairos, Thurman, Fienup</em> <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">3</a></sup> (linear subpixel registration), <em>Sarvaiya, Patnaik, Kothari</em> <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">4</a></sup> (rotational, scaling registration), and extend to a multiframe setting</p>
 <ul>
 <li>
 <p>Introduction</p>
 <ul>
 <li>Define registration, motion estimation, segmentation</li>
 <li>Registration model (from thesis draft) <a href="https://uiuc-sine.github.io/thesis/intro.html#introduction">Draft</a></li>
-<li>4 step generalization of registration methods <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">1</a></sup></li>
+<li>4 step generalization of registration methods <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup><ol>
+<li>Feature detection</li>
+<li>Feature matching</li>
+<li>Transform model estimation</li>
+<li>Image transformation</li>
+</ol>
+</li>
 </ul>
 </li>
 <li>
 <p>Chapter 1 - Registration via Phase Correlation</p>
 <ul>
 <li>Area based methods - cross correlation, normalized CC, etc</li>
-<li>Frequency based methods - Phase correlation</li>
+<li>Frequency based methods - Phase correlation<ul>
+<li>Based on Fourier shift property - CPSD of shifted signal gives complex exponential</li>
+</ul>
+</li>
 <li>Rotational/Scaling Extension to Phase correlation</li>
 </ul>
 </li>
@@ -54,24 +71,30 @@
 <ul>
 <li>Give definition and expand registration model from introduction</li>
 <li>Prior work</li>
-<li>Introduce my multiframe extension to <em>Guizar-Sicairos, Thurman, Fienup</em></li>
+<li>Introduce my multiframe extension to <em>Guizar-Sicairos, Thurman, Fienup</em><ul>
+<li>How does this compare to simply averaging registration estimates for adjacent frames (expected registration error)</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 <div class="footnote">
 <hr />
 <ol>
+<li id="fn:1">
+<p><a href="https://ieeexplore.ieee.org/abstract/document/988953">Extension of phase correlation to subpixel registration</a> - Foroosh, Zerubia, Berthod&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
 <li id="fn:2">
-<p><a href="https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&amp;pid=1-s2.0-S0262885603001379-main.pdf">Image registration methods: a survey</a> - Zitova, Flusser 2003&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p><a href="https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&amp;pid=1-s2.0-S0262885603001379-main.pdf">Image registration methods: a survey</a> - Zitova, Flusser 2003&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:5">
-<p><a href="https://ieeexplore.ieee.org/document/4767966">De Castro, Morandi 1987</a>&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p><a href="https://ieeexplore.ieee.org/document/4767966">Registration of Translate and Rotated Images Using Finite Fourier Transforms</a> - De Castro, Morandi 1987&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p><a href="https://www.osapublishing.org/ol/viewmedia.cfm?uri=ol-33-2-156&amp;seq=0">Guizar-Sicairos, Thurman, Fienup 2008</a>&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p><a href="https://www.osapublishing.org/ol/viewmedia.cfm?uri=ol-33-2-156&amp;seq=0">Efficient subpixel image registration algorithms</a> - Guizar-Sicairos, thurman, Fienup 2008&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 <li id="fn:8">
-<p><a href="http://www.jprr.org/index.php/jprr/article/view/355">Sarvaiya, Patnaik, Kothari 2012</a>&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p><a href="http://www.jprr.org/index.php/jprr/article/view/355">Image Registration Using Log Polar Transform and Phase Correlation to Recover Higher Scale</a> - Sarvaiya, Patnaik, Kothari 2012&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
