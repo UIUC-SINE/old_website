@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Noise Experiments</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js" defer></script> 
+
+
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Noise Experiments</h1>
+      <time datetime="2020-03-21">2020-03-21</time> - Evan Widloski
+    </header>
+    <p>Here are some image reconstructions using our current best image registration algorithm.</p>
+<ol>
+<li>Generate high-resolution scene</li>
+<li>Generate lower-resolution video frames as observed through photon sieve of linearly translating spacecraft</li>
+<li>Scale video frames and add noise</li>
+<li><a href="https://uiuc-sine.github.io/reports/2019-12-30_survey/index.html">Estimate drift</a></li>
+<li>Coadd registered frames</li>
+</ol>
+<p>For simplicity, a few steps in the reconstruction process are not included here that would replace step 5:</p>
+<ol start="5">
+<li>Motion blur removal</li>
+<li>Tikhonov regularization</li>
+<li>Super resolution</li>
+</ol>
+<figure style="text-align: center">
+<iframe src="out.html" height=550 width=350></iframe>
+</figure>
+
+<p>The observation model used for generating each observed frame <script type="math/tex">y_k</script> is</p>
+<p>
+<script type="math/tex; mode=display">x_k = \text{blur}_k\left(\frac{s}{\max(s)} * m, \, v\right)</script>
+</p>
+<p>
+<script type="math/tex; mode=display">y_k = \mathcal{N}\left( \text{Pois}(x_k + (n_d + n_b) / f), \sqrt{n_r}\right)</script>
+</p>
+<p>with parameters:</p>
+<ul>
+<li>input scene: <script type="math/tex">s</script>
+</li>
+<li>max photon count: <script type="math/tex">m</script>
+</li>
+<li>drift velocity (mm/s): <script type="math/tex">v</script>
+</li>
+<li>background noise: <script type="math/tex">n_b</script>
+</li>
+<li>dark current: <script type="math/tex">n_d=8</script>
+</li>
+<li>read noise: <script type="math/tex">n_r=10</script>
+</li>
+<li>frame rate: <script type="math/tex">f=4</script>
+</li>
+</ul>
+<p>Operator <script type="math/tex">\text{blur}_k(\cdot, v)</script> selects a region from the high resolution scene <script type="math/tex">s</script> corresponding to the spacecraft field of view at frame <script type="math/tex">k</script> and applies appropriate motion blur.</p>
+<h2 id="reconstruction-with-alternative-scaling-model">Reconstruction with alternative scaling model</h2>
+<p>There has been confusion with regards to scaling the images to achieve the desired maximum photon count.  In the above experiments, scaling has been applied so that the maximum value of the entire scene takes the desired value.</p>
+<p>I repeated these experiments, but scaling the maximum value of the region of the scene swept by the spacecraft.  The reconstruction SNR differs significantly.</p>
+<figure style="text-align: center">
+<iframe src="out2.html" height=550 width=350></iframe>
+</figure>
+
+<p>The new observation model is</p>
+<p>
+<script type="math/tex; mode=display">x_k = \text{blur}_k(s, v)</script>
+</p>
+<p>
+<script type="math/tex; mode=display">x_k = \frac{x_k}{\max(x_1\frown ... \frown x_K)} * m</script>
+</p>
+<p>
+<script type="math/tex; mode=display">y_k = \mathcal{N}\left( \text{Pois}(x_k + (n_d + n_b) / f), \sqrt{n_r}\right)</script>
+</p>
+<p>where <script type="math/tex">\frown</script> is vector concatenation.</p>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>

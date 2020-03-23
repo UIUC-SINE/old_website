@@ -1,0 +1,31 @@
+<!--
+- use 1 / n^2 for weight on improvement #1
+- finish implementing improvement #2
+- document improvement #1
+- document improvement 2
+-->
+
+<figure style="text-align: center">
+<iframe src="corr_sum.html" height=375 width=350></iframe>
+<figcaption>Correlation sums for </figcaption>
+</figure>
+
+<figure style="text-align: center">
+<iframe src="corr_sum_grid.html" height=375 width=350></iframe>
+<figcaption>Downsampled correlation sum.  Comparison of default and shifted grids</figcaption>
+</figure>
+
+## Downsampling
+
+I implement downsampling by factor F by splitting the image into F-by-F patches and taking the average of each patch.
+
+When first doing testing after my initial implementation, I ran into an issue where the peak of the downsampled correlation sums seemed to be off by half a pixel.  After some investigation, I realized the downsample grid needs to be shifted so that center of the first patch should fall at [0, 0] rather than its corner.
+
+![Default downsampling grid.  The peak should fall at [2.5, 2.5] in the red grid, but instead falls at [3, 3].](oldgrid.png){: style="width: 400px"}
+
+![Shifted downsampling grid.  The peak falls at the right place in the downsampled grid.](newgrid.png){: style="width: 400px"}
+
+<figure style="text-align: center">
+<iframe src="downsample.html" height=425 width=350></iframe>
+<figcaption>Downsampled correlation sum.  Comparison of default and shifted grids</figcaption>
+</figure>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <style>
+         .pixelated {
+             image-rendering:optimizeSpeed;             /* Legal fallback */
+             image-rendering:-moz-crisp-edges;          /* Firefox        */
+             image-rendering:-o-crisp-edges;            /* Opera          */
+             image-rendering:-webkit-optimize-contrast; /* Safari         */
+             image-rendering:optimize-contrast;         /* CSS3 Proposed  */
+             image-rendering:crisp-edges;               /* CSS4 Proposed  */
+             image-rendering:pixelated;                 /* CSS4 Proposed  */
+             -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
+         }
+         input {
+             width: 300px;
+         }
+        </style>
+    </head>
+
+    <img width=300 class="pixelated" id="img">
+
+    <br>
+
+    <span class="label">downsample grid</span>
+<input id="slider_0" class="slider" type="range" min="0" max="1" value="0" step="1" oninput="showVal()"/>
+<span class="range">0</span>
+<br>
+
+<span class="label">downsample factor</span>
+<input id="slider_1" class="slider" type="range" min="0" max="36" value="10" step="1" oninput="showVal()"/>
+<span class="range">0</span>
+<br>
+
+
+    <script defer>
+     var sliders = Array.from(document.getElementsByClassName("slider"));
+     var ranges = Array.from(document.getElementsByClassName("range"));
+
+     function update() {
+        var slider_vals = sliders.map(e => {return e.value})
+        var filename = slider_vals.join("") + ".bmp"
+        slider_vals.forEach(function(val, i){
+        ranges[i].innerHTML = val;
+        });
+        document.getElementById("img").src = "downsample/" + filename;
+        console.log(filename);
+     };
+
+     function showVal(newVal) {
+         update();
+     };
+
+     update();
+
+    </script>
+
+</html>
