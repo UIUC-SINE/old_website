@@ -24,8 +24,8 @@ def experiment(*, max_count, background_noise, drift_velocity):
     drift, _ = guizar_multiframe(corr_sum)
 
     # reconstruct
-    recon = shift_and_sum(sv.frames, drift)
-    noise_recon = shift_and_sum(noise, drift)
+    recon = shift_and_sum(sv.frames, drift, mode='crop')
+    noise_recon = shift_and_sum(noise, drift, mode='crop')
 
     result = resize(recon, (300, 300))
 
@@ -40,19 +40,20 @@ def experiment(*, max_count, background_noise, drift_velocity):
         'snr_db': snr_db,
     }
 
+
 # %% experiment
 
 results = combination_experiment(
     experiment,
-    max_count=[20, 40, 80],
-    background_noise=[0, 2, 4, 8, 16],
-    drift_velocity=[0.05, 0.1, 0.2, 0.4]
-    # max_count=[20],
-    # background_noise=[8],
-    # drift_velocity=[0.2],
+    # max_count=[20, 40, 80],
+    # background_noise=[0, 2, 4, 8, 16, 32, 64, 128, 256],
+    # drift_velocity=[0.05, 0.1, 0.2, 0.4]
+    max_count=[20],
+    background_noise=[8, 300],
+    drift_velocity=[0.2],
 )
 
-results.to_pickle('results.pkl')
+# results.to_pickle('results.pkl')
 
 # %% slider
 
