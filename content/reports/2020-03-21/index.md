@@ -41,23 +41,3 @@ with parameters:
 - frame rate: $f=4$
 
 Operator $\text{blur}_k(\cdot, v)$ selects a region from the high resolution scene $s$ corresponding to the spacecraft field of view at frame $k$ and applies appropriate motion blur.
-
-## Reconstruction with alternative scaling model
-
-There has been confusion with regards to scaling the images to achieve the desired maximum photon count.  In the above experiments, scaling has been applied so that the maximum value of the entire scene takes the desired value.
-
-I repeated these experiments, but scaling the maximum value of the region of the scene swept by the spacecraft.  The reconstruction SNR differs significantly.
-
-<figure style="text-align: center">
-<iframe src="out2.html" height=550 width=350></iframe>
-</figure>
-
-The new observation model is
-
-$$x_k = \text{blur}_k(s, v)$$
-
-$$x_k = \frac{x_k}{\max(x_1\frown ... \frown x_K)} * m$$
-
-$$y_k = \mathcal{N}\left( \text{Pois}(x_k + (n_d + n_b) / f), \sqrt{n_r}\right)$$
-
-where $\frown$ is vector concatenation.
