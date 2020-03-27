@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <title>Computational Optics Pipeline</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+  <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js" defer></script> 
+
+
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Computational Optics Pipeline</h1>
+      <time datetime="2020-03-27">2020-03-27</time> - Evan Widloski, Ulas Kamaci
+    </header>
+    <p>This is a document overviewing the full pipeline of the optics team from generating the nanoflare scene to reconstructing a final image from noisy video frames.</p>
+<p>Code used to generate these figures can be found <a href="https://github.com/UIUC-SINE/uiuc-sine.github.io/tree/source/content/reports/pipeline">here</a>.</p>
+<div class="toc">
+<ul>
+<li><a href="#forward-model">Forward Model</a><ul>
+<li><a href="#scene-generation">Scene Generation</a><ul>
+<li><a href="#detector-and-scene-generation-parameters">Detector and Scene generation parameters</a></li>
+</ul>
+</li>
+<li><a href="#video-frames-generation">Video Frames Generation</a><ul>
+<li><a href="#scene-scaling">Scene Scaling</a></li>
+<li><a href="#optical-blurring">Optical Blurring</a></li>
+<li><a href="#motion-blurring">Motion Blurring</a></li>
+</ul>
+</li>
+<li><a href="#noise">Noise</a><ul>
+<li><a href="#signal-to-noise-ratio">Signal to Noise Ratio</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#image-recovery">Image Recovery</a><ul>
+<li><a href="#drift-estimation">Drift Estimation</a></li>
+<li><a href="#video-frames-fusion">Video Frames Fusion</a></li>
+<li><a href="#motion-and-optical-blur-removal">Motion and Optical Blur Removal</a></li>
+<li><a href="#future-steps">Future Steps</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Pipeline steps in the forward model are used for generating simulated observations, while those under image recovery are used in image recovery.</p>
+<h1 id="forward-model">Forward Model</h1>
+<h2 id="scene-generation">Scene Generation</h2>
+<p>We begin by generating a static high resolution image which we call the <em>scene</em> that has a wide field of view.  This scene is filled with nanoflares of a fixed width but random amplitude and orientation based on Jim Klimchuk's simulations.</p>
+<p>
+<figure style="max-width:300px"><img src="scene.png" /><figcaption>a high resolution scene filled with randomly generated nanoflares</figcaption></figure>
+</p>
+<p>This scene is generated at a higher resolution than the detector pitch (and therefore simulated observations) so that we can simulate the effects of motion blur and eventually evaluate effectiveness of super resolution methods.  Additionally, this lets us simulate a spacecraft with non-integer translational velocity.</p>
+<p>The diagram below illustrates the relative sizes of the detector pixels and virtual subpixels.</p>
+<p>
+<figure style="max-width:500px"><img src="diagram_scene.png" /><figcaption>diagram showing scene, field of view, subpixels, detector pixels</figcaption></figure>
+</p>
+<p>Below is a cropped portion of the scene corresponding to the field of view of the detector at some time instant.  Note that no noise, optical blur or motion effects have been applied yet.</p>
+<p>
+<figure style="max-width:300px"><img src="scene_fov.png" /><figcaption>view from spacecraft at some time instant.  Strands appear larger because the field of view is smaller than the whole scene</figcaption></figure>
+</p>
+<h4 id="detector-and-scene-generation-parameters">Detector and Scene generation parameters</h4>
+<p>Here are the VISORS detector specs:</p>
+<ul>
+<li>Pixel size: <script type="math/tex">14 \ \mu m</script>
+</li>
+<li>Pixel FOV: <script type="math/tex">69 \ MAS \ (50 \ km)</script>
+</li>
+<li>Detector Size: <script type="math/tex">750 \times 750</script> pixel grid</li>
+<li>Detector FOV: <script type="math/tex">52</script> arcsec <script type="math/tex">(37500 \ km)</script>
+</li>
+</ul>
+<p>Let <script type="math/tex">r_{pix}</script> be the ratio of simulated scene pixel size to the detector pixel size, and <script type="math/tex">r_{FOV}</script> be the ratio of simulated scene FOV to the detector FOV, then the simulated image specs become:</p>
+<ul>
+<li>Pixel size: <script type="math/tex">14/r_{pix} \ \mu m</script>
+</li>
+<li>Pixel FOV: <script type="math/tex">69/r_{pix} \ MAS \ (50/r_{pix} \ km)</script>
+</li>
+<li>Scene Size: <script type="math/tex">750r_{pix}r_{FOV} \times 750r_{pix}r_{FOV}</script> pixel grid</li>
+<li>Scene FOV: <script type="math/tex">52 r_{FOV}</script> arcsec <script type="math/tex">(37500 r_{FOV} \ km)</script>
+</li>
+<li>Strand Diameter: <script type="math/tex">400 \ km</script>
+</li>
+<li>Strand Angles: <script type="math/tex">[-20,20]</script> degrees</li>
+<li>Num Strands: <script type="math/tex">475r_{FOV}</script>
+</li>
+</ul>
+<!-- <details><summary>Detector parameters / Scene generation parameters</summary> -->
+
+<!-- </details> -->
+
+<h2 id="video-frames-generation">Video Frames Generation</h2>
+<p>Now that we have the high resolution scene, we can generate the lower resolution frames that are captured by the detector.</p>
+<p>In this step, we perform the following tasks:</p>
+<ul>
+<li>scaling scene from unitless amplitude to desired counts per second</li>
+<li>blurring from instrument optical path</li>
+<li>blurring from motion of spacecraft during integration</li>
+</ul>
+<h4 id="scene-scaling">Scene Scaling</h4>
+<p>At this point, the amplitudes of pixels in the high resolution scene are unitless and simply take values between 0 and 1.  We want our image amplitudes to be in terms of photons/s so that noise parameters set in the next step map to physical values.</p>
+<p>We do this by scaling the scene so that the maximum pixel takes a particular value (in photons/s).</p>
+<p>
+<script type="math/tex; mode=display">s = \frac{s}{\max{s}} \cdot m</script>
+</p>
+<p>where <script type="math/tex">s</script> is the input scene and <script type="math/tex">m</script> is the desired maximum photon count.</p>
+<h4 id="optical-blurring">Optical Blurring</h4>
+<p>The scene will be blurred slightly as it passes through the instrumentation optics on the two spacecraft.  This step can be represented as a convolution of the scene with the instrument point spread function (PSF).  This PSF can be computed analytically, but we have omitted it here for brevity.</p>
+<p>
+<script type="math/tex; mode=display">
+h = \text{PSF}(p_{diam},\, p_{hole},\, \lambda) \\
+s = s \ast h
+</script>
+</p>
+<p>where</p>
+<ul>
+<li>
+<script type="math/tex">h</script> - photon sieve PSF</li>
+<li>
+<script type="math/tex">p_{diam}</script> - diameter of photon sieve (m)</li>
+<li>
+<script type="math/tex">p_{hole}</script> - diameter of smallest hole on photon sieve (m)</li>
+<li>
+<script type="math/tex">\lambda</script> - wavelength of scene (m)</li>
+</ul>
+<h4 id="motion-blurring">Motion Blurring</h4>
+<p>As the detector captures an image, the CMOS sensor must collect enough charge, akin to the shutter speed on a conventional camera.  During this period, the spacecraft may drift causing a blurring of the captured image. This effect can be represented as a convolution of the scene incident on the detector with the motion blurring kernel. We generate the motion blurring kernel using an anti-aliased <a href="https://github.com/scikit-image/scikit-image/blob/master/skimage/draw/draw.py#L372">line generation function</a>. </p>
+<p>We take into account the drift and detector parameters to compute the frames. We make two assumptions about the drift of the spacecraft and the scene:</p>
+<ul>
+<li>linear, constant speed drift model without rotation</li>
+<li>imaged structures do not significantly change during acquisition</li>
+</ul>
+<p>Given the drift angle, drift velocity, and frame rate, we compute each frame by adding up sub frames along the drift direction. The following diagram demonstrates this operation:</p>
+<p>
+<figure style="max-width:500px"><img src="diagram_video.png" /><figcaption>illustration of the frame generation</figcaption></figure>
+</p>
+<p>Once the high resolution frames are computed using the coaddition of subframes, they are downscaled to the detector resolution. An example computed frame is given below:
+<figure style="max-width:300px"><img src="noiseless_frame.png" /><figcaption>a computed noiseless frame</figcaption></figure>
+</p>
+<h2 id="noise">Noise</h2>
+<p>Once the clean frames are computed, noise is applied on them according to the detector and scene specs. The parameters that go into the noise model are:</p>
+<ul>
+<li>
+<script type="math/tex">x_k</script> - (photons/pixel)</li>
+<li>
+<script type="math/tex">n_b</script> - background noise (photons/s/pixel)</li>
+<li>
+<script type="math/tex">n_d</script> - dark current (photons/s/pixel)</li>
+<li>
+<script type="math/tex">n_r</script> - read noise (photons/read/pixel)</li>
+<li>
+<script type="math/tex">f</script> - frame rate (Hz)</li>
+</ul>
+<p>The observation model used for generating each observed noisy frame <script type="math/tex">y_k</script> is</p>
+<p>
+<script type="math/tex; mode=display">y_k = \mathcal{N}\Big( \text{Pois}(x_k + (n_d + n_b) / f),
+\, n_r^2\Big)</script>
+</p>
+<p>Dark current and read noise are properties of the detector, while background noise is due to off-target sources of light illuminating the sensor.</p>
+<figure style="text-align: center">
+<iframe src="noisy_frame.html" height=550 width=350></iframe>
+</figure>
+
+<h4 id="signal-to-noise-ratio">Signal to Noise Ratio</h4>
+<p>We define the signal to noise ratio in the measured frames as the signal mean divided by the measurement standard deviation. This definition is applied pixel-wise, meaning that each pixel has different SNR. SNR at a pixel <script type="math/tex">i</script> is (assuming noise parameters do not change accross the detector):</p>
+<p>
+<script type="math/tex; mode=display">SNR[i]=\frac{x_k[i]}{\sqrt{x_k[i] + (n_d + n_b) / f + n_r^2}}</script>
+</p>
+<h1 id="image-recovery">Image Recovery</h1>
+<h2 id="drift-estimation">Drift Estimation</h2>
+<p>Assuming constant linear drift, cross-correlations between adjacent frames should all contain an identical delta at a location corresponding to the drift vector.  These cross correlations can then be summed to help eliminate noise.  We call the images generated by this process <em>correlation sums</em>, denoted as <script type="math/tex">CS_k</script>
+</p>
+<p>Similarly, this process can be repeated for pairs of frames separated by <script type="math/tex">k=2, 3, 4, ...</script> time steps.  This is illustrated below.</p>
+<p>
+<figure style="max-width:500px"><img src="corr_sum.jpg" /><figcaption>Visualization of computing <script type="math/tex">CS_1</script> and <script type="math/tex">CS_2</script>. <script type="math/tex">i_1</script>, ..., <script type="math/tex">i_5</script> are the nanoflare video frames</figcaption></figure>
+</p>
+<p>Since <script type="math/tex">CS_k</script> is a sum of cross-correlations of frames separated by <script type="math/tex">k</script> time steps, the location of the delta is scaled by <script type="math/tex">k</script>.</p>
+<p>Finally, we can obtain an estimate for the drift vector by taking argmax of the correlation sums, scaling by <script type="math/tex">k</script>, and taking the mean of the result.</p>
+<p>
+<script type="math/tex; mode=display">                          
+\text{mean} \left[ \frac{\arg \max CS_k}{k} \right]_{k = 1:N-1}
+= \text{mean} \left[ \frac{\arg \max \sum_{n=1}^{N-k} \text{CC}(y_n, y_{n + k})}{k} \right]_{k = 1:N-1}
+</script>
+</p>
+<h2 id="video-frames-fusion">Video Frames Fusion</h2>
+<p>Once the drift is estimated, the frames are coadded such that they align with each other, which increases SNR and provides a clean, single frame. Depending on whether we crop the non-overlapping regions of the co-added frames, we have two versions of coaddition: cropped or full, which is demonstrated in the following figure:</p>
+<p><img alt="" src="diagram_crops.png" style="max-width:500px" /></p>
+<figure style="text-align: center">
+<iframe src="coadded.html" height=550 width=350></iframe>
+</figure>
+
+<h2 id="motion-and-optical-blur-removal">Motion and Optical Blur Removal</h2>
+<p>The story doesn't end with the coaddition of frames. Although coadding noisy frames helps improve SNR, motion blur is still present in each of these coadded frames.  Depending on the drift velocity and frame rate, this blur degrades our resolution in the direction of drift. </p>
+<p>Other than the motion blur, there is also the optical blur in the frames due to the photon sieve PSF. We would ideally remove this blur as well to get a sharper reconstruction. 
+Note that the coadded image is still noisy and this makes the deblurring a hard task.</p>
+<p>In order to obtain the overall blurring kernel, we convolve the motion blurring kernel that is generated using the estimated drift with the photon sieve PSF. This is illustrated in the following diagram:</p>
+<p>
+<figure style="max-width:500px"><img src="diagram_blur.png" /><figcaption>Illustration of obtaining the overall blurring kernel</figcaption></figure>
+</p>
+<p>Once the overall blurring kernel is obtained, we perform deconvolution on the coadded image. The deconvolution algorithm iteratively reconstructs the underlying sharp scene. </p>
+<h2 id="future-steps">Future Steps</h2>
+<p>These are other steps in our pipeline which will be documented in the future.</p>
+<ul>
+<li>super resolution</li>
+</ul>
+  </article>
+</main>
+<footer>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>

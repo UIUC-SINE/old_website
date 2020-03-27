@@ -29,13 +29,13 @@
 <li>Coadd registered frames</li>
 </ol>
 <p>For simplicity, a few steps in the reconstruction process are not included here that would replace step 5:</p>
-<ol start="5">
+<ol>
 <li>Motion blur removal</li>
 <li>Tikhonov regularization</li>
 <li>Super resolution</li>
 </ol>
 <figure style="text-align: center">
-<iframe src="out.html" height=550 width=350></iframe>
+<iframe src="test.html" height=550 width=350></iframe>
 </figure>
 
 <p>The observation model used for generating each observed frame <script type="math/tex">y_k</script> is</p>
@@ -43,7 +43,7 @@
 <script type="math/tex; mode=display">x_k = \text{blur}_k\left(\frac{s}{\max(s)} * m, \, v\right)</script>
 </p>
 <p>
-<script type="math/tex; mode=display">y_k = \mathcal{N}\left( \text{Pois}(x_k + (n_d + n_b) / f), \sqrt{n_r}\right)</script>
+<script type="math/tex; mode=display">y_k = \mathcal{N}\left( \text{Pois}(x_k + (n_d + n_b) / f), n_r\right)</script>
 </p>
 <p>with parameters:</p>
 <ul>

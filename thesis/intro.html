@@ -61,7 +61,7 @@
 </ul>
 </div>
 <h1 id="introduction">Introduction</h1>
-<p><em>Motion estimation</em>, a related field, is the process of identifying motion captured in a series of images (usually frames of a video).  This motion may be due to motion of the camera which causes the whole scene to appear to move (<em>apparent motion</em>), or individual objects moving independently within the frame.  In motion fields, a velocity vector is associated with each pixel in a particular region of the image (<em>local</em> motion estimation) or the image as a whole (<em>global</em> motion estimation).  These motion vectors usually represent 2D motion across the image, but are sometimes 3D to capture movement in 3D space.  When a motion field for individual pixels has been computed it is common to group motion vectors that belong to the same moving object, a process known as <em>motion segmentation</em>. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p><em>Motion estimation</em>, a related field, is the process of identifying motion captured in a series of images (usually frames of a video).  This motion may be due to motion of the camera which causes the whole scene to appear to move (<em>apparent motion</em>), or individual objects moving independently within the frame.  In motion fields, a velocity vector is associated with each pixel in a particular region of the image (<em>local</em> motion estimation) or the image as a whole (<em>global</em> motion estimation).  These motion vectors usually represent 2D motion across the image, but are sometimes 3D to capture movement in 3D space.  When a motion field for individual pixels has been computed it is common to group motion vectors that belong to the same moving object, a process known as <em>motion segmentation</em>. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup></p>
 <p><em>Image registration</em> is the process of overlaying two images of the same scene taken at different times, different viewpoints, or with different imaging equipment.  Registration is an important step in countless fields in remote sensing.  Geographic information systems (GIS), medical computer tomography (CT), cartography and computer vision all make extensive use of image registration for the purposes of image fusion and denoising, change detection or super-resolution.</p>
 <p>Let <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> be two images captured of a scene.  These are often called the <em>reference</em> and <em>template</em> images.  In image registration, we want to find a mapping from regions in the template image to regions in the reference image.  More formally, we want to find <script type="math/tex">f</script> such that</p>
 <p>
@@ -70,7 +70,7 @@ i_2(\bm{x}) = g(i_1(f(\bm{x})), \bm{x}) \,\, \forall \bm{x} \in X
 </script>
 </p>
 <p>where <script type="math/tex">\bm{x}</script> is a 2D coordinate in the image overlap region <script type="math/tex">X</script>, <script type="math/tex">f</script> is some unknown coordinate transform, and <script type="math/tex">g</script> is an unknown intensity mapping function.  <script type="math/tex">g</script> is often assumed to be unitary, but can be a very complicated function in multimodal applications like medical imaging where <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> are captured from different instruments.</p>
-<p><em>Zitova, Flusser 2003</em> generalizes all image registration algorithms into 4 steps. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>  Note that certain algorithms omit some of these steps.</p>
+<p><em>Zitova, Flusser 2003</em> generalizes all image registration algorithms into 4 steps. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup>  Note that certain algorithms omit some of these steps.</p>
 <ol>
 <li><strong>Feature detection</strong> - Distinct features (points, edges, closed regions, intersections, corners, etc.) are detected in both images.  These features may be represented by coordinates (intersections, corners, etc.), coordinate pairs (edges) or a more complex parameterization.  This step is omitted in area based registration methods.</li>
 <li><strong>Feature Matching</strong> - Correspondence is established between features detected in the images.  Feature similarity measures or feature positions within the images may be used to do this.  This step is omitted in area based registration methods.</li>
@@ -93,7 +93,7 @@ i_2(\bm{x}) = g(i_1(f(\bm{x})), \bm{x}) \,\, \forall \bm{x} \in X
 <h3 id="correlation-like-methods">Correlation-like Methods</h3>
 <h5 id="cross-correlation">Cross Correlation</h5>
 <p>The most straightforward of all methods, direct correlation, is conceptually simple and works for many classes of transformations.</p>
-<p>Note that the normalization here is crucial so that the intensities of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> do not influence the maximum.  We call this measure normalized cross correlation (NCC). <sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
+<p>Note that the normalization here is crucial so that the intensities of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> do not influence the maximum.  We call this measure normalized cross correlation (NCC). <sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup></p>
 <!-- only works when $f$ is a simple linear translation, $f(\bm{x}) = \bm{x} - \bm{c}^*$. -->
 
 <p>
@@ -129,7 +129,7 @@ i_2(\bm{x}) = g(i_1(f(\bm{x})), \bm{x}) \,\, \forall \bm{x} \in X
 <p>In practice though, cross correlation is still successful in the presence of slight rotation, scaling or even non-affine transformation. <!-- need to find citation --></p>
 <h5 id="generalized-iterative-cross-correlation">Generalized Iterative Cross Correlation</h5>
 <h5 id="selective-similary-detection-algorithm-ssda">Selective Similary Detection Algorithm (SSDA)</h5>
-<p>In standard correlation methods, the sum over <script type="math/tex">X</script> for each candidate <script type="math/tex">f</script> must be computed in full before a maximum is found.  Barnea, Silverman <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> propose a class alternative schemes which greatly improve computation time in two ways.  The paper calls these algorithms selective similarity detection algorithms (SSDAs), of which one is presented here.</p>
+<p>In standard correlation methods, the sum over <script type="math/tex">X</script> for each candidate <script type="math/tex">f</script> must be computed in full before a maximum is found.  Barnea, Silverman <sup id="fnref:4"><a class="footnote-ref" href="#fn:4" rel="footnote">4</a></sup> propose a class alternative schemes which greatly improve computation time in two ways.  The paper calls these algorithms selective similarity detection algorithms (SSDAs), of which one is presented here.</p>
 <p>First, the paper uses absolute sum of errors (ASE) as a similarity measure, which requires no costly multiplications unlike NCC or SSE.</p>
 <p>
 <script type="math/tex; mode=display">
@@ -166,9 +166,9 @@ PC(i_1, i_2)(\bm{x}) = \mathcal{F}^{-1}\left[ CPSD(i_1, i_2) \right](\bm{x}) = \
 \hat{c} = \arg \max_{\bm{x}} PC(i_1, i_2)(\bm{x})
 </script>
 </p>
-<p>An important consideration here is that the Fourier Shift theorem only holds exactly when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  Foroosh, Zerubia, Berthod <sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup> propose a prefilter which can be applied to both images before phase correlation to reduce these effects.</p>
+<p>An important consideration here is that the Fourier Shift theorem only holds exactly when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  Foroosh, Zerubia, Berthod <sup id="fnref:7"><a class="footnote-ref" href="#fn:7" rel="footnote">7</a></sup> propose a prefilter which can be applied to both images before phase correlation to reduce these effects.</p>
 <h5 id="de-castro-morandi-method">De Castro, Morandi Method</h5>
-<p>De Castro, Morandi <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup> introduced an extension of the phase correlation method which applies to images that are translated and rotated. This method is similar in spirit to the Generalized Iterative Cross Correlation method in that it amounts to repeatedly detransforming <script type="math/tex">i_2</script> with different parameters, testing alignment with <script type="math/tex">i_1</script> using some similarity measure and repeating this process until the correct parameters are found.  Like the standard phase correlation method, this technique claims robustness against frequency dependent noise and non-uniform illumination differences between the images.</p>
+<p>De Castro, Morandi <sup id="fnref:5"><a class="footnote-ref" href="#fn:5" rel="footnote">5</a></sup> introduced an extension of the phase correlation method which applies to images that are translated and rotated. This method is similar in spirit to the Generalized Iterative Cross Correlation method in that it amounts to repeatedly detransforming <script type="math/tex">i_2</script> with different parameters, testing alignment with <script type="math/tex">i_1</script> using some similarity measure and repeating this process until the correct parameters are found.  Like the standard phase correlation method, this technique claims robustness against frequency dependent noise and non-uniform illumination differences between the images.</p>
 <p>Let <script type="math/tex">i_2</script> be a translated and rotated copy of <script type="math/tex">i_1</script>.  Then</p>
 <p>
 <script type="math/tex; mode=display">
@@ -246,7 +246,7 @@ I_2(\bm{\omega}) = e^{-j \langle \bm{\omega}, \bm{c}^* \rangle} I_1(R_{\theta^*}
 S_{s^*} = \begin{bmatrix}s^* & 0 \\ 0 & s^*\end{bmatrix}
 </script>
 </p>
-<p>Sarvaiya, Patnaik, Kothari <sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup> introduced a new method which is capable of registering images that have been translated, rotated and scaled.  They make use of the Fourier scale, Fourier shift and Fourier rotation properties and also the Log-Polar transform (also known as Fourier-Mellin transform), where rotation and scaling in the original domain manifest as translation in the Log-Polar domain.  Their approach is broken into two applications of the phase correlation method, where the first application is used to recover scale and rotation, and the second, translation.</p>
+<p>Sarvaiya, Patnaik, Kothari <sup id="fnref:8"><a class="footnote-ref" href="#fn:8" rel="footnote">8</a></sup> introduced a new method which is capable of registering images that have been translated, rotated and scaled.  They make use of the Fourier scale, Fourier shift and Fourier rotation properties and also the Log-Polar transform (also known as Fourier-Mellin transform), where rotation and scaling in the original domain manifest as translation in the Log-Polar domain.  Their approach is broken into two applications of the phase correlation method, where the first application is used to recover scale and rotation, and the second, translation.</p>
 <p>If <script type="math/tex">i_2</script> is a scaled, rotated and shifted copy of <script type="math/tex">i_1</script>,</p>
 <p>
 <script type="math/tex; mode=display">
@@ -321,7 +321,7 @@ MI(i_1, i_2(f)) = H(i_1) + H(i_2(f)) - H(i_1, i_2(f))
 <h5 id="nmsre-conjugate-descent">NMSRE Conjugate Descent</h5>
 <!-- FIXME assumes linear shift, but this section is about high dimensional f -->
 
-<p>The first method, presented by Guizar-Sicairos, Thurman, Fienup <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup>,  is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image <script type="math/tex">f</script> and a copy <script type="math/tex">g</script> shifted by <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
+<p>The first method, presented by Guizar-Sicairos, Thurman, Fienup <sup id="fnref:6"><a class="footnote-ref" href="#fn:6" rel="footnote">6</a></sup>,  is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image <script type="math/tex">f</script> and a copy <script type="math/tex">g</script> shifted by <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
 <p>
 <script type="math/tex; mode=display">
 f^*_{NMSRE} = \min_{\hat{f}} \frac{\sum_{x} |i_2(\hat{f}(x)) - i_1(x)|^2}{\sum_{x}|i_1(x)|^2}
@@ -352,7 +352,7 @@ r(x_0, y_0) &= \sum_{x, y}I_2(x - x_0, y - y_0)I_1^*(x, y) \\
 <h5 id="gauss-newton-minimization">Gauss-Newton Minimization</h5>
 <h5 id="levenberg-marquardt">Levenberg-Marquardt</h5>
 <h1 id="feature-based-registration">Feature Based Registration</h1>
-<p>Feature based methods involve a preprocessing step known as <em>feature detection</em>, where notable structures in both images are located and recorded.  Detected structures come in a variety of forms, such as polygons (forests, lakes, fields), line segments (roads, buildings), or single points (street intersections, region corners).  There are many algorithms capable of extracting these features and the optimal choice of algorithm is highly dependent on the target scene.  In general, a desirable property of these algorithms is that the same features can be detected in both images and that these features are robust against corruption introduced by function <script type="math/tex">g</script> or noise. <sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p>Feature based methods involve a preprocessing step known as <em>feature detection</em>, where notable structures in both images are located and recorded.  Detected structures come in a variety of forms, such as polygons (forests, lakes, fields), line segments (roads, buildings), or single points (street intersections, region corners).  There are many algorithms capable of extracting these features and the optimal choice of algorithm is highly dependent on the target scene.  In general, a desirable property of these algorithms is that the same features can be detected in both images and that these features are robust against corruption introduced by function <script type="math/tex">g</script> or noise. <sup id="fnref2:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup></p>
 <p>In the next stage, <em>feature matching</em>, detected features are corresponded from both images.</p>
 <h5 id="harris-corner-detection-and-ransac">Harris Corner Detection and RANSAC</h5>
 <h1 id="summary">Summary</h1>
@@ -387,34 +387,34 @@ r(x_0, y_0) &= \sum_{x, y}I_2(x - x_0, y - y_0)I_1^*(x, y) \\
 <hr />
 <ol>
 <li id="fn:1">
-<p>Motion Estimation - Konrad&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>Motion Estimation - Konrad&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p><a href="https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&amp;pid=1-s2.0-S0262885603001379-main.pdf">Image registration methods: a survey</a> - Zitova, Flusser 2003&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p><a href="https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&amp;pid=1-s2.0-S0262885603001379-main.pdf">Image registration methods: a survey</a> - Zitova, Flusser 2003&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p>Brown Survey Paper&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>Brown Survey Paper&#160;<a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
-<p><a href="https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=5008923">Barnea, Silverman 1972</a>&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p><a href="https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=5008923">Barnea, Silverman 1972</a>&#160;<a class="footnote-backref" href="#fnref:4" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 <li id="fn:5">
-<p><a href="https://ieeexplore.ieee.org/document/4767966">De Castro, Morandi 1987</a>&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+<p><a href="https://ieeexplore.ieee.org/document/4767966">De Castro, Morandi 1987</a>&#160;<a class="footnote-backref" href="#fnref:5" rev="footnote" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p><a href="https://www.osapublishing.org/ol/viewmedia.cfm?uri=ol-33-2-156&amp;seq=0">Guizar-Sicairos, Thurman, Fienup 2008</a>&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+<p><a href="https://www.osapublishing.org/ol/viewmedia.cfm?uri=ol-33-2-156&amp;seq=0">Guizar-Sicairos, Thurman, Fienup 2008</a>&#160;<a class="footnote-backref" href="#fnref:6" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 <li id="fn:7">
-<p><a href="https://ieeexplore.ieee.org/document/988953">Foroosh, Zerubia, Berthod 2002</a>&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+<p><a href="https://ieeexplore.ieee.org/document/988953">Foroosh, Zerubia, Berthod 2002</a>&#160;<a class="footnote-backref" href="#fnref:7" rev="footnote" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 <li id="fn:8">
-<p><a href="http://www.jprr.org/index.php/jprr/article/view/355">Sarvaiya, Patnaik, Kothari 2012</a>&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+<p><a href="http://www.jprr.org/index.php/jprr/article/view/355">Sarvaiya, Patnaik, Kothari 2012</a>&#160;<a class="footnote-backref" href="#fnref:8" rev="footnote" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 <li id="fn:9">
-<p>Feature-Based Deformable Image Registration with RANSAC Based Search Correspondence - Colleu, Shen, Matuszewski, Shark, Cariou&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+<p>Feature-Based Deformable Image Registration with RANSAC Based Search Correspondence - Colleu, Shen, Matuszewski, Shark, Cariou&#160;<a class="footnote-backref" href="#fnref:9" rev="footnote" title="Jump back to footnote 9 in the text">&#8617;</a></p>
 </li>
 <li id="fn:10">
-<p>An Automatic Satellite Image Registration Technique Based on Harris Corner Detection and Random Sample Consensus (RANSAC) Outlier Rejection Model - Misra, Moorthi, Dhar, Ramakrishnan&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+<p>An Automatic Satellite Image Registration Technique Based on Harris Corner Detection and Random Sample Consensus (RANSAC) Outlier Rejection Model - Misra, Moorthi, Dhar, Ramakrishnan&#160;<a class="footnote-backref" href="#fnref:10" rev="footnote" title="Jump back to footnote 10 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
