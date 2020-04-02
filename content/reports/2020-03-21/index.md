@@ -21,14 +21,14 @@ For simplicity, a few steps in the reconstruction process are not included here 
 7. Super resolution
 
 <figure style="text-align: center">
-<iframe src="out.html" height=550 width=350></iframe>
+<iframe src="test.html" height=550 width=350></iframe>
 </figure>
 
 The observation model used for generating each observed frame $y_k$ is
 
 $$x_k = \text{blur}_k\left(\frac{s}{\max(s)} * m, \, v\right)$$
 
-$$y_k = \mathcal{N}\left( \text{Pois}(x_k + (n_d + n_b) / f), \sqrt{n_r}\right)$$
+$$y_k = \mathcal{N}\left( \text{Pois}(x_k + (n_d + n_b) / f), n_r\right)$$
 
 with parameters:
 

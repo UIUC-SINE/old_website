@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <style>
+         .pixelated {
+             image-rendering:optimizeSpeed;             /* Legal fallback */
+             image-rendering:-moz-crisp-edges;          /* Firefox        */
+             image-rendering:-o-crisp-edges;            /* Opera          */
+             image-rendering:-webkit-optimize-contrast; /* Safari         */
+             image-rendering:optimize-contrast;         /* CSS3 Proposed  */
+             image-rendering:crisp-edges;               /* CSS4 Proposed  */
+             image-rendering:pixelated;                 /* CSS4 Proposed  */
+             -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
+         }
+         input {
+             width: 300px;
+         }
+        </style>
+    </head>
+
+    <img width=300 class="pixelated" id="img">
+
+    <br>
+
+    <span class="label">max_count:</span>
+    <span class="range">0</span>
+    <br>
+    <input id="slider_0" class="slider" type="range" min="0" max="2" value="0" step="1" oninput="showVal()"/>
+    <br>
+
+    <span class="label">background_noise:</span>
+    <span class="range">0</span>
+    <br>
+    <input id="slider_1" class="slider" type="range" min="0" max="3" value="2" step="1" oninput="showVal()"/>
+    <br>
+
+    <span class="label">drift_velocity:</span>
+    <span class="range">0</span>
+    <br>
+    <input id="slider_2" class="slider" type="range" min="0" max="3" value="2" step="1" oninput="showVal()"/>
+    <br>
+
+    <span class="label">frame_rate:</span>
+    <span class="range">0</span>
+    <br>
+    <input id="slider_3" class="slider" type="range" min="0" max="2" value="0" step="1" oninput="showVal()"/>
+    <br>
+
+
+
+
+    <script defer>
+     var sliders = Array.from(document.getElementsByClassName("slider"));
+     var ranges = Array.from(document.getElementsByClassName("range"));
+     var indicators = Array.from(document.getElementsByClassName("indicator"));
+
+     function update() {
+         var slider_vals = [['20', '40', '80'], ['25', '50', '100', '200'], ['0.05', '0.1', '0.2', '0.4'], ['4', '6', '8']];
+         var indicator_vals = {'0000': [], '0001': [], '0002': [], '0010': [], '0011': [], '0012': [], '0020': [], '0021': [], '0022': [], '0030': [], '0031': [], '0032': [], '0100': [], '0101': [], '0102': [], '0110': [], '0111': [], '0112': [], '0120': [], '0121': [], '0122': [], '0130': [], '0131': [], '0132': [], '0200': [], '0201': [], '0202': [], '0210': [], '0211': [], '0212': [], '0220': [], '0221': [], '0222': [], '0230': [], '0231': [], '0232': [], '0300': [], '0301': [], '0302': [], '0310': [], '0311': [], '0312': [], '0320': [], '0321': [], '0322': [], '0330': [], '0331': [], '0332': [], '1000': [], '1001': [], '1002': [], '1010': [], '1011': [], '1012': [], '1020': [], '1021': [], '1022': [], '1030': [], '1031': [], '1032': [], '1100': [], '1101': [], '1102': [], '1110': [], '1111': [], '1112': [], '1120': [], '1121': [], '1122': [], '1130': [], '1131': [], '1132': [], '1200': [], '1201': [], '1202': [], '1210': [], '1211': [], '1212': [], '1220': [], '1221': [], '1222': [], '1230': [], '1231': [], '1232': [], '1300': [], '1301': [], '1302': [], '1310': [], '1311': [], '1312': [], '1320': [], '1321': [], '1322': [], '1330': [], '1331': [], '1332': [], '2000': [], '2001': [], '2002': [], '2010': [], '2011': [], '2012': [], '2020': [], '2021': [], '2022': [], '2030': [], '2031': [], '2032': [], '2100': [], '2101': [], '2102': [], '2110': [], '2111': [], '2112': [], '2120': [], '2121': [], '2122': [], '2130': [], '2131': [], '2132': [], '2200': [], '2201': [], '2202': [], '2210': [], '2211': [], '2212': [], '2220': [], '2221': [], '2222': [], '2230': [], '2231': [], '2232': [], '2300': [], '2301': [], '2302': [], '2310': [], '2311': [], '2312': [], '2320': [], '2321': [], '2322': [], '2330': [], '2331': [], '2332': []};
+         var slider_positions = sliders.map(e => {return e.value})
+         var index = slider_positions.join("")
+         var filename = index + ".bmp"
+         slider_positions.forEach(function(pos, i){
+             ranges[i].innerHTML = slider_vals[i][pos];
+         });
+         indicators.forEach(function(ind, i){
+             ind.innerHTML = indicator_vals[index][i];
+         });
+         document.getElementById("img").src = "noisy_frame/" + filename;
+         console.log(filename);
+     };
+
+     function showVal(newVal) {
+         update();
+     };
+
+     update();
+
+    </script>
+
+</html>
