@@ -8,3 +8,4 @@ pelican.pid
 *.bbl
 *.blg
 *.log
+*.pkl
