@@ -10,11 +10,11 @@ devserver: output
 	trap "exit" INT TERM
 	trap "kill 0" EXIT
 	# serve content
-	httpwatcher --root output --watch content,templates --port 8000 &
+	httpwatcher --root output --watch content,templates --host 0.0.0.0 --port 8000 &
 	# wait for change and rebuild
 	legoman build
 	while :; do
-		inotifywait -r -e modify --format %w content templates
+		inotifywait -r -e create,modify --format %w content templates
 		legoman build
 	done
 
