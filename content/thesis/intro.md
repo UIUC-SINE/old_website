@@ -35,7 +35,7 @@ This document contains many types of variables which can represent transform par
 
 * bold for variables which represent 1D vectors.  For example $\bm{x}$ is a coordinate vector representing position within an image
 * superscript $*$ for ground truth parameters of $f$.  For example $s^*$ and $\theta^*$ are parameters controlling scaling and rotation
-* hat $\,\hat{}\,$ for algorithmic estimates of ground truth parameters. For example $\hat{\theta}$ may represent the best estimate for $\theta^*$ found by an algorithm
+* hat $\,\hat{}\,$ for algorithmic estimates of ground truth parameters. For example $\hat{\theta}$ represents the estimates for $\theta^*$ found by a particular algorithm
 <!-- * hat $\,\hat{}\,$ for placeholder variables in maximization or minimization problems. For example $\hat{\theta}$ may represent the current value under test in an iterative algorithm searching for $\theta_0$ -->
 <!-- * superscript $*$ for final parameter estimates obtained by registration methods. For example $\theta^*$ is a best estimate for the true $\theta_0$ -->
 
@@ -100,7 +100,7 @@ $$
 ASE(i_1, i_2(f)) = \sum_{\bm{x} \in X} |i_1(\bm{x}) - i_2(\bm{x} - \bm{c})|
 $$
 
-The second optimization uses early stopping and requires that the sum over $X$ be implemented sequentially (e.g. as an iterative software loop).  For a particular candidate $\bm{c}$, the current value of the sum is compared to a threshold parameter after each iteration.  If the ASE surpasses this threshold, the number of iterations is recorded and the algorithm moves on to the next candidate.  If an candidate computation never exceeds $T$, then the final ASE is recorded instead.
+The second optimization uses early stopping and requires that the sum over $X$ be implemented sequentially (e.g. as an iterative software loop).  For a particular candidate $\bm{c}$, the current value of the sum is compared to a threshold parameter $T$ after each iteration.  If the ASE surpasses this threshold, the number of iterations is recorded and the algorithm moves on to the next candidate.  If an candidate computation never exceeds $T$, then the final ASE is recorded instead.
 
 Finally, the candidate with the lowest ASE is selected.  If all candidates surpassed the threshold, then the candidate with the most number of iterations before passing the threshold is selected.
 
