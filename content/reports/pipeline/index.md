@@ -93,7 +93,7 @@ where
 
 #### Motion Blurring
 
-As the detector captures an image, the CMOS sensor must collect enough charge, akin to the shutter speed on a conventional camera.  During this period, the spacecraft may drift causing a blurring of the captured image. This effect can be represented as a convolution of the scene incident on the detector with the motion blurring kernel. We generate the motion blurring kernel using an anti-aliased [line generation function](https://github.com/scikit-image/scikit-image/blob/master/skimage/draw/draw.py#L372). 
+As the detector captures an image, the CMOS sensor must collect enough charge, akin to the shutter speed on a conventional camera.  During this period, the spacecraft may drift causing a blurring of the captured image. This effect can be represented as a convolution of the scene incident on the detector with the motion blurring kernel. We generate the motion blurring kernel using an anti-aliased [line generation function](https://github.com/scikit-image/scikit-image/blob/master/skimage/draw/draw.py#L372).
 
 We take into account the drift and detector parameters to compute the frames. We make two assumptions about the drift of the spacecraft and the scene:
 
@@ -165,16 +165,30 @@ Once the drift is estimated, the frames are coadded such that they align with ea
 
 
 ## Motion and Optical Blur Removal
-The story doesn't end with the coaddition of frames. Although coadding noisy frames helps improve SNR, motion blur is still present in each of these coadded frames.  Depending on the drift velocity and frame rate, this blur degrades our resolution in the direction of drift. 
+The pipeline doesn't end with the co-addition of frames. Although coadding noisy
+frames helps improve SNR, motion blur is still present in each of these coadded
+frames. Depending on the drift velocity and frame rate, this blur degrades our
+resolution in the direction of drift.
 
-Other than the motion blur, there is also the optical blur in the frames due to the photon sieve PSF. We would ideally remove this blur as well to get a sharper reconstruction. 
+Other than the motion blur, there is also the optical blur in the frames due to the photon sieve PSF. We would ideally remove this blur as well to get a sharper reconstruction.
 Note that the coadded image is still noisy and this makes the deblurring a hard task.
 
-In order to obtain the overall blurring kernel, we convolve the motion blurring kernel that is generated using the estimated drift with the photon sieve PSF. This is illustrated in the following diagram:
+In order to obtain the overall blurring kernel, denoted as $h_e$, we convolve
+the motion blurring kernel, denoted as $h_m$, with the photon sieve PSF, $h_p$:
+$$h_e = h_m \ast h_p$$
+$h_m$ is generated using the mentioned line generating algorithm along the
+estimated drift direction with a length determined by the estimated drift
+velocity. The generation of the overall blurring kernel is illustrated in the
+below diagram:
 
 ![Illustration of obtaining the overall blurring kernel](diagram_blur.png){: style=max-width:500px}
 
-Once the overall blurring kernel is obtained, we perform deconvolution on the coadded image. The deconvolution algorithm iteratively reconstructs the underlying sharp scene. 
+Once the overall blurring kernel $h_e$ is obtained, we deconvolve it from the
+co-added image, denoted as $y$, to obtain the underlying high resolution image:
+
+$$\hat x = \text{Deconvolution}(y; h_e)$$
+where the deconvolution algorithm assumes the following relation:
+$$y = x \ast h_e + noise $$
 
 ## Future Steps
 
