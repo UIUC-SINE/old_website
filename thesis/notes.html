@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+    <title>Notes</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="/styles.css" /> 
+    <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js" defer></script> 
+
+
+
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Notes</h1>
+      <time datetime="2020-04-27">2020-04-27</time>
+    </header>
+    <h1 id="papers">Papers</h1>
+<h3 id="registration">Registration</h3>
+<ul>
+<li>
+<p>Fast and accurate image registration: Applications to on-board satellite imaging (Thesis)</p>
+<ul>
+<li>Rais</li>
+<li><a href="https://tel.archives-ouvertes.fr/tel-01485321/file/75996_RAIS_2016_archivage.pdf">Link</a></li>
+<li>Great numerical overview/comparison of two-frame methods under different settings</li>
+<li>Plots comparing runtimes and errors</li>
+<li><a href="https://github.com/martinraism/shiftestimationipol">Implementation</a></li>
+</ul>
+</li>
+<li>
+<p>RASL: Robust Alignment by Sparse and Low-rank Decomposition of Linearly Correlated Images - 2010, 170 citations</p>
+<ul>
+<li>Yi-Ma</li>
+<li>assumes aligned images arranged as columns of a matrix will have low rank<ul>
+<li>not a good assumption for linearly translated images (esp first and last images)</li>
+</ul>
+</li>
+<li>assumes noise is low magnitude gaussian (section 1C paragraph 2)<ul>
+<li>other models and higher noise levels out of scope of paper</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Constrained, Globally Optimal, Multiframe Motion Estimation, 50 citations</p>
+<ul>
+<li>Farsiu, Elad, Milanfar</li>
+<li><a href="https://elad.cs.technion.ac.il/wp-content/uploads/2018/02/26_Stat_MotionEST.pdf">Link</a></li>
+<li>sets up multiframe registration as generic argmin of arbitrary cost</li>
+<li>substitutes lukas-kanade equations to get multiframe optical flow under constant translation<ul>
+<li>doesnt seem feasible at our scale - storing the forward matrix alone is over a billion rows for our problem</li>
+<li>examples given are small images with few frames - only about 40k rows</li>
+<li>presentation on matrix-free cvxpy by Steven Boyd may be useful<ul>
+<li><a href="https://stanford.edu/~boyd/papers/abs_ops.html">Link</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Sequential Image Registration for Astronomical Images, 2 citations</p>
+<ul>
+<li>Shahhosseine, Rezaie, Emamian</li>
+<li><a href="https://ieeexplore.ieee.org/document/6424678">Link</a></li>
+<li>acceleration for registration algorithms, identifies motion direction first</li>
+</ul>
+</li>
+<li>
+<p>Planetary Image Live Stacking via Phase Correlation</p>
+</li>
+</ul>
+<h3 id="super-resolution">Super Resolution</h3>
+<ul>
+<li>
+<p>Super-resolution: a comprehensive survey - 2014, 400 citations</p>
+<ul>
+<li>Nasrollahi, Moeslund</li>
+<li><a href="https://link.springer.com/article/10.1007/s00138-014-0623-4">Link</a></li>
+<li>See section 3.1 Geometric Registration</li>
+</ul>
+</li>
+<li>
+<p>A bayesian approach to adaptive video super resolution - 2011, 181 citations</p>
+<ul>
+<li>Ce Liu, Deqing Sun</li>
+<li>estimates motion, blur kernel and noise level</li>
+<li>Implementations:<ul>
+<li><a href="https://github.com/qiaopTDUN/bayesian-video-super-resolution">bayesian-video-super-resolution</a> (matlab)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Fast and Robust Multiframe Super Resolution - 2004, 2343 Citations</p>
+<ul>
+<li>Farsiu, Robinson</li>
+<li>Implementations: <ul>
+<li><a href="https://github.com/allwillbeok/SuperResolution-1">SuperResolution-1</a></li>
+<li><a href="https://github.com/thomas-koehler/SupER">SupER</a></li>
+<li><a href="https://github.com/enry12/super_resolution">super_resolution</a></li>
+<li><a href="https://github.com/debugCVML/FRSR-Matlab/blob/cc0b766e7b588a43b653ca0f80896e6320b45479/FastRobustSR.m">FastRobustSR</a></li>
+</ul>
+</li>
+<li>Super resolution only, assumes images already registered</li>
+</ul>
+</li>
+</ul>
+<h5 id="nn-based">NN Based</h5>
+<ul>
+<li>
+<p>Detail-revealing Deep Video Super-resolution - 2017, 137 citations</p>
+</li>
+<li>
+<p>Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network</p>
+</li>
+</ul>
+<h3 id="time-delay-estimation">Time Delay Estimation</h3>
+<ul>
+<li>
+<p>TIME DELAY ESTIMATION VIA MULTICHANNEL CROSS-CORRELATION</p>
+<ul>
+<li>could be natural extension of this method to 2D images</li>
+<li>doesnt seem to support subpixel registration out of box (not sure)</li>
+<li>allows nonuniform sensor placement (i.e. non uniform video frame sample times)</li>
+</ul>
+</li>
+<li>
+<p>Robust Time Delay Estimation Exploiting Redundancy Among Multiple Microphones</p>
+</li>
+<li>
+<p>Time delay estimation by generalized cross correlation methods</p>
+</li>
+<li>
+<p>tikhonov parameter estimation</p>
+<ul>
+<li><a href="https://onlinelibrary.wiley.com/doi/full/10.1046/j.1365-2818.2000.00671.x"></a></li>
+</ul>
+</li>
+</ul>
+  </article>
+</main>
+<footer>
+    <p>All source code and data available <a href="https://github.com/UIUC-SINE/uiuc-sine.github.io">here</a></p>
+    <p>SINE UIUC</p>
+</footer>
+</body>
+</html>

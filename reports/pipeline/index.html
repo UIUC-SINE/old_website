@@ -131,7 +131,7 @@ s = s \ast h
 <script type="math/tex">\lambda</script> - wavelength of scene (m)</li>
 </ul>
 <h4 id="motion-blurring">Motion Blurring</h4>
-<p>As the detector captures an image, the CMOS sensor must collect enough charge, akin to the shutter speed on a conventional camera.  During this period, the spacecraft may drift causing a blurring of the captured image. This effect can be represented as a convolution of the scene incident on the detector with the motion blurring kernel. We generate the motion blurring kernel using an anti-aliased <a href="https://github.com/scikit-image/scikit-image/blob/master/skimage/draw/draw.py#L372">line generation function</a>. </p>
+<p>As the detector captures an image, the CMOS sensor must collect enough charge, akin to the shutter speed on a conventional camera.  During this period, the spacecraft may drift causing a blurring of the captured image. This effect can be represented as a convolution of the scene incident on the detector with the motion blurring kernel. We generate the motion blurring kernel using an anti-aliased <a href="https://github.com/scikit-image/scikit-image/blob/master/skimage/draw/draw.py#L372">line generation function</a>.</p>
 <p>We take into account the drift and detector parameters to compute the frames. We make two assumptions about the drift of the spacecraft and the scene:</p>
 <ul>
 <li>linear, constant speed drift model without rotation</li>
@@ -197,14 +197,29 @@ s = s \ast h
 </figure>
 
 <h2 id="motion-and-optical-blur-removal">Motion and Optical Blur Removal</h2>
-<p>The story doesn't end with the coaddition of frames. Although coadding noisy frames helps improve SNR, motion blur is still present in each of these coadded frames.  Depending on the drift velocity and frame rate, this blur degrades our resolution in the direction of drift. </p>
-<p>Other than the motion blur, there is also the optical blur in the frames due to the photon sieve PSF. We would ideally remove this blur as well to get a sharper reconstruction. 
+<p>The pipeline doesn't end with the co-addition of frames. Although coadding noisy
+frames helps improve SNR, motion blur is still present in each of these coadded
+frames. Depending on the drift velocity and frame rate, this blur degrades our
+resolution in the direction of drift.</p>
+<p>Other than the motion blur, there is also the optical blur in the frames due to the photon sieve PSF. We would ideally remove this blur as well to get a sharper reconstruction.
 Note that the coadded image is still noisy and this makes the deblurring a hard task.</p>
-<p>In order to obtain the overall blurring kernel, we convolve the motion blurring kernel that is generated using the estimated drift with the photon sieve PSF. This is illustrated in the following diagram:</p>
+<p>In order to obtain the overall blurring kernel, denoted as <script type="math/tex">h_e</script>, we convolve
+the motion blurring kernel, denoted as <script type="math/tex">h_m</script>, with the photon sieve PSF, <script type="math/tex">h_p</script>:
+<script type="math/tex; mode=display">h_e = h_m \ast h_p</script>
+<script type="math/tex">h_m</script> is generated using the mentioned line generating algorithm along the
+estimated drift direction with a length determined by the estimated drift
+velocity. The generation of the overall blurring kernel is illustrated in the
+below diagram:</p>
 <p>
 <figure style="max-width:500px"><img src="diagram_blur.png" /><figcaption>Illustration of obtaining the overall blurring kernel</figcaption></figure>
 </p>
-<p>Once the overall blurring kernel is obtained, we perform deconvolution on the coadded image. The deconvolution algorithm iteratively reconstructs the underlying sharp scene. </p>
+<p>Once the overall blurring kernel <script type="math/tex">h_e</script> is obtained, we deconvolve it from the
+co-added image, denoted as <script type="math/tex">y</script>, to obtain the underlying high resolution image:</p>
+<p>
+<script type="math/tex; mode=display">\hat x = \text{Deconvolution}(y; h_e)</script>
+where the deconvolution algorithm assumes the following relation:
+<script type="math/tex; mode=display">y = x \ast h_e + noise </script>
+</p>
 <h2 id="future-steps">Future Steps</h2>
 <p>These are other steps in our pipeline which will be documented in the future.</p>
 <ul>

@@ -63,25 +63,25 @@
 <p>This paper presents 3 subpixel registration methods all based on phase-correlation.  The second of these methods seems to be widely cited because of it's simplicity.</p>
 <h4 id="method-1-conjugate-descent">Method 1 - Conjugate Descent</h4>
 <p>The first method presented is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image <script type="math/tex">f</script> and a copy <script type="math/tex">g</script> shifted by <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
-<div class="codehilite"><pre><span></span>NMSRE^2 = \min_{x_0, y_0}\frac{\sum_{x,y} |g(x - x_0, y - y_0) - f(x, y)|^2}{\sum_{x,y}|f(x, y)|^2}
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="err">NMSRE^2 = \min_{x_0, y_0}\frac{\sum_{x,y} |g(x - x_0, y - y_0) - f(x, y)|^2}{\sum_{x,y}|f(x, y)|^2}</span>
+</code></pre></div>
 
 
 <p>By minimizing the NMSRE over <script type="math/tex">(x_0, y_0)</script>, the true offset of <script type="math/tex">g</script> can be found.  This is not mentioned in the paper, but this error formulation implicitly assumes a circular image shift.</p>
 <p>Rewriting the above definition into a maximization problem, we can achieve a more useful formulation</p>
-<div class="codehilite"><pre><span></span>NMSRE^2 = 1 - \frac{\max_{x_0, y_0} |r(x_0, y_0)|^2}{\sum_{x, y}|f(x, y)|^2 \sum_{x, y}|g(x, y)|^2} \\
+<div class="codehilite"><pre><span></span><code><span class="n">NMSRE</span><span class="o">^</span><span class="mi">2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="err">\</span><span class="n">frac</span><span class="err">{\</span><span class="n">max_</span><span class="err">{</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="err">}</span> <span class="o">|</span><span class="n">r</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">)</span><span class="o">|^</span><span class="mi">2</span><span class="err">}{\</span><span class="n">sum_</span><span class="err">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="err">}</span><span class="o">|</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">|^</span><span class="mi">2</span> <span class="err">\</span><span class="n">sum_</span><span class="err">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="err">}</span><span class="o">|</span><span class="k">g</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">|^</span><span class="mi">2</span><span class="err">}</span> <span class="err">\\</span>
 
-\begin{aligned}
-r(x_0, y_0) &amp;= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
-&amp;= \sum_{u, v} F(u, v)G^*(u, v) \text{exp}\left[ j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right]
-\end{aligned}
-</pre></div>
+<span class="err">\</span><span class="k">begin</span><span class="err">{</span><span class="n">aligned</span><span class="err">}</span>
+<span class="n">r</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">)</span> <span class="o">&amp;=</span> <span class="err">\</span><span class="n">sum_</span><span class="err">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="err">}</span><span class="k">g</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_0</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y_0</span><span class="p">)</span><span class="n">f</span><span class="o">^*</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="err">\\</span>
+<span class="o">&amp;=</span> <span class="err">\</span><span class="n">sum_</span><span class="err">{</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="err">}</span> <span class="n">F</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span><span class="k">G</span><span class="o">^*</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="err">\</span><span class="nb">text</span><span class="err">{</span><span class="n">exp</span><span class="err">}\</span><span class="k">left</span><span class="p">[</span> <span class="n">j</span> <span class="mi">2</span> <span class="err">\</span><span class="n">pi</span> <span class="err">\</span><span class="k">left</span><span class="p">(</span> <span class="n">u</span> <span class="err">\</span><span class="n">frac</span><span class="err">{</span><span class="n">x_0</span><span class="err">}{</span><span class="n">M</span><span class="err">}</span> <span class="o">+</span> <span class="n">v</span> <span class="err">\</span><span class="n">frac</span><span class="err">{</span><span class="n">y_0</span><span class="err">}{</span><span class="n">N</span><span class="err">}</span> <span class="err">\</span><span class="k">right</span><span class="p">)</span> <span class="err">\</span><span class="k">right</span><span class="p">]</span>
+<span class="err">\</span><span class="k">end</span><span class="err">{</span><span class="n">aligned</span><span class="err">}</span>
+</code></pre></div>
 
 
 <p>where <script type="math/tex">r</script> is cross correlation and <script type="math/tex">F</script> and <script type="math/tex">G</script> are the image DFTs of size <script type="math/tex">M \times N</script>.</p>
 <p>Since all other terms are constant, we need only minimize <script type="math/tex">|r(x_0, y_0)|^2</script>.</p>
-<div class="codehilite"><pre><span></span>\frac{d(r(x_0, y_0))}{dx_0} = 2 \text{Im} \left(r(x_0, y_0) \sum_{u, v} \frac{2 \pi u}{M} F^*(u, v) \times G(u, v) \text{exp} \left[-j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right] \right)
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="err">\frac{d(r(x_0, y_0))}{dx_0} = 2 \text{Im} \left(r(x_0, y_0) \sum_{u, v} \frac{2 \pi u}{M} F^*(u, v) \times G(u, v) \text{exp} \left[-j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right] \right)</span>
+</code></pre></div>
 
 
 <p>With this partial derivative (and a similar for <script type="math/tex">y_0</script>) we can use standard conjugate descent to solve for <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
@@ -109,9 +109,9 @@ r(x_0, y_0) &amp;= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
 <p>The fundamental assumption of this paper is that a subpixel shift of an image is actually an integer shift of a higher resolution image that has been subsequently downsampled.</p>
 <p>The paper then goes on to show that while phase-correlating the high resolution images results in a dirac delta corresponding to the image offset (a well known result), phase-correlation of the downsampled images yields a sinc function centered at the image offset.</p>
 <p>i.e.</p>
-<div class="codehilite"><pre><span></span>\text{PC}_{HR}(x) = \text{IDFT}(\text{CPSD}_{HR}) = \delta(x - x_0) \\
-\text{PC}_{LR}(x) = \text{IDFT}(\text{CPSD}_{LR}) = \frac{\sin(\pi(Mx + x_0))}{\pi(Mx + x_0)}
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="err">\text{PC}_{HR}(x) = \text{IDFT}(\text{CPSD}_{HR}) = \delta(x - x_0) \\</span>
+<span class="err">\text{PC}_{LR}(x) = \text{IDFT}(\text{CPSD}_{LR}) = \frac{\sin(\pi(Mx + x_0))}{\pi(Mx + x_0)}</span>
+</code></pre></div>
 
 
 <p>where <script type="math/tex">PC_{HR}</script> and <script type="math/tex">PC_{LR}</script> are the high-resolution and downsampled phase-correlation results, respectively.  This is illustrated below.</p>
@@ -123,8 +123,8 @@ r(x_0, y_0) &amp;= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
 </p>
 <h4 id="solving-for-the-subpixel-offset">Solving for the subpixel offset</h4>
 <p>We can analytically solve for the subpixel offset by choosing two points <script type="math/tex">c_0</script> and <script type="math/tex">c_1</script> from the phase-correlation result and applying the <script type="math/tex">PC_{LR}</script> equation.</p>
-<div class="codehilite"><pre><span></span>\frac{\sin(\pi x_0)}{\pi x_0} = c_0 \text{ and } \frac{\sin(\pi (M + x_0))}{\pi (M + x_0) = c_1} \Rightarrow \frac{x_0}{M} = \frac{c_1}{c_0 - c_1}
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="err">\frac{\sin(\pi x_0)}{\pi x_0} = c_0 \text{ and } \frac{\sin(\pi (M + x_0))}{\pi (M + x_0) = c_1} \Rightarrow \frac{x_0}{M} = \frac{c_1}{c_0 - c_1}</span>
+</code></pre></div>
 
 
 <p>A good choice for <script type="math/tex">c_0</script> and <script type="math/tex">c_1</script> are the highest energy points of the phase-correlation result, shown below.</p>
@@ -137,19 +137,19 @@ r(x_0, y_0) &amp;= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
 <p>There are a number of variations of Prony's method, but I chose the one presented in ECE551.  i.e. find an annihilating filter and compute its roots.</p>
 <h4 id="overview">Overview</h4>
 <p>Prony's method is capable of recovering a signal of the form</p>
-<div class="codehilite"><pre><span></span>x(t) = \sum_{k=0}^{K-1} e^{j 2 \pi \omega_k t}
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="err">x(t) = \sum_{k=0}^{K-1} e^{j 2 \pi \omega_k t}</span>
+</code></pre></div>
 
 
 <p>exactly given a finite number of samples.</p>
 <p>By solving the following system for the FIR filter <script type="math/tex">h</script>
 </p>
-<div class="codehilite"><pre><span></span>\begin{bmatrix}
-x[0] &amp; \dots &amp; x[K] \\ &amp; \vdots &amp; \\ x[N - K - 1] &amp; \dots &amp; x[N - 1]
-\end{bmatrix}
-\begin{bmatrix}h[K] \\ \vdots \\ h[0] \end{bmatrix} =
-\begin{bmatrix} 0 \\ \vdots \\ 0 \end{bmatrix}
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="err">\</span><span class="k">begin</span><span class="err">{</span><span class="n">bmatrix</span><span class="err">}</span><span class="w"></span>
+<span class="n">x</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="err">\</span><span class="n">dots</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">x</span><span class="o">[</span><span class="n">K</span><span class="o">]</span><span class="w"> </span><span class="err">\\</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="err">\</span><span class="n">vdots</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="err">\\</span><span class="w"> </span><span class="n">x</span><span class="o">[</span><span class="n">N - K - 1</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="err">\</span><span class="n">dots</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">x</span><span class="o">[</span><span class="n">N - 1</span><span class="o">]</span><span class="w"></span>
+<span class="err">\</span><span class="k">end</span><span class="err">{</span><span class="n">bmatrix</span><span class="err">}</span><span class="w"></span>
+<span class="err">\</span><span class="k">begin</span><span class="err">{</span><span class="n">bmatrix</span><span class="err">}</span><span class="n">h</span><span class="o">[</span><span class="n">K</span><span class="o">]</span><span class="w"> </span><span class="err">\\</span><span class="w"> </span><span class="err">\</span><span class="n">vdots</span><span class="w"> </span><span class="err">\\</span><span class="w"> </span><span class="n">h</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"> </span><span class="err">\</span><span class="k">end</span><span class="err">{</span><span class="n">bmatrix</span><span class="err">}</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="err">\</span><span class="k">begin</span><span class="err">{</span><span class="n">bmatrix</span><span class="err">}</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="err">\\</span><span class="w"> </span><span class="err">\</span><span class="n">vdots</span><span class="w"> </span><span class="err">\\</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="err">\</span><span class="k">end</span><span class="err">{</span><span class="n">bmatrix</span><span class="err">}</span><span class="w"></span>
+</code></pre></div>
 
 
 <p>then solving for the roots of the polynomial formed by <script type="math/tex">h</script>, we can find the exact <script type="math/tex">\omega_k</script>s that form <script type="math/tex">x</script>.</p>
