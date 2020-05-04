@@ -10,8 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/mathtex-script-type.min.js" defer></script> 
 
-
-
 </head>
 <body>
 <main>
@@ -26,6 +24,8 @@
     - can we estimate expected registration error?  [ argmax(sum) ] vs [ mean(argmax, argmax, ...) ]
 -->
 
+<style> c { color: gray } </style>
+
 <p>First and second level bullets are sections and subsections.  Third level bullets are further content breakdowns of subsections.</p>
 <ul>
 <li>Abstract</li>
@@ -38,80 +38,126 @@
 <li>
 <p>Chapter 1 - Introduction</p>
 <ul>
-<li>Motion Estimation, Segmentation, and Registration</li>
-<li>Registration Problem Model</li>
-<li>Choice of Motion Prior</li>
+<li>Motion Estimation, Segmentation, and Registration<ul>
+<li><c>Describe techniques of motion estimation, segmentation, registration.  What fields are they used in (GIS, CT, remote sensing, etc) and related applications. </c></li>
+</ul>
+</li>
+<li>Registration Problem Model<ul>
+<li><c>Generic mathematical model for a two-frame registration problem, describing how registration involves finding some specific transform which warps the <em>reference</em> image to the <em>template</em> image.</c></li>
+</ul>
+</li>
 <li>Categorizing Registration Methods<ul>
-<li>4 step generalization of registration methods <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup><ol>
+<li><c> 4 step generalization of registration methods <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup><ol>
 <li>Feature detection</li>
 <li>Feature matching</li>
 <li>Transform model estimation</li>
-<li>Image transformation</li>
+<li>Image transformation
+</c></li>
 </ol>
 </li>
 </ul>
 </li>
-<li>Motivating Problem</li>
+<li>Choice of Motion Prior<ul>
+<li><c>Describe some families of transforms (translation, rotation, affine, scale, rubbersheeting, etc.) and which are used in some common problems (.e.g rubbersheet transform might be used to align faces of different shapes).  e.g. Mention effects on algorithm complexity.</c></li>
+</ul>
+</li>
+<li>Motivating Problem<ul>
+<li><c>1 page description of VISORS project and justification for why this choice of motion prior (constant translation) is appropriate.  Show some simulated images to illustrate extreme observation noise.</c></li>
+</ul>
+</li>
+<li>Outline<ul>
+<li><c>Chapter 2 introduces classes of image registration and describes popular registration methods from each class.  Chapter 3 introduces the idea of subpixel registration, its uses, and gives a summary of a fast subpixel registration algorithm which is used to derive a new fast multi-frame subpixel algorithm, described in chapter 4.  Chapter 5 contains numerical registration experiments under various settings, a description of the pipeline used to generate the test images, and some tests involving other classes of images unrelated to the VISORS project.</c></li>
+</ul>
+</li>
 </ul>
 </li>
 <li>
 <p>Chapter 2 - Review of Global Registration Methods</p>
 <ul>
+<li><c>The primary purpose of this chapter is to overview the classes of registration methods and highlight strenghts and weaknesses. </c></li>
 <li>Area Based Methods<ul>
-<li>Cross Correlation</li>
-<li>Normalized CC</li>
-<li>Selective Similarity Detection Algorithm</li>
+<li><c>Methods include Cross Correlation, Normalized CC and Selective Similarity Detection Algorithm</c></li>
+<li><c>Appropriate for situations where high noise immunity is needed.</c></li>
 </ul>
 </li>
 <li>Information Based Methods<ul>
-<li>Mutual Information</li>
+<li><c>Mutual Information</c></li>
 </ul>
 </li>
 <li>Optimization Based Methods<ul>
-<li>Lukas-Kanade Optical Flow</li>
+<li><c>Lukas-Kanade Optical Flow</c></li>
 </ul>
 </li>
 <li>Featured Based Methods<ul>
-<li>RANSAC</li>
+<li><c>Currently state of the art for handheld video super resolution applications</li>
+<li><c>RANSAC</c></li>
+<li><c>Features need to be accurately detected and localized -&gt; not good for high noise</c></li>
 </ul>
 </li>
 <li>Frequency Based Methods<ul>
-<li>Phase Correlation</li>
-<li>de Castro, Morandi Method <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">3</a></sup></li>
+<li><c>Methods include phase correlation, de Castro, Morandi Method <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">3</a></sup></c></li>
+<li><c>In the next section I introduce another frequency based method which my work is based upon</c></li>
 </ul>
 </li>
 </ul>
 </li>
 <li>
-<p>Chapter 3 - Fast Subpixel Registration <sup id="fnref2:6"><a class="footnote-ref" href="#fn:6">4</a></sup></p>
+<p>Chapter 3 - Subpixel Registration <sup id="fnref2:6"><a class="footnote-ref" href="#fn:6">4</a></sup></p>
 <ul>
-<li>Coarse Estimation</li>
-<li>Fine Estimation</li>
+<li>Coarse Estimation<ul>
+<li><c>Coarse estimation step of algorithm.  Just a simple argmax of circular cross correlation implemented via FFTs</c></li>
+</ul>
+</li>
+<li>Fine Estimation<ul>
+<li><c>Fine estimation step of algorithm.  Involves direct DFT evaluation of a small patch centered around coarse pixel.</c></li>
+</ul>
+</li>
 <li>Optimality</li>
-<li>Padded FFT vs Direct DFT</li>
+<li>Padded FFT vs Direct DFT<ul>
+<li><c>Explanation of why direct DFT evaluation is significantly faster than a padded FFT approach for the fine estimation step.  Computational complexity analysis?</c></li>
+</ul>
+</li>
 </ul>
 </li>
 <li>
 <p>Chapter 4 - Multiframe Subpixel Registration</p>
 <ul>
+<li>Multiframe Registration Model<ul>
+<li><c>Introduce mathematical model for multiframe registration describing how registration involves finding a set of transforms parameterized by frame number rather than a single transform.</c></li>
+</ul>
+</li>
 <li>Coarse Estimation with All Frames</li>
 <li>Fine Estimation with All Frames</li>
-<li>Optimality</li>
+<li>Optimality<ul>
+<li><c>I have a <a href="/reports/2020-03-07/">partial proof</a> showing that the ML solution to a multiframe registration problem is similar to my algorithm.  Need to revisit this before deciding to include it.</c></li>
+</ul>
+</li>
 </ul>
 </li>
 <li>
 <p>Chapter 5 - Numerical Experiments</p>
 <ul>
-<li>Nanoflare Scene Generation</li>
-<li>Video Sequence Generation<ul>
-<li>Optical Blurring and Point Spread Functions</li>
-<li>Photon Sieve</li>
-<li>Motion Blurring</li>
+<li>Generation of Test Data<ul>
+<li><c>Nanoflare Scene Generation</c></li>
+<li><c>Video Sequence Generation</c><ul>
+<li><c>Optical Blurring and Point Spread Functions</c></li>
+<li><c>Photon Sieve</c></li>
+<li><c>Motion Blurring</c></li>
 </ul>
 </li>
-<li>Gaussian and Poisson Noise at Detector</li>
-<li>Registration Results</li>
-<li>Other Image Classes</li>
+<li><c>Gaussian and Poisson Noise at Detector</c></li>
+</ul>
+</li>
+<li>Registration Results<ul>
+<li><c>Test algorithm under different noise levels, drift velocities, drift angles, framerates, number of frames.</c></li>
+<li><c>This would also be the section to compare my algorithm against another multiframe registration algorithm.</c></li>
+</ul>
+</li>
+<li>Other Image Classes<ul>
+<li><c>Similar tests on other images unrelated to VISORS to show algorithm is more generally applicable.  These images will have much less noise.</c></li>
+<li><c>What are some other scenarios where a constant translation motion prior is appropriate?</c></li>
+</ul>
+</li>
 </ul>
 </li>
 <li>
