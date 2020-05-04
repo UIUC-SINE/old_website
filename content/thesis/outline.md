@@ -1,51 +1,116 @@
 ---
 template: project.j2
-date: 2019-01-27
+date: 2020-04-27
 title: Outline
 ---
 
-#### Reference Theses
-
-- [MRI Registration and Segmentation for Machine Learning Diagnosis of Parkinson's Disease](http://hdl.handle.net/2142/55634)
-
 <!--
-
 - is [^1] equivalent to Prony's method when using all image pixels?
 - Guizar-Sicairos multiframe extension
     - can we estimate expected registration error?  [ argmax(sum) ] vs [ mean(argmax, argmax, ...) ]
-
 -->
 
-#### Outline
+<style> c { color: gray } </style>
 
-Goal: combine work from *Guizar-Sicairos, Thurman, Fienup* [^5] (linear subpixel registration), *Sarvaiya, Patnaik, Kothari* [^6] (rotational, scaling registration), and extend to a multiframe setting
 
-- Introduction
-    - Define registration, motion estimation, segmentation
-    - Registration model (from thesis draft) [Draft](https://uiuc-sine.github.io/thesis/intro.html#introduction)
-    - 4 step generalization of registration methods [^2]
-        1. Feature detection
-        2. Feature matching
-        3. Transform model estimation
-        4. Image transformation
+First and second level bullets are sections and subsections.  Third level bullets are further content breakdowns of subsections.
+
+- Abstract
+- Contribution of Thesis
+    - Goal: Extend work from *Guizar-Sicairos, Thurman, Fienup* [^5] (linear subpixel registration) to a multiframe setting
+
+- Chapter 1 - Introduction
+    - Motion Estimation, Segmentation, and Registration
+        - <c>Describe techniques of motion estimation, segmentation, registration.  What fields are they used in (GIS, CT, remote sensing, etc) and related applications. </c>
+    - Registration Problem Model
+        - <c>Generic mathematical model for a two-frame registration problem, describing how registration involves finding some specific transform which warps the *reference* image to the *template* image.</c>
+    - Categorizing Registration Methods
+        - <c> 4 step generalization of registration methods [^2]
+            1. Feature detection
+            2. Feature matching
+            3. Transform model estimation
+            4. Image transformation
+            </c>
+    - Choice of Motion Prior
+        - <c>Describe some families of transforms (translation, rotation, affine, scale, rubbersheeting, etc.) and which are used in some common problems (.e.g rubbersheet transform might be used to align faces of different shapes).  e.g. Mention effects on algorithm complexity.</c>
+    - Motivating Problem
+        - <c>1 page description of VISORS project and justification for why this choice of motion prior (constant translation) is appropriate.  Show some simulated images to illustrate extreme observation noise.</c>
+    - Outline
+        - <c>Chapter 2 introduces classes of image registration and describes popular registration methods from each class.  Chapter 3 introduces the idea of subpixel registration, its uses, and gives a summary of a fast subpixel registration algorithm which is used to derive a new fast multi-frame subpixel algorithm, described in chapter 4.  Chapter 5 contains numerical registration experiments under various settings, a description of the pipeline used to generate the test images, and some tests involving other classes of images unrelated to the VISORS project.</c>
+        
+- Chapter 2 - Review of Global Registration Methods
+    - <c>The primary purpose of this chapter is to overview the classes of registration methods and highlight strenghts and weaknesses. </c>
+    - Area Based Methods
+        - <c>Methods include Cross Correlation, Normalized CC and Selective Similarity Detection Algorithm</c>
+        - <c>Appropriate for situations where high noise immunity is needed.</c>
+    - Information Based Methods
+        - <c>Mutual Information</c>
+    - Optimization Based Methods
+        - <c>Lukas-Kanade Optical Flow</c>
+    - Featured Based Methods
+        - <c>Currently state of the art for handheld video super resolution applications
+        - <c>RANSAC</c>
+        - <c>Features need to be accurately detected and localized -> not good for high noise</c>
+    - Frequency Based Methods
+        - <c>Methods include phase correlation, de Castro, Morandi Method [^5]</c>
+        - <c>In the next section I introduce another frequency based method which my work is based upon</c>
     
-- Chapter 1 - Registration via Phase Correlation
-    - Area based methods - cross correlation, normalized CC, etc
-    - Frequency based methods - Phase correlation
-        - Based on Fourier shift property - CPSD of shifted signal gives complex exponential
-        - Provides sharper peak compared to CC based methods
-        - Resistance
-    - Pre whitening
-    - Rotational/Scaling Extension to Phase correlation
+- Chapter 3 - Subpixel Registration [^6]
+    - Coarse Estimation
+        - <c>Coarse estimation step of algorithm.  Just a simple argmax of circular cross correlation implemented via FFTs</c>
+    - Fine Estimation
+        - <c>Fine estimation step of algorithm.  Involves direct DFT evaluation of a small patch centered around coarse pixel.</c>
+    - Optimality
+    - Padded FFT vs Direct DFT
+        - <c>Explanation of why direct DFT evaluation is significantly faster than a padded FFT approach for the fine estimation step.  Computational complexity analysis?</c>
     
-- Chapter 2 - Subpixel Registration
-    - 
+- Chapter 4 - Multiframe Subpixel Registration
+    - Multiframe Registration Model
+        - <c>Introduce mathematical model for multiframe registration describing how registration involves finding a set of transforms parameterized by frame number rather than a single transform.</c>
+    - Coarse Estimation with All Frames
+    - Fine Estimation with All Frames
+    - Optimality
+        - <c>I have a [partial proof](/reports/2020-03-07/) showing that the ML solution to a multiframe registration problem is similar to my algorithm.  Need to revisit this before deciding to include it.</c>
+        
+- Chapter 5 - Numerical Experiments
+    - Generation of Test Data
+        - <c>Nanoflare Scene Generation</c>
+        - <c>Video Sequence Generation</c>
+            - <c>Optical Blurring and Point Spread Functions</c>
+            - <c>Photon Sieve</c>
+            - <c>Motion Blurring</c>
+        - <c>Gaussian and Poisson Noise at Detector</c>
+    - Registration Results
+        - <c>Test algorithm under different noise levels, drift velocities, drift angles, framerates, number of frames.</c>
+        - <c>This would also be the section to compare my algorithm against another multiframe registration algorithm.</c>
+    - Other Image Classes
+        - <c>Similar tests on other images unrelated to VISORS to show algorithm is more generally applicable.  These images will have much less noise.</c>
+        - <c>What are some other scenarios where a constant translation motion prior is appropriate?</c>
+    
+- Chapter 6 - Conclusion
+    - Future Work
+        - Extension to Rotational Motion [^8]
+        
+# Timeline
 
-- Chapter 3 - Multiframe Registration (needs expanding)
-    - Give definition and expand registration model from introduction
-    - Prior work
-    - Introduce my multiframe extension to *Guizar-Sicairos, Thurman, Fienup*
-        - How does this compare to simply averaging registration estimates for adjacent frames (expected registration error)
+- May 4 - Introduction completed.
+    - Some of this introductory material is present in the previous draft.
+- May 11 - Chapter 3 completed.
+    - Chapter 3 will be a writeup of the Guizar-Sicairos paper [^6].
+- May 25 - Chapter 4 completed.  End of numerical experiments.
+- June 2 - Chapters 2, 5 completed.  Editing by Farzad begins.
+    - Much of chapter 2 will come from previous drafts.
+    - Chapter 5 follows the same format as the [optics pipeline document](https://uiuc-sine.github.io/reports/pipeline/)
+- July 2 - Last day to start MS thesis check.
+- July 24 - MS thesis deposit
+
+# Thesis Checklist
+
+- [x] Registered for ECE599
+- [ ] Thesis/Dissertation Approval Form
+- [ ] Apply for graduation
+- [ ] File thesis title with department
+- [ ] Electronic Submission
 
 [^1]: [Extension of phase correlation to subpixel registration](https://ieeexplore.ieee.org/abstract/document/988953) - Foroosh, Zerubia, Berthod
 [^2]: [Image registration methods: a survey](https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&pid=1-s2.0-S0262885603001379-main.pdf) - Zitova, Flusser 2003
@@ -53,59 +118,5 @@ Goal: combine work from *Guizar-Sicairos, Thurman, Fienup* [^5] (linear subpixel
 [^6]: [Efficient subpixel image registration algorithms](https://www.osapublishing.org/ol/viewmedia.cfm?uri=ol-33-2-156&seq=0) - Guizar-Sicairos, thurman, Fienup 2008
 [^8]: [Image Registration Using Log Polar Transform and Phase Correlation to Recover Higher Scale](http://www.jprr.org/index.php/jprr/article/view/355) - Sarvaiya, Patnaik, Kothari 2012
 
-
-#### Multiframe Methods
-- Fast and accurate image registration: Applications ot on-boad satellite imaging
-  - Rais
-  - https://tel.archives-ouvertes.fr/tel-01485321/file/75996_RAIS_2016_archivage.pdf
-  - Great numerical overview/comparison of two-frame methods under different settings
-  - Plots comparing runtimes and errors
-  - Implementation: https://github.com/martinraism/shiftestimationipol
+    
   
-- Super-resolution: a comprehensive survey - 2014, 400 citations
-  - Nasrollahi, Moeslund
-  - https://link.springer.com/article/10.1007/s00138-014-0623-4
-  - Section 3.1 Geometric Registration
-    - 
-
-- RASL: Robust Alignment by Sparse and Low-rank Decomposition of Linearly Correlated Images - 2010, 170 citations
-  - Yi-Ma
-  - assumes aligned images arranged as columns of a matrix will have low rank
-    - not a good assumption for linearly translated images (esp first and last images)
-  - assumes noise is low magnitude gaussian (section 1C paragraph 2)
-    - other models and higher noise levels out of scope of paper
-
-- A bayesian approach to adaptive video super resolution - 2011, 181 citations
-  - Ce Liu, Deqing Sun
-  - estimates motion, blur kernel and noise level
-  - Implementations:
-    - https://github.com/qiaopTDUN/bayesian-video-super-resolution (matlab)
-  
-- Fast and Robust Multiframe Super Resolution - 2004, 2343 Citations
-  - Farsiu, Robinson
-  - Implementations: 
-    - https://github.com/allwillbeok/SuperResolution-1
-    - https://github.com/thomas-koehler/SupER
-    - https://github.com/enry12/super_resolution
-    - https://github.com/debugCVML/FRSR-Matlab/blob/cc0b766e7b588a43b653ca0f80896e6320b45479/FastRobustSR.m
-  - Super resolution only, assumes images already registered
-
-##### NN Based
-
-- Detail-revealing Deep Video Super-resolution - 2017, 137 citations
-
-- Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network
-
-##### Time delay estimation
-
-- TIME DELAY ESTIMATION VIA MULTICHANNEL CROSS-CORRELATION
-  - could be natural extension of this method to 2D images
-  - doesnt seem to support subpixel registration out of box (not sure)
-  - allows nonuniform sensor placement (i.e. non uniform video frame sample times)
-
-- Robust Time Delay Estimation Exploiting Redundancy Among Multiple Microphones
-
-- Time delay estimation by generalized cross correlation methods
-
-- tikhonov parameter estimation
-  - https://onlinelibrary.wiley.com/doi/full/10.1046/j.1365-2818.2000.00671.x
