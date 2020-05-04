@@ -8,9 +8,10 @@ title: Introduction
 
 # Introduction
 
-*Motion estimation*, a related field, is the process of identifying motion captured in a series of images (usually frames of a video).  This motion may be due to motion of the camera which causes the whole scene to appear to move (*apparent motion*), or individual objects moving independently within the frame.  In motion fields, a velocity vector is associated with each pixel in a particular region of the image (*local* motion estimation) or the image as a whole (*global* motion estimation).  These motion vectors usually represent 2D motion across the image, but are sometimes 3D to capture movement in 3D space.  When a motion field for individual pixels has been computed it is common to group motion vectors that belong to the same moving object, a process known as *motion segmentation*. [^1]
+*Motion estimation*, a related field, is the process of identifying motion captured in a series of images (usually frames of a video).  This motion may be due to motion of the camera which causes the whole scene to appear to move (*apparent motion*), or individual objects moving independently within the frame.  In motion fields, a velocity vector is associated with each pixel in a particular region of the image (*local* motion estimation) or the image as a whole (*global* motion estimation).  These motion vectors usually represent 2D motion across the image, but may also be 3D to capture movement in 3D space.  When a motion field for individual pixels has been computed it is common to group motion vectors that belong to the same moving object, a process known as *motion segmentation*. [^1]
 
-*Image registration* is the process of overlaying two images of the same scene taken at different times, different viewpoints, or with different imaging equipment.  Registration is an important step in countless fields in remote sensing.  Geographic information systems (GIS), medical computer tomography (CT), cartography and computer vision all make extensive use of image registration for the purposes of image fusion and denoising, change detection or super-resolution.
+*Image registration* is the process of transforming multiple snapshots so that subjects or features common to two or more snapshots are aligned.
+The images may be stitched into a composite image to get a wider field of view, higher resolution, reduced noise, or may be simply be aligned as in the case of video stabilization.  Depending on the problem, registration algorithms often need to contend with changes in the scene being imaged (due to elapsed time between snapshots), perspective changes (changes in camera position), and illumination changes (from different imaging equipment).  Registration is an important step in countless fields in remote sensing.  Geographic information systems (GIS), medical computer tomography (CT), cartography and computer vision all make extensive use of image registration.
 
 Let $i_1$ and $i_2$ be two images captured of a scene.  These are often called the *reference* and *template* images.  In image registration, we want to find a mapping from regions in the template image to regions in the reference image.  More formally, we want to find $f$ such that
 
@@ -22,9 +23,9 @@ where $\bm{x}$ is a 2D coordinate in the image overlap region $X$, $f$ is some u
 
 *Zitova, Flusser 2003* generalizes all image registration algorithms into 4 steps. [^2]  Note that certain algorithms omit some of these steps.
 
-1. **Feature detection** - Distinct features (points, edges, closed regions, intersections, corners, etc.) are detected in both images.  These features may be represented by coordinates (intersections, corners, etc.), coordinate pairs (edges) or a more complex parameterization.  This step is omitted in area based registration methods.
-2. **Feature Matching** - Correspondence is established between features detected in the images.  Feature similarity measures or feature positions within the images may be used to do this.  This step is omitted in area based registration methods.
-3. **Transform model estimation** - The parameters of the coordinate mapping function $f$ are computed using the previously matched features.
+1. **Feature detection** - Distinct features (points, edges, closed regions, intersections, corners, etc.) are detected in both images.  These features may be represented by coordinates (intersections, corners, etc.), coordinate pairs (edges) or a more complex parameterization.  This step is omitted in non-feature based registration methods.
+2. **Feature Matching** - Correspondence is established between features detected in the images.  Feature similarity measures or feature positions within the images may be used to do this.  This step is omitted in non-feature based registration methods.
+3. **Transform model estimation** - In feature based methods, the parameters of the coordinate mapping function $f$ are computed using the previously matched features.  In non-feature based methods, model parameters can be estimated from image statistics, iterative cost minimization, or image spectra, to name a few.  This step is where most variability between registration methods lies.
 4. **Image transformation** - The sensed image is transformed using the estimated parameters and optionally fused with the template image.  Interpolation may be necessary if the mapping function contains non-integer coordinates.
 
 In the next section, I highlight some classical and/or popular contemporary image registration methods and the domains in which they are applied.
@@ -41,7 +42,7 @@ This document contains many types of variables which can represent transform par
 
 # Area based Registration
 
-There are two overarching categories of image registration algorithms, area based and feature based.  Area based methods perform no feature detection or feature mapping and instead use all available pixels in the feature matching step <!-- not necessarily true --> to register the images.  Most classical registration methods fall into this category and they are relatively simpler than feature based methods as a result.
+There are two overarching categories of image registration algorithms, area based and feature based.  Area based methods perform no feature detection or feature mapping and instead use all available pixels in the model estimation step <!-- not necessarily true --> to estimate transform parameters.
 
 This simplicity can sometimes come at a performance cost in certain situations, however.  If a target scene has smooth regions with few salient features to register on, an area based method may perform more poorly than a feature based method which can ignore the smooth parts of the scene that contain little alignment information.
 
@@ -354,7 +355,7 @@ In the next stage, *feature matching*, detected features are corresponded from b
 
 # Summary
 
-Area based methods are preferred when images have salient details and information is provided by pixel intensities rather than shapes and structures in the imae.  The images' intensities must be similar or at least statistically related.  The set of candidate transformations $f$ that can be searched is generally limited to translation with small amounts of rotation or skew, but there are some extensions to methods that support large rotations or skews so long as the degrees of freedom of $f$ remains small.  Pyramid search techniques and sophisticated optimization strategies are available to more quickly find extrema of the similarity measure.
+Area based methods are preferred when images have salient details and information is provided by pixel intensities rather than shapes and structures in the image.  The images' intensities must be similar or at least statistically related.  The set of candidate transformations $f$ that can be searched is generally limited to translation with small amounts of rotation or skew, but there are some extensions to methods that support large rotations or skews so long as the degrees of freedom of $f$ remains small.  Pyramid search techniques and sophisticated optimization strategies are available to more quickly find extrema of the similarity measure.
 
 Feature based methods are generally utilized when shapes in structures in the image pair contain more alignment information than the pixel intensities, such as between a picture of an object and a computer model of an object.  The drawback of these methods is that such features can be hard to detect and match with each other.  It is critical that chosen feature detector be robust against any differences between the images.
 
