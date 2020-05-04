@@ -11,6 +11,5 @@ pip install legoman
 make
 
 # run a webserver with autoreloading/autorebuilding
-apt install  
 make devserver
 ```
