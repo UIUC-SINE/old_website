@@ -52,7 +52,6 @@ h3 {
 <li><a href="#rotation">Rotation</a></li>
 <li><a href="#scaling">Scaling</a></li>
 <li><a href="#affine">Affine</a></li>
-<li><a href="#perspective">Perspective</a></li>
 <li><a href="#elastic">Elastic</a></li>
 </ul>
 </li>
@@ -104,7 +103,8 @@ h3 {
 <p><em>Image registration</em> is the process of transforming multiple snapshots so that subjects or features common to two or more snapshots are aligned.
 The images may be stitched into a composite image to get a wider field of view, higher resolution, reduced noise, or may be simply be aligned as in the case of video stabilization.  Depending on the problem, registration algorithms often need to contend with changes in the scene being imaged (due to elapsed time between snapshots), perspective changes (changes in camera position), and illumination changes (from different imaging equipment). <sup id="fnref:brown"><a class="footnote-ref" href="#fn:brown">3</a></sup></p>
 <p><em>Motion estimation</em>, a related field, is the process of identifying motion captured in a series of images (usually frames of a video).  This motion may be due to motion of the camera which causes the whole scene to appear to move (<em>apparent motion</em>), or individual objects moving independently within the frame.  In motion fields, a velocity vector is associated with each pixel in a particular region of the image (<em>local</em> motion estimation) or the image as a whole (<em>global</em> motion estimation).  These motion vectors usually represent 2D motion across the image, but may also be 3D to capture movement in 3D space.  When a motion field for individual pixels has been computed it is common to group motion vectors that belong to the same moving object, a process known as <em>motion segmentation</em>. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
-<p>Registration is an important step in the image processing pipeline for countless fields.  For example, in remote sensing applications registration is used in change detection, image mosaicing, and super resolution.  In medicial imaging applications, registration is used for overlaying patient images from multiple channels, such as CT and MRI, which provide different information to the caregiver and can be cross-referenced when they are aligned.</p>
+<p>Registration is an important step in the image processing pipeline for countless fields.  For example, in remote sensing applications registration is used in change detection, image mosaicing, and super resolution.  In medical imaging applications, registration is used for overlaying patient images from multiple channels, such as CT and MRI, which the caregiver can cross-reference for diagnoses, and to compare patient data to physiological atlases.</p>
+<p>In the next sections, I mathematically describe the problem of image registration, provide a categorization framework for registration methods, and explain the motivating problem of this thesis.</p>
 <h2 id="registration-problem-model">Registration Problem Model</h2>
 <p>Let <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> be two images captured of a scene.  These are often called the <em>reference</em> and <em>sensed</em> images.  In image registration, we want to find a mapping from regions in the sensed image to regions in the reference image.  More formally, we want to find <script type="math/tex">f</script> such that</p>
 <p>
@@ -180,55 +180,44 @@ R_{\theta} = \begin{bmatrix} \cos \theta & - \sin \theta \\ \sin \theta & \cos \
 <script type="math/tex; mode=display">f(\bm{x}) = \begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{bmatrix} \bm{x} - \bm{c}</script>
 </p>
 <p>This transform can also account geometric skew, where angles and lengths are no longer preserved but parallel lines remain parallel.</p>
-<h3 id="perspective">Perspective</h3>
-<p>Another coordinate transform is <em>perspective projection</em>, which is used when <script type="math/tex">\bm{x}</script> corresponds to a point in 3D space and the entire 3D scene is projected to a 2D plane in a nonlinear fashion.</p>
-<p><img alt="" src="perspective.jpg" style="width:500px" /></p>
+<!-- ### Perspective -->
+
+<!-- Another coordinate transform is *perspective projection*, which is used when $\bm{x}$ corresponds to a point in 3D space and the entire 3D scene is projected to a 2D plane in a nonlinear fashion. -->
+
+<!-- ![](perspective.jpg){: style=width:500px} -->
+
 <h3 id="elastic">Elastic</h3>
-<!--
-- transform is fundamental component of any registraiton algorithm
-- In this section, I describe a few types of coordinate transforms
-- translation, rotation, affine, projection, polynomial transform
-- implications on computational complexity
-
--->
-
+<p>When the type of transform is unknown or more complicated, elastic transforms can be used to correct for misalignment.  This can arise in situations where a 3D scene is projected through an optical system onto a 2D plane, but unlike perspective projection, there are large depth variations which occlude parts of the scene.  Objects which appear in one image may be completely obscured in the other, which is increasingly difficult to account for as the number of occlusions increases.  In these settings, a more general coordinate transform which can map more arbitrary distortions is preferred.</p>
+<p>Elastic methods can either operate over the image as a whole (global), or apply different transforms to regions of the image separately (local).</p>
+<p>An example of a global elastic method is the <em>bivariate polynomial</em> transform, in which the x and y coordinates are fed through a pair of polynomial functions.</p>
+<p>
+<script type="math/tex; mode=display">u = \sum_{l=0}^m \sum_{j=0}^i a_{ij} x^l y^{j - l}</script>
+</p>
+<p>
+<script type="math/tex; mode=display">v = \sum_{l=0}^m \sum_{j=0}^i b_{ij} x^l y^{j - l}</script>
+</p>
+<p>where <script type="math/tex">
+<script type="math/tex; mode=display">x\,y</script>
+</script> are the original coordinates, <script type="math/tex">
+<script type="math/tex; mode=display">u,\,v</script>
+</script> the transformed coordinates, and <script type="math/tex">a_{ij}</script> and <script type="math/tex">b_{ij}</script> are constant parameters controlling the transform.</p>
+<p>Local methods are more general than global methods and can handle distortions that global methods cannot, such as deformable objects, complex 3D surfaces, and object motion within the scene.  While these methods are more powerful, there is a tradeoff with computational complexity as the number of parameters increases.  An example of a local elastic coordinate transform is piecewise spline interpolation.</p>
+<p>Below is a diagram which illustrates examples of some of these transform classes.</p>
 <p><img alt="" src="transforms.png" style="width:300px" /></p>
-<table>
-<thead>
-<tr>
-<th>Transform</th>
-<th>Properties</th>
-<th>Applications</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Similarity</td>
-<td>Preserves angles, lengths, parallel lines</td>
-<td></td>
-</tr>
-<tr>
-<td>Affine</td>
-<td>Preserves parallel lines</td>
-<td></td>
-</tr>
-<tr>
-<td>Perspective</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Projective</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Elastic</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<!-- | Transform   | Properties                                | Applications | -->
+
+<!-- |-------------|-------------------------------------------|--------------| -->
+
+<!-- | Similarity  | Preserves angles, lengths, parallel lines |              | -->
+
+<!-- | Affine      | Preserves parallel lines                  |              | -->
+
+<!-- | Perspective |                                           |              | -->
+
+<!-- | Projective  |                                           |              | -->
+
+<!-- | Elastic     |                                           |              | -->
+
 <h2 id="visors-mission">VISORS Mission</h2>
 <p>The VIrtual Super-resolution Optics with Reconfigurable Swarms (VISORS) mission, due to be launched by NASA in 2023, is a heliophysics CubeSat mission designed to study the Sun's corona at a finer scale than has been achieved in previous missions in order to shine light on the processes which drive heating in the corona.</p>
 <p>VISORS consists of two 3U spacecraft known as the Optics and Sunshade Spacecraft (OSSC) and Detector Spacecraft (DSC), which carry instrumentation for taking measurements in extreme ultraviolet (EUV) range.  These two spacecraft will fly in formation 40 meters apart aligned along an axis pointed at the region of interest on the Sun during science mode.  The OSSC focuses incoming light using a novel diffractive element known as a photon sieve while simultaneously using its solar panels to block off-axis light from entering the DSC.  The DSC will be positioned on the focal plane corresponding to He II emission line at 30.4nm.  In particular, the OSSC uses a diffractive optical element known as a photon sieve, which can outperform equivalent reflective optics due to tighter manufacturing tolerances. <sup id="fnref:oktem"><a class="footnote-ref" href="#fn:oktem">4</a></sup></p>
