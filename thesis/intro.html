@@ -2,7 +2,7 @@
 <html lang=en>
 
 <head>
-    <title>Introduction</title>
+    <title>Thesis</title>
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" type="text/css" href="/styles.css" /> 
     <link rel="stylesheet" type="text/css" href="/codehilite.css" /> 
@@ -15,84 +15,245 @@
 <main>
   <article>
     <header>
-      <h1>Introduction</h1>
+      <h1>Thesis</h1>
       <time datetime="2019-06-16">2019-06-16</time>
     </header>
-    <div class="toc">
+    <style>
+c { 
+    color: gray;
+} 
+header h1 {
+    border: none;
+}
+h1 {
+    /* border-bottom: 1px solid black; */
+    border: 1px solid black;
+    padding: 1em;
+    text-align: center;
+}
+h2 {
+    /* text-decoration: underline; */
+    border-bottom: 1px solid black;
+    font-size: 1.25em;
+}
+h3 {
+    font-size: 1em;
+}
+</style>
+
+<div class="toc">
 <ul>
 <li><a href="#introduction">Introduction</a><ul>
+<li><a href="#registration-problem-model">Registration Problem Model</a></li>
+<li><a href="#categorizing-registration-methods">Categorizing Registration Methods</a></li>
 <li><a href="#a-comment-on-notation">A Comment on Notation</a></li>
+<li><a href="#types-of-image-transforms">Types of Image Transforms</a><ul>
+<li><a href="#translation">Translation</a></li>
+<li><a href="#rotation">Rotation</a></li>
+<li><a href="#scaling">Scaling</a></li>
+<li><a href="#affine">Affine</a></li>
+<li><a href="#perspective">Perspective</a></li>
+<li><a href="#elastic">Elastic</a></li>
 </ul>
 </li>
-<li><a href="#area-based-registration">Area based Registration</a><ul>
-<li><a href="#correlation-like-methods">Correlation-like Methods</a><ul>
-<li><a href="#cross-correlation">Cross Correlation</a></li>
-<li><a href="#generalized-iterative-cross-correlation">Generalized Iterative Cross Correlation</a></li>
-<li><a href="#selective-similary-detection-algorithm-ssda">Selective Similary Detection Algorithm (SSDA)</a></li>
+<li><a href="#visors-mission">VISORS Mission</a></li>
+<li><a href="#paper-outline">Paper Outline</a></li>
 </ul>
 </li>
-<li><a href="#frequency-based-methods">Frequency Based Methods</a><ul>
-<li><a href="#phase-correlation">Phase Correlation</a></li>
-<li><a href="#de-castro-morandi-method">De Castro, Morandi Method</a></li>
-<li><a href="#phase-correlation-rotationscale-extension">Phase Correlation - Rotation/Scale Extension</a></li>
-<li><a href="#phase-correlation-subpixel-registration-extension">Phase Correlation - Subpixel Registration Extension</a></li>
-</ul>
-</li>
-<li><a href="#information-based-methods">Information Based Methods</a><ul>
-<li><a href="#mutual-information">Mutual Information</a></li>
-</ul>
-</li>
-<li><a href="#optimization-based-methods">Optimization Based Methods</a><ul>
-<li><a href="#nmsre-conjugate-descent">NMSRE Conjugate Descent</a></li>
-<li><a href="#gauss-newton-minimization">Gauss-Newton Minimization</a></li>
-<li><a href="#levenberg-marquardt">Levenberg-Marquardt</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#feature-based-registration">Feature Based Registration</a><ul>
+<li><a href="#review-of-registration-methods">Review of Registration Methods</a><ul>
+<li><a href="#feature-based-methods">Feature-Based Methods</a><ul>
 <li><a href="#harris-corner-detection-and-ransac">Harris Corner Detection and RANSAC</a></li>
 </ul>
 </li>
-<li><a href="#summary">Summary</a></li>
+<li><a href="#area-based-methods">Area-Based Methods</a><ul>
+<li><a href="#cross-correlation">Cross Correlation</a></li>
+<li><a href="#generalized-iterative-cross-correlation">Generalized Iterative Cross Correlation</a></li>
+<li><a href="#selective-similary-detection-algorithm-ssda">Selective Similary Detection Algorithm (SSDA)</a></li>
+<li><a href="#nmsre-conjugate-descent">NMSRE Conjugate Descent</a></li>
+</ul>
+</li>
+<li><a href="#frequency-based-methods">Frequency-Based Methods</a><ul>
+<li><a href="#phase-correlation">Phase Correlation</a></li>
+<li><a href="#de-castro-morandi-method">De Castro, Morandi Method</a></li>
+<li><a href="#phase-correlation-rotationscale-extension">Phase Correlation - Rotation/Scale Extension</a></li>
+<li><a href="#mutual-information">Mutual Information</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#subpixel-registration">Subpixel Registration</a></li>
+<li><a href="#multiframe-subpixel-registration">Multiframe Subpixel Registration</a></li>
+<li><a href="#numerical-experiments">Numerical Experiments</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 </div>
 <h1 id="introduction">Introduction</h1>
-<p><em>Motion estimation</em>, a related field, is the process of identifying motion captured in a series of images (usually frames of a video).  This motion may be due to motion of the camera which causes the whole scene to appear to move (<em>apparent motion</em>), or individual objects moving independently within the frame.  In motion fields, a velocity vector is associated with each pixel in a particular region of the image (<em>local</em> motion estimation) or the image as a whole (<em>global</em> motion estimation).  These motion vectors usually represent 2D motion across the image, but may also be 3D to capture movement in 3D space.  When a motion field for individual pixels has been computed it is common to group motion vectors that belong to the same moving object, a process known as <em>motion segmentation</em>. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<!--
+- fields where imaging is used
+  - remote sensing
+    - change detection
+    - image mosaicing
+    - super resolution
+  - medicine
+    - combining CT and MRI data
+    - overlaying patient data on anatomical references
+
+-->
+
 <p><em>Image registration</em> is the process of transforming multiple snapshots so that subjects or features common to two or more snapshots are aligned.
-The images may be stitched into a composite image to get a wider field of view, higher resolution, reduced noise, or may be simply be aligned as in the case of video stabilization.  Depending on the problem, registration algorithms often need to contend with changes in the scene being imaged (due to elapsed time between snapshots), perspective changes (changes in camera position), and illumination changes (from different imaging equipment).  Registration is an important step in countless fields in remote sensing.  Geographic information systems (GIS), medical computer tomography (CT), cartography and computer vision all make extensive use of image registration.</p>
-<p>Let <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> be two images captured of a scene.  These are often called the <em>reference</em> and <em>template</em> images.  In image registration, we want to find a mapping from regions in the template image to regions in the reference image.  More formally, we want to find <script type="math/tex">f</script> such that</p>
+The images may be stitched into a composite image to get a wider field of view, higher resolution, reduced noise, or may be simply be aligned as in the case of video stabilization.  Depending on the problem, registration algorithms often need to contend with changes in the scene being imaged (due to elapsed time between snapshots), perspective changes (changes in camera position), and illumination changes (from different imaging equipment). <sup id="fnref:brown"><a class="footnote-ref" href="#fn:brown">3</a></sup></p>
+<p><em>Motion estimation</em>, a related field, is the process of identifying motion captured in a series of images (usually frames of a video).  This motion may be due to motion of the camera which causes the whole scene to appear to move (<em>apparent motion</em>), or individual objects moving independently within the frame.  In motion fields, a velocity vector is associated with each pixel in a particular region of the image (<em>local</em> motion estimation) or the image as a whole (<em>global</em> motion estimation).  These motion vectors usually represent 2D motion across the image, but may also be 3D to capture movement in 3D space.  When a motion field for individual pixels has been computed it is common to group motion vectors that belong to the same moving object, a process known as <em>motion segmentation</em>. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p>Registration is an important step in the image processing pipeline for countless fields.  For example, in remote sensing applications registration is used in change detection, image mosaicing, and super resolution.  In medicial imaging applications, registration is used for overlaying patient images from multiple channels, such as CT and MRI, which provide different information to the caregiver and can be cross-referenced when they are aligned.</p>
+<h2 id="registration-problem-model">Registration Problem Model</h2>
+<p>Let <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> be two images captured of a scene.  These are often called the <em>reference</em> and <em>sensed</em> images.  In image registration, we want to find a mapping from regions in the sensed image to regions in the reference image.  More formally, we want to find <script type="math/tex">f</script> such that</p>
 <p>
 <script type="math/tex; mode=display">
 i_2(\bm{x}) = g(i_1(f(\bm{x})), \bm{x}) \,\, \forall \bm{x} \in X
 </script>
 </p>
-<p>where <script type="math/tex">\bm{x}</script> is a 2D coordinate in the image overlap region <script type="math/tex">X</script>, <script type="math/tex">f</script> is some unknown coordinate transform, and <script type="math/tex">g</script> is an unknown intensity mapping function.  <script type="math/tex">g</script> is often assumed to be unitary, but can be a very complicated function in multimodal applications like medical imaging where <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> are captured from different instruments.</p>
-<p><em>Zitova, Flusser 2003</em> generalizes all image registration algorithms into 4 steps. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>  Note that certain algorithms omit some of these steps.</p>
+<p>where <script type="math/tex">\bm{x}</script> is a coordinate vector in the image overlap region <script type="math/tex">X</script>, <script type="math/tex">f</script> is some unknown coordinate transform, and <script type="math/tex">g</script> is an unknown intensity mapping function.  <script type="math/tex">g</script> is often assumed to be unitary, but can be a very complicated function in multimodal applications like medical imaging where <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> are captured from different instruments.  For the rest of this paper, I assume <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> are 2D vectors containing image data.</p>
+<!-- X is intersection region for SR, fusion -->
+
+<!-- X is union for stitching -->
+
+<h2 id="categorizing-registration-methods">Categorizing Registration Methods</h2>
+<p>While there is a wide variety of approaches to the problem of image registration, many algorithms can be broken down into 4 steps which aids in their classification. <sup id="fnref:zitova"><a class="footnote-ref" href="#fn:zitova">2</a></sup>.</p>
 <ol>
 <li><strong>Feature detection</strong> - Distinct features (points, edges, closed regions, intersections, corners, etc.) are detected in both images.  These features may be represented by coordinates (intersections, corners, etc.), coordinate pairs (edges) or a more complex parameterization.  This step is omitted in non-feature based registration methods.</li>
-<li><strong>Feature Matching</strong> - Correspondence is established between features detected in the images.  Feature similarity measures or feature positions within the images may be used to do this.  This step is omitted in non-feature based registration methods.</li>
-<li><strong>Transform model estimation</strong> - In feature based methods, the parameters of the coordinate mapping function <script type="math/tex">f</script> are computed using the previously matched features.  In non-feature based methods, model parameters can be estimated from image statistics, iterative cost minimization, or image spectra, to name a few.  This step is where most variability between registration methods lies.</li>
-<li><strong>Image transformation</strong> - The sensed image is transformed using the estimated parameters and optionally fused with the template image.  Interpolation may be necessary if the mapping function contains non-integer coordinates.</li>
+<li><strong>Feature Matching</strong> - Correspondence is established between features detected in the images.  Feature similarity measures or feature positions within the images may be used to do this.  This step is omitted in non-feature-based registration methods.</li>
+<li><strong>Transform model estimation</strong> - In feature-based methods, the parameters of the coordinate mapping function <script type="math/tex">f</script> are computed using the previously matched features.  In non-feature-based methods, model parameters can be estimated from image statistics, iterative cost minimization, or image spectra, to name a few.  This step is where most variability between registration methods lies.</li>
+<li><strong>Image transformation</strong> - The sensed image is transformed using the estimated parameters and optionally fused with the reference image.  Interpolation may be necessary if the mapping function contains non-integer coordinates.</li>
 </ol>
-<p>In the next section, I highlight some classical and/or popular contemporary image registration methods and the domains in which they are applied.</p>
-<h3 id="a-comment-on-notation">A Comment on Notation</h3>
+<p>The registration algorithms reviewed later in this manuscript perform a single pass of these steps to arrive at the registered result, but some other algorithms, especially those used in the process of super-resolution, repeat steps through several iterations and only stop when some criterion is met. <sup id="fnref:farsiu2004"><a class="footnote-ref" href="#fn:farsiu2004">5</a></sup></p>
+<!-- In the next section, I highlight some classical and/or popular contemporary image registration methods and the domains in which they are applied. -->
+
+<h2 id="a-comment-on-notation">A Comment on Notation</h2>
 <p>This document contains many types of variables which can represent transform parameters, <!-- placeholder variables inside optimizations, --> 1D vectors of parameters and 2D images.   I try to follow these guidelines for easier reading:</p>
 <ul>
 <li>bold for variables which represent 1D vectors.  For example <script type="math/tex">\bm{x}</script> is a coordinate vector representing position within an image</li>
-<li>superscript <script type="math/tex">*</script> for ground truth parameters of <script type="math/tex">f</script>.  For example <script type="math/tex">s^*</script> and <script type="math/tex">\theta^*</script> are parameters controlling scaling and rotation</li>
+<li>superscript <script type="math/tex">*</script> for ground truth parameters of coordinate transform <script type="math/tex">f</script>.  For example <script type="math/tex">s^*</script> and <script type="math/tex">\theta^*</script> are parameters controlling scaling and rotation</li>
 <li>hat <script type="math/tex">\,\hat{}\,</script> for algorithmic estimates of ground truth parameters. For example <script type="math/tex">\hat{\theta}</script> represents the estimates for <script type="math/tex">\theta^*</script> found by a particular algorithm
 <!-- * hat <script type="math/tex">\,\hat{}\,</script> for placeholder variables in maximization or minimization problems. For example <script type="math/tex">\hat{\theta}</script> may represent the current value under test in an iterative algorithm searching for <script type="math/tex">\theta_0</script> -->
 <!-- * superscript <script type="math/tex">*</script> for final parameter estimates obtained by registration methods. For example <script type="math/tex">\theta^*</script> is a best estimate for the true <script type="math/tex">\theta_0</script> --></li>
 </ul>
-<h1 id="area-based-registration">Area based Registration</h1>
-<p>There are two overarching categories of image registration algorithms, area based and feature based.  Area based methods perform no feature detection or feature mapping and instead use all available pixels in the model estimation step <!-- not necessarily true --> to estimate transform parameters.</p>
-<p>This simplicity can sometimes come at a performance cost in certain situations, however.  If a target scene has smooth regions with few salient features to register on, an area based method may perform more poorly than a feature based method which can ignore the smooth parts of the scene that contain little alignment information.</p>
-<h3 id="correlation-like-methods">Correlation-like Methods</h3>
-<h5 id="cross-correlation">Cross Correlation</h5>
-<p>The most straightforward of all methods, direct correlation, is conceptually simple and works for many classes of transformations.</p>
-<p>Note that the normalization here is crucial so that the intensities of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> do not influence the maximum.  We call this measure normalized cross correlation (NCC). <sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
+<h2 id="types-of-image-transforms">Types of Image Transforms</h2>
+<p>The coordinate transform is a fundamental component of any registration algorithm.  Most registration algorithms describe a specific class of coordinate transforms which can be completely described by a handful of parameters that are searched over during the <em>transform model estimation</em> step .  In this section, I describe a few of the most common classes of coordinate transforms, their parameters, and give some examples of where they are used.</p>
+<h3 id="translation">Translation</h3>
+<p>The simplest and most common type of coordinate transform is translation</p>
+<p>
+<script type="math/tex; mode=display">f(\bm{x}) = \bm{x} - \bm{c}</script>
+</p>
+<!-- FIXME citation -->
+
+<p>where <script type="math/tex">\bm{c}</script> is a length 2 vector whose elements correspond to the shift in each dimension.  Some of the oldest registration methods operate over this class of transforms. </p>
+<h3 id="rotation">Rotation</h3>
+<p>Another type of registration method is rotation, in which the sensed image is rotated about some point.</p>
+<p>
+<script type="math/tex; mode=display">f(\bm{x}) = R_{\theta}\bm{x}</script>
+</p>
+<p>where <script type="math/tex">R_{\theta}</script> is known as a <em>rotation matrix</em>.  <script type="math/tex">R_{\theta}</script> has orthogonal columns and can be entirely parameterized by <script type="math/tex">\theta</script>, the rotation angle.</p>
+<p>
+<script type="math/tex; mode=display">
+R_{\theta} = \begin{bmatrix} \cos \theta & - \sin \theta \\ \sin \theta & \cos \theta \end{bmatrix}
+</script>
+</p>
+<p>These two transform classes might be used together when stitching images from a digital microscope to get a larger field of view where the specimen slide is allowed to translate or rotate in a fixed plane.</p>
+<h3 id="scaling">Scaling</h3>
+<p>A third type of coordinate transform is scaling, where the sensed image origin and orientation remain fixed, but coordinates are scaled.</p>
+<p>
+<script type="math/tex; mode=display">f(\bm{x}) = S_s \bm{x}</script>
+</p>
+<p>where <script type="math/tex">S_s</script> is a scaling matrix parameterized by the scaling factor <script type="math/tex">s</script>.</p>
+<p>
+<script type="math/tex; mode=display">S_s = \begin{bmatrix} s & 0 \\ 0 & s \end{bmatrix}</script>
+</p>
+<p>These three coordinate transforms taken together are often called an <em>similarity transform</em>.  Similarity transforms are rigid, meaning they do not change the shape of features in the reference image, parallel lines remain parallel, and angles and lengths are preserved.  For example, a triangle in the sensed image will map to a similar triangle in the reference image.</p>
+<p>Similarity transforms can be written generally as</p>
+<p>
+<script type="math/tex; mode=display">f(\bm{x}) = R_{\theta} S_s \bm{x} - \bm{c}</script>
+</p>
+<p>Some authors allow for the first or second column of <script type="math/tex">R_{\theta}</script> to be negated which corresponds to a geometric reflection, though this is less useful in registration settings.</p>
+<h3 id="affine">Affine</h3>
+<p>A generalization of the similarity transform is the <em>affine transform</em>, where the rotation matrix is replaced by a matrix with no orthogonality constraint and the scaling factor is incorporated.</p>
+<p>
+<script type="math/tex; mode=display">f(\bm{x}) = \begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{bmatrix} \bm{x} - \bm{c}</script>
+</p>
+<p>This transform can also account geometric skew, where angles and lengths are no longer preserved but parallel lines remain parallel.</p>
+<h3 id="perspective">Perspective</h3>
+<p>Another coordinate transform is <em>perspective projection</em>, which is used when <script type="math/tex">\bm{x}</script> corresponds to a point in 3D space and the entire 3D scene is projected to a 2D plane in a nonlinear fashion.</p>
+<p><img alt="" src="perspective.jpg" style="width:500px" /></p>
+<h3 id="elastic">Elastic</h3>
+<!--
+- transform is fundamental component of any registraiton algorithm
+- In this section, I describe a few types of coordinate transforms
+- translation, rotation, affine, projection, polynomial transform
+- implications on computational complexity
+
+-->
+
+<p><img alt="" src="transforms.png" style="width:300px" /></p>
+<table>
+<thead>
+<tr>
+<th>Transform</th>
+<th>Properties</th>
+<th>Applications</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Similarity</td>
+<td>Preserves angles, lengths, parallel lines</td>
+<td></td>
+</tr>
+<tr>
+<td>Affine</td>
+<td>Preserves parallel lines</td>
+<td></td>
+</tr>
+<tr>
+<td>Perspective</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Projective</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Elastic</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="visors-mission">VISORS Mission</h2>
+<p>The VIrtual Super-resolution Optics with Reconfigurable Swarms (VISORS) mission, due to be launched by NASA in 2023, is a heliophysics CubeSat mission designed to study the Sun's corona at a finer scale than has been achieved in previous missions in order to shine light on the processes which drive heating in the corona.</p>
+<p>VISORS consists of two 3U spacecraft known as the Optics and Sunshade Spacecraft (OSSC) and Detector Spacecraft (DSC), which carry instrumentation for taking measurements in extreme ultraviolet (EUV) range.  These two spacecraft will fly in formation 40 meters apart aligned along an axis pointed at the region of interest on the Sun during science mode.  The OSSC focuses incoming light using a novel diffractive element known as a photon sieve while simultaneously using its solar panels to block off-axis light from entering the DSC.  The DSC will be positioned on the focal plane corresponding to He II emission line at 30.4nm.  In particular, the OSSC uses a diffractive optical element known as a photon sieve, which can outperform equivalent reflective optics due to tighter manufacturing tolerances. <sup id="fnref:oktem"><a class="footnote-ref" href="#fn:oktem">4</a></sup></p>
+<p>VISORS is what is known as a <em>virtual</em> telescope.  In contrast to other non-virtual space telescopes such as Hubble (visible light) and the Solar Dynamic Observatory (EUV), the focusing optics and detector fly on separate spacecraft which allows the design to support large focal lengths without significantly increasing spacecraft volume and to reconfigure the wavelength after launch by adjusting spacecraft separation.</p>
+<p>In addition to its contributions to heliophysics, VISORS will serve as a technology demonstration of diffractive, distributed telescopy and precision satellite formation flying.</p>
+<p><img alt="" src="satellite.png" /></p>
+<h2 id="paper-outline">Paper Outline</h2>
+<p>Chapter 2 introduces classes of image registration and describes popular registration methods from each class.
+Chapter 3 introduces the idea of subpixel registration, its uses, and gives a summary of a fast subpixel registration algorithm which is used to derive a new fast multi-frame subpixel algorithm, described in chapter 4.
+Chapter 5 contains numerical registration experiments under various settings, a description of the pipeline used to generate the test images, and some tests involving other classes of images unrelated to the VISORS project.</p>
+<h1 id="review-of-registration-methods">Review of Registration Methods</h1>
+<p>There are two overarching categories of image registration algorithms, feature-based and area-based.  These registration classes vary primarily in the steps leading up to transform estimation, while the image transformation step is generally unchanged for a given motion model.  In feature-based methods, structures such as lines, regions or points, known as <em>features</em>, are detected in the reference and sensed images during the feature detection and feature estimation steps, while in area-based methods these steps are omitted entirely.</p>
+<p>In this chapter, I focus primarily on the steps involved up estimating the image transform, namely feature detection, feature matching, and transform model estimation.</p>
+<!-- This simplicity can sometimes come at a performance cost in certain situations, however.  If a target scene has smooth regions with few salient features to register on, an area-based method may perform more poorly than a feature-based method which can ignore the smooth parts of the scene that contain little alignment information. -->
+
+<h2 id="feature-based-methods">Feature-Based Methods</h2>
+<p>Feature-based methods involve a preprocessing step known as <em>feature detection</em>, where notable structures in both images are located.  These structures can come in a variety of forms and can correspond to different kinds of objects depending on the context.  For example, images being registered in a remote sensing context could contain features such as amorphous regions (forests, lakes, fields), line segments (roads, buildings), or single points (street intersections, region corners).  There are many algorithms capable of extracting these features and the optimal choice of algorithm is highly dependent on the target scene.  In general, a desirable property of these algorithms is that the same features can be detected in both images and that these features are robust against corruption introduced by intensity mapping function <script type="math/tex">g</script> or noise. <sup id="fnref2:zitova"><a class="footnote-ref" href="#fn:zitova">2</a></sup></p>
+<p>Some features in the sensed image may not having a matching counterpart in the reference image due to occlusions or because their counterpart is outside of the field of view. A desirable property of the feature matching algorithm is that incorrect matches are eliminated or assigned a low probability so that parameter estimates in the later transform estimation step are not skewed. <sup id="fnref3:zitova"><a class="footnote-ref" href="#fn:zitova">2</a></sup></p>
+<h3 id="harris-corner-detection-and-ransac">Harris Corner Detection and RANSAC</h3>
+<h2 id="area-based-methods">Area-Based Methods</h2>
+<h3 id="cross-correlation">Cross Correlation</h3>
+<!-- FIXME i_2(f) not well defined -->
+
+<p>The most straightforward of all methods, direct correlation, is conceptually simple and works for many classes of transforms.</p>
+<p>Note that the normalization here is crucial so that the intensities of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> do not influence the maximum.  We call this measure normalized cross correlation (NCC). <sup id="fnref2:brown"><a class="footnote-ref" href="#fn:brown">3</a></sup></p>
 <!-- only works when $f$ is a simple linear translation, $f(\bm{x}) = \bm{x} - \bm{c}^*$. -->
 
 <p>
@@ -103,7 +264,7 @@ i_2(\bm{x}) = g(i_1(f(\bm{x})), \bm{x}) \,\, \forall \bm{x} \in X
 \end{aligned}
 </script>
 </p>
-<p>where <script type="math/tex">F</script> is the set of all linear translations.  Practically, the time required to search the space of all possible transformations for a given application makes this approach infeasible, so <script type="math/tex">F</script> is often restricted to translations.</p>
+<p>where <script type="math/tex">F</script> is the set of all linear translations.  Practically, the time required to search the space of all possible transforms for a given application makes this approach infeasible, so <script type="math/tex">F</script> is often restricted to translations.</p>
 <p>
 <script type="math/tex; mode=display">
 \hat{c} = \arg \max_{\bm{c}} \frac{\sum_{\bm{x} \in X} i_1(\bm{x})i_2(\bm{x} - \bm{c})}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
@@ -125,10 +286,10 @@ i_2(\bm{x}) = g(i_1(f(\bm{x})), \bm{x}) \,\, \forall \bm{x} \in X
 </p>
 <p>where <script type="math/tex">\mu_1</script>, <script type="math/tex">\mu_2</script>, <script type="math/tex">\sigma_1</script>, <script type="math/tex">\sigma_2</script> are the means and variances of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> over <script type="math/tex">X</script>.</p>
 <p>While cross correlation methods are very old, they continue to see widespread use because of ease of implementation in hardware (NCC can be efficiently implemented using multiply-accumulate hardware) and because limiting <script type="math/tex">f</script> to translations isn't significantly restrictive for many scenarios.</p>
-<p>In practice though, cross correlation is still successful in the presence of slight rotation, scaling or even non-affine transformation. <!-- need to find citation --></p>
-<h5 id="generalized-iterative-cross-correlation">Generalized Iterative Cross Correlation</h5>
-<h5 id="selective-similary-detection-algorithm-ssda">Selective Similary Detection Algorithm (SSDA)</h5>
-<p>In standard correlation methods, the sum over <script type="math/tex">X</script> for each candidate <script type="math/tex">f</script> must be computed in full before a maximum is found.  Barnea, Silverman <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> propose a class alternative schemes which greatly improve computation time in two ways.  The paper calls these algorithms selective similarity detection algorithms (SSDAs), of which one is presented here.</p>
+<p>In practice though, cross correlation is still successful in the presence of slight rotation, scaling or even non-affine transforms. <!-- need to find citation --></p>
+<h3 id="generalized-iterative-cross-correlation">Generalized Iterative Cross Correlation</h3>
+<h3 id="selective-similary-detection-algorithm-ssda">Selective Similary Detection Algorithm (SSDA)</h3>
+<p>In standard correlation methods, the sum over <script type="math/tex">X</script> for each candidate <script type="math/tex">f</script> must be computed in full before a maximum is found.  Barnea, Silverman <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">6</a></sup> propose a class alternative schemes which greatly improve computation time in two ways.  The paper calls these algorithms selective similarity detection algorithms (SSDAs), of which one is presented here.</p>
 <p>First, the paper uses absolute sum of errors (ASE) as a similarity measure, which requires no costly multiplications unlike NCC or SSE.</p>
 <p>
 <script type="math/tex; mode=display">
@@ -142,9 +303,40 @@ ASE(i_1, i_2(f)) = \sum_{\bm{x} \in X} |i_1(\bm{x}) - i_2(\bm{x} - \bm{c})|
 </figure>
 </p>
 <p>This algorithm offers potentially orders of magnitude speed improvements over direct cross-correlation because of early stopping, but requires selection of parameter <script type="math/tex">T</script>.  A choice of <script type="math/tex">T</script> too high limits efficiency gains while a choice of <script type="math/tex">T</script> too low can lead to suboptimal results.</p>
-<h3 id="frequency-based-methods">Frequency Based Methods</h3>
-<p>If an acceleration over correlation based methods is needed or the images were acquired under frequency dependent noise, Fourier methods are often preferred.  These methods exploit the Fourier representation of images in the frequency domain and have shown better robustness against illumination differences between <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script>.</p>
-<h5 id="phase-correlation">Phase Correlation</h5>
+<h3 id="nmsre-conjugate-descent">NMSRE Conjugate Descent</h3>
+<!-- FIXME assumes linear shift, but this section is about high dimensional f -->
+
+<p>The first method, presented by Guizar-Sicairos, Thurman, Fienup <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">8</a></sup>,  is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image <script type="math/tex">f</script> and a copy <script type="math/tex">g</script> shifted by <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
+<p>
+<script type="math/tex; mode=display">
+f^*_{NMSRE} = \min_{\hat{f}} \frac{\sum_{x} |i_2(\hat{f}(x)) - i_1(x)|^2}{\sum_{x}|i_1(x)|^2}
+</script>
+</p>
+<p>By minimizing the NMSRE over <script type="math/tex">f</script>, the true parameters of <script type="math/tex">f</script> can be found.</p>
+<p>Rewriting the above definition into a maximization problem and assuming <script type="math/tex">f</script> is a linear shift by <script type="math/tex">[x_0, y_0]</script>, we can achieve a more useful formulation.</p>
+<p>
+<script type="math/tex; mode=display">
+NMSRE^2 = 1 - \frac{\max_{x_0, y_0} |r(x_0, y_0)|^2}{\sum_{x, y}|i_1(x, y)|^2 \sum_{x, y}|i_2(x, y)|^2} \\
+</script>
+</p>
+<p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+r(x_0, y_0) &= \sum_{x, y}I_2(x - x_0, y - y_0)I_1^*(x, y) \\
+&= \sum_{u, v} \tilde{I_1}(u, v)\tilde{I_2}^*(u, v) \text{exp}\left[ j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right]
+\end{aligned}
+</script>
+</p>
+<p>where <script type="math/tex">r</script> is cross correlation and <script type="math/tex">\tilde{I_1}</script> and <script type="math/tex">\tilde{I_2}</script> are the image DFTs of size <script type="math/tex">M \times N</script>.</p>
+<p>Since all other terms are constant, we need only minimize <script type="math/tex">|r(x_0, y_0)|^2</script>.</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{d(r(x_0, y_0))}{dx_0} = 2 \text{Im} \left(r(x_0, y_0) \sum_{u, v} \frac{2 \pi u}{M} \tilde{I_1}^*(u, v) \times \tilde{I_2}(u, v) \text{exp} \left[-j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right] \right) </script>
+</p>
+<p>With this partial derivative (and a similar for <script type="math/tex">y_0</script>) we can use standard conjugate descent to solve for <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
+<h2 id="frequency-based-methods">Frequency-Based Methods</h2>
+<p>If an acceleration over correlation-based methods is needed or the images were acquired under frequency dependent noise, Fourier methods are often preferred.  These methods exploit the Fourier representation of images in the frequency domain and have shown better robustness against illumination differences between <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script>.</p>
+<h3 id="phase-correlation">Phase Correlation</h3>
 <p>Phase correlation was originally proposed for registering linearly translated images.  It takes advantage of the Fourier Shift theorem, which states that translating an image and taking its Fourier transform is equivalent to multiplying the Fourier transform of the original untranslated image by a complex exponential.</p>
 <p>Computing the cross-power spectral density (CPSD) we can directly obtain this complex exponential.</p>
 <p>
@@ -165,9 +357,9 @@ PC(i_1, i_2)(\bm{x}) = \mathcal{F}^{-1}\left[ CPSD(i_1, i_2) \right](\bm{x}) = \
 \hat{c} = \arg \max_{\bm{x}} PC(i_1, i_2)(\bm{x})
 </script>
 </p>
-<p>An important consideration here is that the Fourier Shift theorem only holds exactly when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  Foroosh, Zerubia, Berthod <sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup> propose a prefilter which can be applied to both images before phase correlation to reduce these effects.</p>
-<h5 id="de-castro-morandi-method">De Castro, Morandi Method</h5>
-<p>De Castro, Morandi <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup> introduced an extension of the phase correlation method which applies to images that are translated and rotated. This method is similar in spirit to the Generalized Iterative Cross Correlation method in that it amounts to repeatedly detransforming <script type="math/tex">i_2</script> with different parameters, testing alignment with <script type="math/tex">i_1</script> using some similarity measure and repeating this process until the correct parameters are found.  Like the standard phase correlation method, this technique claims robustness against frequency dependent noise and non-uniform illumination differences between the images.</p>
+<p>An important consideration here is that the Fourier Shift theorem only holds when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  Foroosh, Zerubia, Berthod <sup id="fnref:7"><a class="footnote-ref" href="#fn:7">9</a></sup> propose a prefilter which can be applied to both images before phase correlation to reduce these effects.</p>
+<h3 id="de-castro-morandi-method">De Castro, Morandi Method</h3>
+<p>De Castro, Morandi <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">7</a></sup> introduced an extension of the phase correlation method which applies to images that are translated and rotated. This method is similar in spirit to the Generalized Iterative Cross Correlation method in that it amounts to repeatedly detransforming <script type="math/tex">i_2</script> with different parameters, testing alignment with <script type="math/tex">i_1</script> using some similarity measure and repeating this process until the correct parameters are found.  Like the standard phase correlation method, this technique claims robustness against frequency dependent noise and non-uniform illumination differences between the images.</p>
 <p>Let <script type="math/tex">i_2</script> be a translated and rotated copy of <script type="math/tex">i_1</script>.  Then</p>
 <p>
 <script type="math/tex; mode=display">
@@ -238,14 +430,14 @@ I_2(\bm{\omega}) = e^{-j \langle \bm{\omega}, \bm{c}^* \rangle} I_1(R_{\theta^*}
 
 <!-- \tilde{I}(\omega_x, \omega_y) = \int_X I(x, y) e^{-j(x \omega_x + y \omega_y)} dx\, dy \approx \Delta x \Delta y \tilde{I}(\omega_x, \omega_y) -->
 
-<h5 id="phase-correlation-rotationscale-extension">Phase Correlation - Rotation/Scale Extension</h5>
-<p>Phase correlation in its original form is an elegant method of registering translated images.  The method introduced by De Castro and Morandi provides a way to detect and correct for rotation in images before applying phase correlation.  However, another common transformation in imaging systems is scaling, which can occur when the target scene moves closer to the imaging device or if the imager has zoom capabilities.  Like rotation, scaling by a factor <script type="math/tex">s_0</script> can also be written as a matrix operator like so</p>
+<h3 id="phase-correlation-rotationscale-extension">Phase Correlation - Rotation/Scale Extension</h3>
+<p>Phase correlation in its original form is an elegant method of registering translated images.  The method introduced by De Castro and Morandi provides a way to detect and correct for rotation in images before applying phase correlation.  However, another common transform in imaging systems is scaling, which can occur when the target scene moves closer to the imaging device or if the imager has zoom capabilities.  Like rotation, scaling by a factor <script type="math/tex">s_0</script> can also be written as a matrix operator like so</p>
 <p>
 <script type="math/tex; mode=display">
 S_{s^*} = \begin{bmatrix}s^* & 0 \\ 0 & s^*\end{bmatrix}
 </script>
 </p>
-<p>Sarvaiya, Patnaik, Kothari <sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup> introduced a new method which is capable of registering images that have been translated, rotated and scaled.  They make use of the Fourier scale, Fourier shift and Fourier rotation properties and also the Log-Polar transform (also known as Fourier-Mellin transform), where rotation and scaling in the original domain manifest as translation in the Log-Polar domain.  Their approach is broken into two applications of the phase correlation method, where the first application is used to recover scale and rotation, and the second, translation.</p>
+<p>Sarvaiya, Patnaik, Kothari <sup id="fnref:8"><a class="footnote-ref" href="#fn:8">10</a></sup> introduced a new method which is capable of registering images that have been translated, rotated and scaled.  They make use of the Fourier scale, Fourier shift and Fourier rotation properties and also the Log-Polar transform (also known as Fourier-Mellin transform), where rotation and scaling in the original domain manifest as translation in the Log-Polar domain.  Their approach is broken into two applications of the phase correlation method, where the first application is used to recover scale and rotation, and the second, translation.</p>
 <p>If <script type="math/tex">i_2</script> is a scaled, rotated and shifted copy of <script type="math/tex">i_1</script>,</p>
 <p>
 <script type="math/tex; mode=display">
@@ -268,11 +460,8 @@ i_2(\bm{x}) = i_1(R_{\theta^*} S_{s^*} \bm{x} - \bm{c}_0)
 </script>
 </p>
 <p>where <script type="math/tex">\mathcal{LP}</script> is the Log-Polar transform.</p>
-<h5 id="phase-correlation-subpixel-registration-extension">Phase Correlation - Subpixel Registration Extension</h5>
-<p>Todo: import from previous report.</p>
-<h3 id="information-based-methods">Information Based Methods</h3>
+<h3 id="mutual-information">Mutual Information</h3>
 <p>Viola and Wells introduced a new class of registration methods in 1994 based on entropy of image pairs.  This class of methods has proven effective in multimodal registration so it has achieved significant popularity in medical imaging.</p>
-<h5 id="mutual-information">Mutual Information</h5>
 <p>In the early 20th century, Hartley was looking for a way to measure the transmission of information, particularly in relation to the telegraph as a communications system.  He considered a system in which a finite set of symbols ('dit' or 'dah', telegraph 1's or 0's) are sent sequentially through a channel (telegraph wire).</p>
 <p>The number of unique messages that can be encoded given a message length of <script type="math/tex">n</script> and <script type="math/tex">s</script> unique symbols is <script type="math/tex">s^n</script>.  However, Hartley wanted a measure that would grow linearly with message length.  A message which is twice as long should contain twice as much information.</p>
 <p>He therefore settled on the following measure of information:</p>
@@ -315,69 +504,28 @@ MI(i_1, i_2(f)) = H(i_1) + H(i_2(f)) - H(i_1, i_2(f))
 </script>
 </p>
 <p>With this new measure, if the overlap region contains little information, terms <script type="math/tex">H(i_1)</script> and <script type="math/tex">H(i_2(f))</script> will be small and counteract joint entropy.  Also note that since mutual information contains <script type="math/tex">-H(i_1, i_2(f))</script>, minimizing joint entropy is related to maximizing mutual information.</p>
-<h3 id="optimization-based-methods">Optimization Based Methods</h3>
-<p>Many of the above methods introduce various similarity metrics as measures of alignment between registration candidates.  They mostly rely on an exhaustive search through all potential registration candidates and as such are restricted to situations where the set of all possible <script type="math/tex">f</script> candidates are small, usually simple translation.  In situations where the number of parameters controlling <script type="math/tex">f</script> is large, such as elastic transformation, it is appropriate to make use optimization methods that can find minima or maxima in the chosen similarity measure in a feasible amount of time.</p>
-<h5 id="nmsre-conjugate-descent">NMSRE Conjugate Descent</h5>
-<!-- FIXME assumes linear shift, but this section is about high dimensional f -->
+<h1 id="subpixel-registration">Subpixel Registration</h1>
+<h1 id="multiframe-subpixel-registration">Multiframe Subpixel Registration</h1>
+<h1 id="numerical-experiments">Numerical Experiments</h1>
+<h1 id="conclusion">Conclusion</h1>
+<!-- ### Optimization-Based Methods -->
 
-<p>The first method, presented by Guizar-Sicairos, Thurman, Fienup <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup>,  is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image <script type="math/tex">f</script> and a copy <script type="math/tex">g</script> shifted by <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
-<p>
-<script type="math/tex; mode=display">
-f^*_{NMSRE} = \min_{\hat{f}} \frac{\sum_{x} |i_2(\hat{f}(x)) - i_1(x)|^2}{\sum_{x}|i_1(x)|^2}
-</script>
-</p>
-<p>By minimizing the NMSRE over <script type="math/tex">f</script>, the true parameters of <script type="math/tex">f</script> can be found.</p>
-<p>Rewriting the above definition into a maximization problem and assuming <script type="math/tex">f</script> is a linear shift by <script type="math/tex">[x_0, y_0]</script>, we can achieve a more useful formulation.</p>
-<p>
-<script type="math/tex; mode=display">
-NMSRE^2 = 1 - \frac{\max_{x_0, y_0} |r(x_0, y_0)|^2}{\sum_{x, y}|i_1(x, y)|^2 \sum_{x, y}|i_2(x, y)|^2} \\
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-r(x_0, y_0) &= \sum_{x, y}I_2(x - x_0, y - y_0)I_1^*(x, y) \\
-&= \sum_{u, v} \tilde{I_1}(u, v)\tilde{I_2}^*(u, v) \text{exp}\left[ j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right]
-\end{aligned}
-</script>
-</p>
-<p>where <script type="math/tex">r</script> is cross correlation and <script type="math/tex">\tilde{I_1}</script> and <script type="math/tex">\tilde{I_2}</script> are the image DFTs of size <script type="math/tex">M \times N</script>.</p>
-<p>Since all other terms are constant, we need only minimize <script type="math/tex">|r(x_0, y_0)|^2</script>.</p>
-<p>
-<script type="math/tex; mode=display">
-\frac{d(r(x_0, y_0))}{dx_0} = 2 \text{Im} \left(r(x_0, y_0) \sum_{u, v} \frac{2 \pi u}{M} \tilde{I_1}^*(u, v) \times \tilde{I_2}(u, v) \text{exp} \left[-j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right] \right) </script>
-</p>
-<p>With this partial derivative (and a similar for <script type="math/tex">y_0</script>) we can use standard conjugate descent to solve for <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
-<h5 id="gauss-newton-minimization">Gauss-Newton Minimization</h5>
-<h5 id="levenberg-marquardt">Levenberg-Marquardt</h5>
-<h1 id="feature-based-registration">Feature Based Registration</h1>
-<p>Feature based methods involve a preprocessing step known as <em>feature detection</em>, where notable structures in both images are located and recorded.  Detected structures come in a variety of forms, such as polygons (forests, lakes, fields), line segments (roads, buildings), or single points (street intersections, region corners).  There are many algorithms capable of extracting these features and the optimal choice of algorithm is highly dependent on the target scene.  In general, a desirable property of these algorithms is that the same features can be detected in both images and that these features are robust against corruption introduced by function <script type="math/tex">g</script> or noise. <sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
-<p>In the next stage, <em>feature matching</em>, detected features are corresponded from both images.</p>
-<h5 id="harris-corner-detection-and-ransac">Harris Corner Detection and RANSAC</h5>
-<h1 id="summary">Summary</h1>
-<p>Area based methods are preferred when images have salient details and information is provided by pixel intensities rather than shapes and structures in the image.  The images' intensities must be similar or at least statistically related.  The set of candidate transformations <script type="math/tex">f</script> that can be searched is generally limited to translation with small amounts of rotation or skew, but there are some extensions to methods that support large rotations or skews so long as the degrees of freedom of <script type="math/tex">f</script> remains small.  Pyramid search techniques and sophisticated optimization strategies are available to more quickly find extrema of the similarity measure.</p>
-<p>Feature based methods are generally utilized when shapes in structures in the image pair contain more alignment information than the pixel intensities, such as between a picture of an object and a computer model of an object.  The drawback of these methods is that such features can be hard to detect and match with each other.  It is critical that chosen feature detector be robust against any differences between the images.</p>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>Application</th>
-<th>Noise</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>foo</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<!-- Many of the above methods introduce various similarity metrics as measures of alignment between registration candidates.  They mostly rely on an exhaustive search through all potential registration candidates and as such are restricted to situations where the set of all possible $f$ candidates are small, usually simple translation.  In situations where the number of parameters controlling $f$ is large, such as elastic transform, it is appropriate to make use optimization methods that can find minima or maxima in the chosen similarity measure in a feasible amount of time. -->
+
+<!-- # Summary -->
+
+<!-- Area-based methods are preferred when images have salient details and information is provided by pixel intensities rather than shapes and structures in the image.  The images' intensities must be similar or at least statistically related.  The set of candidate transforms $f$ that can be searched is generally limited to translation with small amounts of rotation or skew, but there are some extensions to methods that support large rotations or skews so long as the degrees of freedom of $f$ remains small.  Pyramid search techniques and sophisticated optimization strategies are available to more quickly find extrema of the similarity measure. -->
+
+<!-- Feature-based methods are generally utilized when shapes in structures in the image pair contain more alignment information than the pixel intensities, such as between a picture of an object and a computer model of an object.  The drawback of these methods is that such features can be hard to detect and match with each other.  It is critical that chosen feature detector be robust against any differences between the images. -->
+
+<!-- | Method | Application | Noise | -->
+
+<!-- |--------|-------------|-------| -->
+
+<!-- | foo    |             |       | -->
+
+<!-- |        |             |       | -->
+
 <h1 id="references">References</h1>
 <ul>
 <li><a href="https://www.google.com/search?q=survey%20of%20mutual%20information%20based%20registration">A Survey of Mutual Information Based Registration</a> - Pluim, Maintz, Viergever 2003</li>
@@ -388,32 +536,38 @@ r(x_0, y_0) &= \sum_{x, y}I_2(x - x_0, y - y_0)I_1^*(x, y) \\
 <li id="fn:1">
 <p>Motion Estimation - Konrad&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
-<li id="fn:2">
-<p><a href="https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&amp;pid=1-s2.0-S0262885603001379-main.pdf">Image registration methods: a survey</a> - Zitova, Flusser 2003&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<li id="fn:zitova">
+<p><a href="https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&amp;pid=1-s2.0-S0262885603001379-main.pdf">Image registration methods: a survey</a> - Zitova, Flusser 2003&#160;<a class="footnote-backref" href="#fnref:zitova" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:zitova" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:zitova" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
-<li id="fn:3">
-<p>Brown Survey Paper&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<li id="fn:brown">
+<p>Brown Survey Paper&#160;<a class="footnote-backref" href="#fnref:brown" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:brown" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:oktem">
+<p>F. S. Oktem, F. Kamalabadi, and J. M. Davila, "High-resolution computational spectral imaging with photon sieves," in 2014 IEEE International Conference on Image Processing (ICIP). IEEE, 2014, pp. 5122-5126.&#160;<a class="footnote-backref" href="#fnref:oktem" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:farsiu2004">
+<p>Fast and Robust Multiframe Super Resolution - 2004, 2343 Citations&#160;<a class="footnote-backref" href="#fnref:farsiu2004" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
-<p><a href="https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=5008923">Barnea, Silverman 1972</a>&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p><a href="https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=5008923">Barnea, Silverman 1972</a>&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 <li id="fn:5">
-<p><a href="https://ieeexplore.ieee.org/document/4767966">De Castro, Morandi 1987</a>&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+<p><a href="https://ieeexplore.ieee.org/document/4767966">De Castro, Morandi 1987</a>&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p><a href="https://www.osapublishing.org/ol/viewmedia.cfm?uri=ol-33-2-156&amp;seq=0">Guizar-Sicairos, Thurman, Fienup 2008</a>&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+<p><a href="https://www.osapublishing.org/ol/viewmedia.cfm?uri=ol-33-2-156&amp;seq=0">Guizar-Sicairos, Thurman, Fienup 2008</a>&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 <li id="fn:7">
-<p><a href="https://ieeexplore.ieee.org/document/988953">Foroosh, Zerubia, Berthod 2002</a>&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+<p><a href="https://ieeexplore.ieee.org/document/988953">Foroosh, Zerubia, Berthod 2002</a>&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 9 in the text">&#8617;</a></p>
 </li>
 <li id="fn:8">
-<p><a href="http://www.jprr.org/index.php/jprr/article/view/355">Sarvaiya, Patnaik, Kothari 2012</a>&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+<p><a href="http://www.jprr.org/index.php/jprr/article/view/355">Sarvaiya, Patnaik, Kothari 2012</a>&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 10 in the text">&#8617;</a></p>
 </li>
 <li id="fn:9">
-<p>Feature-Based Deformable Image Registration with RANSAC Based Search Correspondence - Colleu, Shen, Matuszewski, Shark, Cariou&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+<p>Feature-Based Deformable Image Registration with RANSAC Based Search Correspondence - Colleu, Shen, Matuszewski, Shark, Cariou&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 11 in the text">&#8617;</a></p>
 </li>
 <li id="fn:10">
-<p>An Automatic Satellite Image Registration Technique Based on Harris Corner Detection and Random Sample Consensus (RANSAC) Outlier Rejection Model - Misra, Moorthi, Dhar, Ramakrishnan&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+<p>An Automatic Satellite Image Registration Technique Based on Harris Corner Detection and Random Sample Consensus (RANSAC) Outlier Rejection Model - Misra, Moorthi, Dhar, Ramakrishnan&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 12 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
