@@ -22,6 +22,9 @@
 c { 
     color: gray;
 } 
+n {
+    color: green;
+}
 header h1 {
     border: none;
 }
@@ -52,6 +55,7 @@ h3 {
 <li><a href="#rotation">Rotation</a></li>
 <li><a href="#scaling">Scaling</a></li>
 <li><a href="#affine">Affine</a></li>
+<li><a href="#perspective">Perspective</a></li>
 <li><a href="#elastic">Elastic</a></li>
 </ul>
 </li>
@@ -59,27 +63,7 @@ h3 {
 <li><a href="#paper-outline">Paper Outline</a></li>
 </ul>
 </li>
-<li><a href="#review-of-registration-methods">Review of Registration Methods</a><ul>
-<li><a href="#feature-based-methods">Feature-Based Methods</a><ul>
-<li><a href="#harris-corner-detection-and-ransac">Harris Corner Detection and RANSAC</a></li>
-</ul>
-</li>
-<li><a href="#area-based-methods">Area-Based Methods</a><ul>
-<li><a href="#cross-correlation">Cross Correlation</a></li>
-<li><a href="#generalized-iterative-cross-correlation">Generalized Iterative Cross Correlation</a></li>
-<li><a href="#selective-similary-detection-algorithm-ssda">Selective Similary Detection Algorithm (SSDA)</a></li>
-<li><a href="#nmsre-conjugate-descent">NMSRE Conjugate Descent</a></li>
-</ul>
-</li>
-<li><a href="#frequency-based-methods">Frequency-Based Methods</a><ul>
-<li><a href="#phase-correlation">Phase Correlation</a></li>
-<li><a href="#de-castro-morandi-method">De Castro, Morandi Method</a></li>
-<li><a href="#phase-correlation-rotationscale-extension">Phase Correlation - Rotation/Scale Extension</a></li>
-<li><a href="#mutual-information">Mutual Information</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a href="#review-of-registration-methods">Review of Registration Methods</a></li>
 <li><a href="#subpixel-registration">Subpixel Registration</a></li>
 <li><a href="#multiframe-subpixel-registration">Multiframe Subpixel Registration</a></li>
 <li><a href="#numerical-experiments">Numerical Experiments</a></li>
@@ -180,12 +164,35 @@ R_{\theta} = \begin{bmatrix} \cos \theta & - \sin \theta \\ \sin \theta & \cos \
 <script type="math/tex; mode=display">f(\bm{x}) = \begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{bmatrix} \bm{x} - \bm{c}</script>
 </p>
 <p>This transform can also account geometric skew, where angles and lengths are no longer preserved but parallel lines remain parallel.</p>
-<!-- ### Perspective -->
-
-<!-- Another coordinate transform is *perspective projection*, which is used when $\bm{x}$ corresponds to a point in 3D space and the entire 3D scene is projected to a 2D plane in a nonlinear fashion. -->
-
-<!-- ![](perspective.jpg){: style=width:500px} -->
-
+<h3 id="perspective">Perspective</h3>
+<p><n>
+Another coordinate transform is the <em>perspective transform</em>, which occurs when a 3D scene is viewed through an idealized optical system and projected onto a 2D plane.  Perspective distortion causes objects which are further away from the camera lens to appear smaller in a process known as <em>foreshortening</em> <sup id="fnref2:brown"><a class="footnote-ref" href="#fn:brown">3</a></sup>.  If the coordinates of a visible point in 3D space is known, for example <script type="math/tex">[x',\, y',\, z']</script>, then its location within the image can be computed as
+</n></p>
+<p>
+<script type="math/tex; mode=display">\bm{x} = [x,\, y]^T = \left[ \frac{-fx'}{z' - f},\, \frac{-fy'}{z' - f} \right]^T</script>
+</p>
+<p><n>
+where <script type="math/tex">f</script> is the distance of the camera lens from the image plane.
+</n></p>
+<p><img alt="" src="perspective.png" style="width:500px" /></p>
+<p><n>
+In the context of image registration, we would like to know how changes in the relative position and orientation between the camera and observed scene affect projected coordinates.  However, it is not possible to express the relationship between <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> as <script type="math/tex">i_2(\bm{x}) = i_1(f(\bm{x}))</script>.</p>
+<p><n>
+In many remote sensing applications, the distance to the scene is much larger than the distance to the lens center (<script type="math/tex">z' \gg f</script>) and the spacecraft's field of view is narrow.  In this setting, it is possible to show that small changes in attitude manifest as apparent translational motion.
+</n></p>
+<p><c>
+WIP Proof
+</c></p>
+<p><n>
+With this result, the coordinate transform has now been simplified to
+</n></p>
+<p>
+<script type="math/tex; mode=display">f(\bm{x}) = R_{\theta} \left(\bm{x} - [f \tan(\alpha),\, f \tan(\phi)]^T \right)</script>
+</p>
+<p><n>
+where <script type="math/tex">\theta</script>, <script type="math/tex">\phi</script> and <script type="math/tex">\alpha</script> are the spacecraft roll, pitch and azimuth.
+</n></p>
+<p><img alt="" src="perspective_approx.png" style="width:600px" /></p>
 <h3 id="elastic">Elastic</h3>
 <p>When the type of transform is unknown or more complicated, elastic transforms can be used to correct for misalignment.  This can arise in situations where a 3D scene is projected through an optical system onto a 2D plane, but unlike perspective projection, there are large depth variations which occlude parts of the scene.  Objects which appear in one image may be completely obscured in the other, which is increasingly difficult to account for as the number of occlusions increases.  In these settings, a more general coordinate transform which can map more arbitrary distortions is preferred.</p>
 <p>Elastic methods can either operate over the image as a whole (global), or apply different transforms to regions of the image separately (local).</p>
@@ -196,11 +203,7 @@ R_{\theta} = \begin{bmatrix} \cos \theta & - \sin \theta \\ \sin \theta & \cos \
 <p>
 <script type="math/tex; mode=display">v = \sum_{l=0}^m \sum_{j=0}^i b_{ij} x^l y^{j - l}</script>
 </p>
-<p>where <script type="math/tex">
-<script type="math/tex; mode=display">x\,y</script>
-</script> are the original coordinates, <script type="math/tex">
-<script type="math/tex; mode=display">u,\,v</script>
-</script> the transformed coordinates, and <script type="math/tex">a_{ij}</script> and <script type="math/tex">b_{ij}</script> are constant parameters controlling the transform.</p>
+<p>where <script type="math/tex">[x,\,y]</script> are the original coordinates, <script type="math/tex">[u,\,v]</script> the transformed coordinates, and <script type="math/tex">a_{ij}</script> and <script type="math/tex">b_{ij}</script> are constant parameters controlling the transform.</p>
 <p>Local methods are more general than global methods and can handle distortions that global methods cannot, such as deformable objects, complex 3D surfaces, and object motion within the scene.  While these methods are more powerful, there is a tradeoff with computational complexity as the number of parameters increases.  An example of a local elastic coordinate transform is piecewise spline interpolation.</p>
 <p>Below is a diagram which illustrates examples of some of these transform classes.</p>
 <p><img alt="" src="transforms.png" style="width:300px" /></p>
@@ -220,279 +223,17 @@ R_{\theta} = \begin{bmatrix} \cos \theta & - \sin \theta \\ \sin \theta & \cos \
 
 <h2 id="visors-mission">VISORS Mission</h2>
 <p>The VIrtual Super-resolution Optics with Reconfigurable Swarms (VISORS) mission, due to be launched by NASA in 2023, is a heliophysics CubeSat mission designed to study the Sun's corona at a finer scale than has been achieved in previous missions in order to shine light on the processes which drive heating in the corona.</p>
-<p>VISORS consists of two 3U spacecraft known as the Optics and Sunshade Spacecraft (OSSC) and Detector Spacecraft (DSC), which carry instrumentation for taking measurements in extreme ultraviolet (EUV) range.  These two spacecraft will fly in formation 40 meters apart aligned along an axis pointed at the region of interest on the Sun during science mode.  The OSSC focuses incoming light using a novel diffractive element known as a photon sieve while simultaneously using its solar panels to block off-axis light from entering the DSC.  The DSC will be positioned on the focal plane corresponding to He II emission line at 30.4nm.  In particular, the OSSC uses a diffractive optical element known as a photon sieve, which can outperform equivalent reflective optics due to tighter manufacturing tolerances. <sup id="fnref:oktem"><a class="footnote-ref" href="#fn:oktem">4</a></sup></p>
+<p>VISORS consists of two 3U spacecraft known as the Optics Spacecraft (OSC) and Detector Spacecraft (DSC), which carry instrumentation for taking measurements in extreme ultraviolet (EUV) range.  These two spacecraft will fly in formation 40 meters apart aligned along an axis pointed at the region of interest on the Sun during science mode.  The OSC focuses incoming light using a novel diffractive element known as a photon sieve while simultaneously using its solar panels to block off-axis light from entering the DSC.  The DSC will be positioned on the focal plane corresponding to He II emission line at 30.4nm.  In particular, the OSC uses a diffractive optical element known as a photon sieve, which can outperform equivalent reflective optics due to tighter manufacturing tolerances. <sup id="fnref:oktem"><a class="footnote-ref" href="#fn:oktem">4</a></sup></p>
 <p>VISORS is what is known as a <em>virtual</em> telescope.  In contrast to other non-virtual space telescopes such as Hubble (visible light) and the Solar Dynamic Observatory (EUV), the focusing optics and detector fly on separate spacecraft which allows the design to support large focal lengths without significantly increasing spacecraft volume and to reconfigure the wavelength after launch by adjusting spacecraft separation.</p>
 <p>In addition to its contributions to heliophysics, VISORS will serve as a technology demonstration of diffractive, distributed telescopy and precision satellite formation flying.</p>
-<p><img alt="" src="satellite.png" /></p>
+<p><n>
+</n></p>
+<p><img alt="" src="satellite.png" style="width:300px" /></p>
 <h2 id="paper-outline">Paper Outline</h2>
 <p>Chapter 2 introduces classes of image registration and describes popular registration methods from each class.
 Chapter 3 introduces the idea of subpixel registration, its uses, and gives a summary of a fast subpixel registration algorithm which is used to derive a new fast multi-frame subpixel algorithm, described in chapter 4.
 Chapter 5 contains numerical registration experiments under various settings, a description of the pipeline used to generate the test images, and some tests involving other classes of images unrelated to the VISORS project.</p>
 <h1 id="review-of-registration-methods">Review of Registration Methods</h1>
-<p>There are two overarching categories of image registration algorithms, feature-based and area-based.  These registration classes vary primarily in the steps leading up to transform estimation, while the image transformation step is generally unchanged for a given motion model.  In feature-based methods, structures such as lines, regions or points, known as <em>features</em>, are detected in the reference and sensed images during the feature detection and feature estimation steps, while in area-based methods these steps are omitted entirely.</p>
-<p>In this chapter, I focus primarily on the steps involved up estimating the image transform, namely feature detection, feature matching, and transform model estimation.</p>
-<!-- This simplicity can sometimes come at a performance cost in certain situations, however.  If a target scene has smooth regions with few salient features to register on, an area-based method may perform more poorly than a feature-based method which can ignore the smooth parts of the scene that contain little alignment information. -->
-
-<h2 id="feature-based-methods">Feature-Based Methods</h2>
-<p>Feature-based methods involve a preprocessing step known as <em>feature detection</em>, where notable structures in both images are located.  These structures can come in a variety of forms and can correspond to different kinds of objects depending on the context.  For example, images being registered in a remote sensing context could contain features such as amorphous regions (forests, lakes, fields), line segments (roads, buildings), or single points (street intersections, region corners).  There are many algorithms capable of extracting these features and the optimal choice of algorithm is highly dependent on the target scene.  In general, a desirable property of these algorithms is that the same features can be detected in both images and that these features are robust against corruption introduced by intensity mapping function <script type="math/tex">g</script> or noise. <sup id="fnref2:zitova"><a class="footnote-ref" href="#fn:zitova">2</a></sup></p>
-<p>Some features in the sensed image may not having a matching counterpart in the reference image due to occlusions or because their counterpart is outside of the field of view. A desirable property of the feature matching algorithm is that incorrect matches are eliminated or assigned a low probability so that parameter estimates in the later transform estimation step are not skewed. <sup id="fnref3:zitova"><a class="footnote-ref" href="#fn:zitova">2</a></sup></p>
-<h3 id="harris-corner-detection-and-ransac">Harris Corner Detection and RANSAC</h3>
-<h2 id="area-based-methods">Area-Based Methods</h2>
-<h3 id="cross-correlation">Cross Correlation</h3>
-<!-- FIXME i_2(f) not well defined -->
-
-<p>The most straightforward of all methods, direct correlation, is conceptually simple and works for many classes of transforms.</p>
-<p>Note that the normalization here is crucial so that the intensities of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> do not influence the maximum.  We call this measure normalized cross correlation (NCC). <sup id="fnref2:brown"><a class="footnote-ref" href="#fn:brown">3</a></sup></p>
-<!-- only works when $f$ is a simple linear translation, $f(\bm{x}) = \bm{x} - \bm{c}^*$. -->
-
-<p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\hat{f} &= \arg \max_{f \in F} \text{NCC}(i_1, i_2(f)) \\
-&= \arg \max_{f \in F} \frac{\sum_{\bm{x} \in X} i_1(\bm{x})i_2(f(\bm{x}))}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
-\end{aligned}
-</script>
-</p>
-<p>where <script type="math/tex">F</script> is the set of all linear translations.  Practically, the time required to search the space of all possible transforms for a given application makes this approach infeasible, so <script type="math/tex">F</script> is often restricted to translations.</p>
-<p>
-<script type="math/tex; mode=display">
-\hat{c} = \arg \max_{\bm{c}} \frac{\sum_{\bm{x} \in X} i_1(\bm{x})i_2(\bm{x} - \bm{c})}{\sqrt{\sum_{\bm{x} \in X} i_1(\bm{x})^2}}
-</script>
-</p>
-<!-- $$ f^* = \arg \max_{\hat{f}} \sum_x i_1(x)i_2(\hat{f}(x)) = \arg \min_{\hat{f}} \sum_x e(x)^2 $$ -->
-
-<p>Related similarity measures which are sometimes used in place of normalized cross correlation are sum of squared error (SSE)</p>
-<p>
-<script type="math/tex; mode=display">
-\text{SSE}(i_1, i_2(f)) = \sum_{\bm{x} \in X} (i_1(\bm{x}) - i_2(f(\bm{x})))^2
-</script>
-</p>
-<p>and correlation coefficient</p>
-<p>
-<script type="math/tex; mode=display">
-\text{Corr}(i_1, i_2(f)) = \frac{\text{cov}(i_1, i_2(f))}{\sigma_1 \sigma_2} = \frac{\sum_{\bm{x} \in X} (i_1(\bm{x}) - \mu_1)(i_2(f(\bm{x})) - \mu_2)}{\sqrt{\sum_{\bm{x} \in X} (i_1(\bm{x}) - \mu_1)^2 \sum_{\bm{x} \in X}(i_2(f(\bm{x})) - \mu_2)^2}}
-</script>
-</p>
-<p>where <script type="math/tex">\mu_1</script>, <script type="math/tex">\mu_2</script>, <script type="math/tex">\sigma_1</script>, <script type="math/tex">\sigma_2</script> are the means and variances of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script> over <script type="math/tex">X</script>.</p>
-<p>While cross correlation methods are very old, they continue to see widespread use because of ease of implementation in hardware (NCC can be efficiently implemented using multiply-accumulate hardware) and because limiting <script type="math/tex">f</script> to translations isn't significantly restrictive for many scenarios.</p>
-<p>In practice though, cross correlation is still successful in the presence of slight rotation, scaling or even non-affine transforms. <!-- need to find citation --></p>
-<h3 id="generalized-iterative-cross-correlation">Generalized Iterative Cross Correlation</h3>
-<h3 id="selective-similary-detection-algorithm-ssda">Selective Similary Detection Algorithm (SSDA)</h3>
-<p>In standard correlation methods, the sum over <script type="math/tex">X</script> for each candidate <script type="math/tex">f</script> must be computed in full before a maximum is found.  Barnea, Silverman <sup id="fnref:4"><a class="footnote-ref" href="#fn:4">6</a></sup> propose a class alternative schemes which greatly improve computation time in two ways.  The paper calls these algorithms selective similarity detection algorithms (SSDAs), of which one is presented here.</p>
-<p>First, the paper uses absolute sum of errors (ASE) as a similarity measure, which requires no costly multiplications unlike NCC or SSE.</p>
-<p>
-<script type="math/tex; mode=display">
-ASE(i_1, i_2(f)) = \sum_{\bm{x} \in X} |i_1(\bm{x}) - i_2(\bm{x} - \bm{c})|
-</script>
-</p>
-<p>The second optimization uses early stopping and requires that the sum over <script type="math/tex">X</script> be implemented sequentially (e.g. as an iterative software loop).  For a particular candidate <script type="math/tex">\bm{c}</script>, the current value of the sum is compared to a threshold parameter <script type="math/tex">T</script> after each iteration.  If the ASE surpasses this threshold, the number of iterations is recorded and the algorithm moves on to the next candidate.  If an candidate computation never exceeds <script type="math/tex">T</script>, then the final ASE is recorded instead.</p>
-<p>Finally, the candidate with the lowest ASE is selected.  If all candidates surpassed the threshold, then the candidate with the most number of iterations before passing the threshold is selected.</p>
-<p>
-<figure><img src="ssda.png" /><figcaption>Error accumulation curves for candidates <script type="math/tex">\bm{c}_1</script>, <script type="math/tex">\bm{c}_2</script>, <script type="math/tex">\bm{c}_3</script> and <script type="math/tex">\bm{c}_4</script>.  Error computation for <script type="math/tex">\bm{c}_1</script> and <script type="math/tex">\bm{c}_2</script> terminated early at 7 and 9 iterations.  <script type="math/tex">\bm{c}_4</script> is the best estimate for offset, followed by <script type="math/tex">\bm{c}_3</script>, <script type="math/tex">\bm{c}_2</script> and <script type="math/tex">\bm{c}_1</script>.</figcaption>
-</figure>
-</p>
-<p>This algorithm offers potentially orders of magnitude speed improvements over direct cross-correlation because of early stopping, but requires selection of parameter <script type="math/tex">T</script>.  A choice of <script type="math/tex">T</script> too high limits efficiency gains while a choice of <script type="math/tex">T</script> too low can lead to suboptimal results.</p>
-<h3 id="nmsre-conjugate-descent">NMSRE Conjugate Descent</h3>
-<!-- FIXME assumes linear shift, but this section is about high dimensional f -->
-
-<p>The first method, presented by Guizar-Sicairos, Thurman, Fienup <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">8</a></sup>,  is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image <script type="math/tex">f</script> and a copy <script type="math/tex">g</script> shifted by <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
-<p>
-<script type="math/tex; mode=display">
-f^*_{NMSRE} = \min_{\hat{f}} \frac{\sum_{x} |i_2(\hat{f}(x)) - i_1(x)|^2}{\sum_{x}|i_1(x)|^2}
-</script>
-</p>
-<p>By minimizing the NMSRE over <script type="math/tex">f</script>, the true parameters of <script type="math/tex">f</script> can be found.</p>
-<p>Rewriting the above definition into a maximization problem and assuming <script type="math/tex">f</script> is a linear shift by <script type="math/tex">[x_0, y_0]</script>, we can achieve a more useful formulation.</p>
-<p>
-<script type="math/tex; mode=display">
-NMSRE^2 = 1 - \frac{\max_{x_0, y_0} |r(x_0, y_0)|^2}{\sum_{x, y}|i_1(x, y)|^2 \sum_{x, y}|i_2(x, y)|^2} \\
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-r(x_0, y_0) &= \sum_{x, y}I_2(x - x_0, y - y_0)I_1^*(x, y) \\
-&= \sum_{u, v} \tilde{I_1}(u, v)\tilde{I_2}^*(u, v) \text{exp}\left[ j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right]
-\end{aligned}
-</script>
-</p>
-<p>where <script type="math/tex">r</script> is cross correlation and <script type="math/tex">\tilde{I_1}</script> and <script type="math/tex">\tilde{I_2}</script> are the image DFTs of size <script type="math/tex">M \times N</script>.</p>
-<p>Since all other terms are constant, we need only minimize <script type="math/tex">|r(x_0, y_0)|^2</script>.</p>
-<p>
-<script type="math/tex; mode=display">
-\frac{d(r(x_0, y_0))}{dx_0} = 2 \text{Im} \left(r(x_0, y_0) \sum_{u, v} \frac{2 \pi u}{M} \tilde{I_1}^*(u, v) \times \tilde{I_2}(u, v) \text{exp} \left[-j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right] \right) </script>
-</p>
-<p>With this partial derivative (and a similar for <script type="math/tex">y_0</script>) we can use standard conjugate descent to solve for <script type="math/tex">(x_0^{\ast}, y_0^*)</script>.</p>
-<h2 id="frequency-based-methods">Frequency-Based Methods</h2>
-<p>If an acceleration over correlation-based methods is needed or the images were acquired under frequency dependent noise, Fourier methods are often preferred.  These methods exploit the Fourier representation of images in the frequency domain and have shown better robustness against illumination differences between <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script>.</p>
-<h3 id="phase-correlation">Phase Correlation</h3>
-<p>Phase correlation was originally proposed for registering linearly translated images.  It takes advantage of the Fourier Shift theorem, which states that translating an image and taking its Fourier transform is equivalent to multiplying the Fourier transform of the original untranslated image by a complex exponential.</p>
-<p>Computing the cross-power spectral density (CPSD) we can directly obtain this complex exponential.</p>
-<p>
-<script type="math/tex; mode=display">
-i_2(\bm{x}) = i_1(\bm{x} - \bm{c}^*)
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
-CPSD(i_1, i_2)(\bm{\omega}) = \frac{I_1(\bm{\omega}) \overline{I_2(\bm{\omega})}}{|I_1(\bm{\omega}) \overline{I_2(\bm{\omega})}|} =
-\frac{I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c}^* \rangle}}}{|I_1(\bm{\omega}) \overline{I_1(\bm{\omega}) e^{-j \langle \bm{\omega}, \bm{c}^* \rangle}}|} = e^{j \langle \bm{\omega},  \bm{c}^* \rangle}
-</script>
-</p>
-<p>Where <script type="math/tex">I_1</script> and <script type="math/tex">I_2</script> are the Fourier transforms of <script type="math/tex">i_1</script> and <script type="math/tex">i_2</script>.  The final estimate for <script type="math/tex">\bm{c}_0</script> is obtained by a final inverse Fourier transform of the CPSD, yielding a delta at location <script type="math/tex">\bm{c}_0</script>.</p>
-<p>
-<script type="math/tex; mode=display">
-PC(i_1, i_2)(\bm{x}) = \mathcal{F}^{-1}\left[ CPSD(i_1, i_2) \right](\bm{x}) = \delta(\bm{x} - \bm{c}^*) \\
-\hat{c} = \arg \max_{\bm{x}} PC(i_1, i_2)(\bm{x})
-</script>
-</p>
-<p>An important consideration here is that the Fourier Shift theorem only holds when translation is circular.  In practice, the phase correlation method still works if the region of overlap is sufficiently large.  Foroosh, Zerubia, Berthod <sup id="fnref:7"><a class="footnote-ref" href="#fn:7">9</a></sup> propose a prefilter which can be applied to both images before phase correlation to reduce these effects.</p>
-<h3 id="de-castro-morandi-method">De Castro, Morandi Method</h3>
-<p>De Castro, Morandi <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">7</a></sup> introduced an extension of the phase correlation method which applies to images that are translated and rotated. This method is similar in spirit to the Generalized Iterative Cross Correlation method in that it amounts to repeatedly detransforming <script type="math/tex">i_2</script> with different parameters, testing alignment with <script type="math/tex">i_1</script> using some similarity measure and repeating this process until the correct parameters are found.  Like the standard phase correlation method, this technique claims robustness against frequency dependent noise and non-uniform illumination differences between the images.</p>
-<p>Let <script type="math/tex">i_2</script> be a translated and rotated copy of <script type="math/tex">i_1</script>.  Then</p>
-<p>
-<script type="math/tex; mode=display">
-i_2(\bm{x}) = i_1(R_{\theta^*} (\bm{x} - \bm{c^*}))
-</script>
-</p>
-<p>where </p>
-<p>
-<script type="math/tex; mode=display">
-R_{\theta^*} = \begin{bmatrix} \cos \theta^* & - \sin \theta^* \\ \sin \theta^* & \cos \theta^* \end{bmatrix}
-</script>
-</p>
-<p>is a rotation operator of angle <script type="math/tex">\theta^*</script>.</p>
-<p>From the Fourier shift theorem, we know that a shift by <script type="math/tex">\bm{c}^*</script> in the spatial domain results in a multiplication by a complex exponential in the frequency domain.  Additionally, the Fourier rotation theorem tells us that a rotation in the spatial domain is a rotation by the same angle in the frequency domain.  Therefore, the relation between <script type="math/tex">I_1</script> and <script type="math/tex">I_2</script> can be written</p>
-<p>
-<script type="math/tex; mode=display">
-I_2(\bm{\omega}) = e^{-j \langle \bm{\omega}, \bm{c}^* \rangle} I_1(R_{\theta^*} \bm{\omega})
-</script>
-</p>
-<!-- $$ -->
-
-<!-- CPSD(I_1, \hat{I_2})(\omega) = \frac{I_1(\omega) \overline{I_2(R^{-1}_{\hat{\theta}}\omega)}}{|I_1(\omega) \overline{I_2(R^{-1}_{\hat{\theta}}\omega)}|} = -->
-
-<!-- \frac{I_1(\omega) \overline{I_1(R^{-1}_{\hat{\theta}} R_{\theta} \omega)}}{|I_1(\omega) \overline{I_1(R^{-1}_{\hat{\theta}} R_{\theta} \omega)}|} = -->
-
-<!-- \frac{I_1(\omega) \overline{I_1(R_{\theta - \hat{\theta}} \omega)}}{|I_1(\omega) \overline{I_1(R_{\theta - \hat{\theta}} \omega)}|} = -->
-
-<!-- $$ -->
-
-<p>To find <script type="math/tex">\theta^*</script>, the authors consider the expression</p>
-<p>
-<script type="math/tex; mode=display">
-\mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\theta} \bm{\omega})} \right]
-</script>
-</p>
-<p>When <script type="math/tex">\theta = \theta^*</script>, we get</p>
-<p>
-<script type="math/tex; mode=display">
-\mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\theta} \bm{\omega})} \right] =
-\mathcal{F}^{-1} \left[ \frac{e^{-j \langle \bm{\omega}, \bm{c}^* \rangle}I_1(R_{\theta^*}\bm{\omega})}{I_1(R_{\theta^*} \bm{\omega})} \right]  = \mathcal{F}^{-1} \left[ e^{-j \langle \bm{\omega}, \bm{c}^* \rangle} \right] = \delta(\bm{x} - \bm{c}^*)
-</script>
-</p>
-<p>By testing a range of values for <script type="math/tex">\theta</script> for which results in the closest to an impulse in the above expression, an approximate for the true <script type="math/tex">\theta^*</script> can be found.</p>
-<p>Formally, this is the minimization problem</p>
-<p>
-<script type="math/tex; mode=display">
-\hat{\theta} = \arg \min_{\theta} \left\Vert \mathcal{F}^{-1} \left[ 
-\frac{I_2(\bm{\omega})}{I_1(R_{\theta}\bm{\omega})}
-\right] \right\Vert_N
-</script>
-</p>
-<p>where <script type="math/tex">\left\Vert \right\Vert_N</script> is a placeholder for a measure which is large for unit impulses.  For example</p>
-<p>
-<script type="math/tex; mode=display">
-\left\Vert f \right\Vert_N = \left\Vert f - \delta(\bm{x} - \arg \max_{\hat{\bm{x}}} f(\hat{\bm{x}})) \right\Vert_2
-</script>
-</p>
-<p>When <script type="math/tex">\hat{\theta}</script> has been found, the offset can be obtained directly from the impulse function</p>
-<p>
-<script type="math/tex; mode=display">
-\hat{\bm{c}} = \arg \max_\bm{x} \mathcal{F}^{-1} \left[ \frac{I_2(\bm{\omega})}{I_1(R_{\hat{\theta}} \bm{\omega})} \right](\bm{x})
-</script>
-</p>
-<p>Note that the denominator <script type="math/tex">I_1(R_{\hat{\theta}} \bm{\omega})</script> must be evaluated using interpolation, as <script type="math/tex">R_{\hat{\theta}} \bm{\omega}</script> will not coincide with the sample nodes of <script type="math/tex">I_1</script> in general.</p>
-<!-- FIXME author somehow use window to eliminate edge effects? -->
-
-<!-- FIXME need a notational correction here, there are continuous and discrete versions of I in both time and frequency that need to be expressed -->
-
-<!-- \tilde{I}(\omega_x, \omega_y) = \int_X I(x, y) e^{-j(x \omega_x + y \omega_y)} dx\, dy \approx \Delta x \Delta y \tilde{I}(\omega_x, \omega_y) -->
-
-<h3 id="phase-correlation-rotationscale-extension">Phase Correlation - Rotation/Scale Extension</h3>
-<p>Phase correlation in its original form is an elegant method of registering translated images.  The method introduced by De Castro and Morandi provides a way to detect and correct for rotation in images before applying phase correlation.  However, another common transform in imaging systems is scaling, which can occur when the target scene moves closer to the imaging device or if the imager has zoom capabilities.  Like rotation, scaling by a factor <script type="math/tex">s_0</script> can also be written as a matrix operator like so</p>
-<p>
-<script type="math/tex; mode=display">
-S_{s^*} = \begin{bmatrix}s^* & 0 \\ 0 & s^*\end{bmatrix}
-</script>
-</p>
-<p>Sarvaiya, Patnaik, Kothari <sup id="fnref:8"><a class="footnote-ref" href="#fn:8">10</a></sup> introduced a new method which is capable of registering images that have been translated, rotated and scaled.  They make use of the Fourier scale, Fourier shift and Fourier rotation properties and also the Log-Polar transform (also known as Fourier-Mellin transform), where rotation and scaling in the original domain manifest as translation in the Log-Polar domain.  Their approach is broken into two applications of the phase correlation method, where the first application is used to recover scale and rotation, and the second, translation.</p>
-<p>If <script type="math/tex">i_2</script> is a scaled, rotated and shifted copy of <script type="math/tex">i_1</script>,</p>
-<p>
-<script type="math/tex; mode=display">
-i_2(\bm{x}) = i_1(R_{\theta^*} S_{s^*} \bm{x} - \bm{c}_0)
-</script>
-</p>
-<p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-&PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_2 \right]\right] \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1 \right] \right] \right| , \left| \mathcal{LP} \left[ \mathcal{F} \left[ i_1(R_{\theta^*} S_{s^*} \bm{x} - \bm{c}_0) \right] \right] \right| \right)(x, y)  \\
-&\text{Apply Fourier shift, scale, rotation properties} \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s^{*2}} e^{-j \langle S_{s^*}^{-1} R_{\theta^*} \bm{\omega}, \bm{c}_0 \rangle} I_1(S_{s^*}^{-1} R_{\theta^*} \bm{\omega}) \right] \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1(\bm{\omega}) \right] \right| , \left| \mathcal{LP} \left[ \frac{1}{s^{*2}} e^{-j \langle S_{s^*}^{-1} R_{\theta^*} \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1(S_{s^*}^{-1} R_{\theta^*} \bm{\omega}) \right] \right| \right)(x, y) \\
-&\text{Apply Log-Polar shift property} \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ \frac{1}{s^{*2}} e^{-j \langle S_{s^*}^{-1} R_{\theta^*} \bm{\omega}, \bm{c}_0 \rangle} \right] \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s^*}, \theta + \theta_0) \right| \right)(x, y) \\
-= &PC \left( \left| \mathcal{LP} \left[ I_1 \right](\rho, \theta) \right| , \left| \mathcal{LP} \left[ I_1 \right](\rho + \ln \frac{1}{s^*}, \theta + \theta_0) \right| \right)(x, y) \\
-= &\delta \left(x - \ln \frac{1}{s^*}, y - \theta_0 \right)
-\end{aligned}
-</script>
-</p>
-<p>where <script type="math/tex">\mathcal{LP}</script> is the Log-Polar transform.</p>
-<h3 id="mutual-information">Mutual Information</h3>
-<p>Viola and Wells introduced a new class of registration methods in 1994 based on entropy of image pairs.  This class of methods has proven effective in multimodal registration so it has achieved significant popularity in medical imaging.</p>
-<p>In the early 20th century, Hartley was looking for a way to measure the transmission of information, particularly in relation to the telegraph as a communications system.  He considered a system in which a finite set of symbols ('dit' or 'dah', telegraph 1's or 0's) are sent sequentially through a channel (telegraph wire).</p>
-<p>The number of unique messages that can be encoded given a message length of <script type="math/tex">n</script> and <script type="math/tex">s</script> unique symbols is <script type="math/tex">s^n</script>.  However, Hartley wanted a measure that would grow linearly with message length.  A message which is twice as long should contain twice as much information.</p>
-<p>He therefore settled on the following measure of information:</p>
-<p>
-<script type="math/tex; mode=display">
-H = \log s^n = n \log s
-</script>
-</p>
-<p>From the first formulation, it is apparent that information grows linearly with <script type="math/tex">n</script>.  Another interesting feature of this measure is that if there is only one symbol, we know exactly what the message will be and so it contains no information <script type="math/tex">(H = n \log 1 = 0)</script>.  This suggests that entropy can also be viewed as a measure of uncertainty.</p>
-<p>A disadvantage of Hartley's entropy measure is that it assumes all symbols are equally likely to occur in a message, which is generally not true.</p>
-<p>In 1948, Shannon introduced a new measure of information which takes this fact into account by weighting Hartley's entropy by the probability that symbols occur.  This is now known as Shannon entropy.  For a set of <script type="math/tex">s</script> symbols with probabilities <script type="math/tex">p_1, ..., p_s</script> of occuring, Shannon entropy is given as</p>
-<p>
-<script type="math/tex; mode=display">
-H = \sum_k p_k \log \frac{1}{p_k} = - \sum_i p_k \log p_k
-</script>
-</p>
-<p>Like Hartley's entropy, Shannon entropy can be viewed as a measure of uncertainty.  If a particular symbol has a very high probability of occuring, our uncertainty about the message decreases and hence information decreases.  If all symbols have an equal probability of occuring, entropy is maximized.  Thus Shannon entropy may also be considered as a measure of spread of a probability distribution.  A distribution with most mass concentrated around a few peaks will have low entropy while a more uniform distribution will have higher entropy.</p>
-<p>To compute Shannon entropy of an image, all possible intensity values of the pixels can be interpreted as symbols in the message.  For an image with bit depth of 8 bits, one can collect all the intensity values into a histogram in order to compute <script type="math/tex">p_0, ..., p_{255}</script>, as shown below.</p>
-<p>
-<figure><img src="histogram.png" /><figcaption>An image and its intensity histogram</figcaption>
-</figure>
-</p>
-<p>Now that we can compute entropy for images we must introduce one more concept before registration can occur, joint histograms.  A joint histogram is a 2D function which, for all possible pairs of intensities, describes how many times intensity pairs occur for a pair of registered images.  For example, if a joint histogram has value 17 at coordinate [33, 34], then for this particular registration there are 17 pixels in which the first image has intensity 33 and the second has intensity 34.  In the case of two 8 bit images, the joint histogram is a 256x256 image.  An example joint histogram for two images is shown below.</p>
-<p>
-<figure><img src="feature_space.png" /><figcaption>Two registered images and their joint histogram, or feature space</figcaption>
-</figure>
-</p>
-<p>The joint histogram changes with the alignment of the images.  For a correctly aligned pair of images, structures within the image align and vary with each other, so we expect the intensities to correlate which manifests as clustering in the joint histogram.  As the image pair becomes misaligned, more greyscale combinations are introduced and the joint histogram exhibits more uniformity.  By measuring this uniformity we now have a similarity measure for registration.</p>
-<p>Formally, the joint Shannon entropy for a pair of registered images</p>
-<p>
-<script type="math/tex; mode=display">
-H(i_1, i_2(f)) = -\sum_{m, n} p(m, n) \log p(m, n)
-</script>
-</p>
-<p>where <script type="math/tex">p(i, j)</script> is the joint histogram of <script type="math/tex">i_1</script> and candidate registered <script type="math/tex">i_2(f)</script> in the region of overlap <script type="math/tex">X</script>. <!-- FIXME --></p>
-<p>However, a problem that can occur when joint entropy is used directly is that low entropy (high degree of reported alignment) can occur for invalid registrations if the images contain large regions of uniform intensity.  For example, if the images in the figure above are aligned so that only their corners containing background overlap, the joint histogram will have approximately a single peak and the joint entropy will be very low.  To account for this, one can make use of the marginal entropies to penalize alignments where the region <script type="math/tex">X</script> contains little information in the images.  This is known as mutual information.</p>
-<p>
-<script type="math/tex; mode=display">
-MI(i_1, i_2(f)) = H(i_1) + H(i_2(f)) - H(i_1, i_2(f))
-</script>
-</p>
-<p>With this new measure, if the overlap region contains little information, terms <script type="math/tex">H(i_1)</script> and <script type="math/tex">H(i_2(f))</script> will be small and counteract joint entropy.  Also note that since mutual information contains <script type="math/tex">-H(i_1, i_2(f))</script>, minimizing joint entropy is related to maximizing mutual information.</p>
 <h1 id="subpixel-registration">Subpixel Registration</h1>
 <h1 id="multiframe-subpixel-registration">Multiframe Subpixel Registration</h1>
 <h1 id="numerical-experiments">Numerical Experiments</h1>
@@ -526,7 +267,7 @@ MI(i_1, i_2(f)) = H(i_1) + H(i_2(f)) - H(i_1, i_2(f))
 <p>Motion Estimation - Konrad&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:zitova">
-<p><a href="https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&amp;pid=1-s2.0-S0262885603001379-main.pdf">Image registration methods: a survey</a> - Zitova, Flusser 2003&#160;<a class="footnote-backref" href="#fnref:zitova" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:zitova" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:zitova" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p><a href="https://www.sciencedirect.com/science/article/pii/S0262885603001379/pdfft?md5=9ac6884a88ac624d4861de8fe7666e27&amp;pid=1-s2.0-S0262885603001379-main.pdf">Image registration methods: a survey</a> - Zitova, Flusser 2003&#160;<a class="footnote-backref" href="#fnref:zitova" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:brown">
 <p>Brown Survey Paper&#160;<a class="footnote-backref" href="#fnref:brown" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:brown" title="Jump back to footnote 3 in the text">&#8617;</a></p>
