@@ -27,30 +27,32 @@ This paper presents 3 subpixel registration methods all based on phase-correlati
 
 The first method presented is a form of conjugate descent on the normalized root mean squared error (NRMSE), which is a translation-invariant measure of error between an image $f$ and a copy $g$ shifted by $(x_0^{\ast}, y_0^*)$.
 
-```math
+$$
 NMSRE^2 = \min_{x_0, y_0}\frac{\sum_{x,y} |g(x - x_0, y - y_0) - f(x, y)|^2}{\sum_{x,y}|f(x, y)|^2}
-```
+$$
 
 By minimizing the NMSRE over $(x_0, y_0)$, the true offset of $g$ can be found.  This is not mentioned in the paper, but this error formulation implicitly assumes a circular image shift.
 
 Rewriting the above definition into a maximization problem, we can achieve a more useful formulation
 
-```math
-NMSRE^2 = 1 - \frac{\max_{x_0, y_0} |r(x_0, y_0)|^2}{\sum_{x, y}|f(x, y)|^2 \sum_{x, y}|g(x, y)|^2} \\
+$$
+NMSRE^2 = 1 - \frac{\max_{x_0, y_0} |r(x_0, y_0)|^2}{\sum_{x, y}|f(x, y)|^2 \sum_{x, y}|g(x, y)|^2}
+$$
 
+$$
 \begin{aligned}
 r(x_0, y_0) &= \sum_{x, y}g(x - x_0, y - y_0)f^*(x, y) \\
 &= \sum_{u, v} F(u, v)G^*(u, v) \text{exp}\left[ j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right]
 \end{aligned}
-```
+$$
 
 where $r$ is cross correlation and $F$ and $G$ are the image DFTs of size $M \times N$.
 
 Since all other terms are constant, we need only minimize $|r(x_0, y_0)|^2$.
 
-```math
+$$
 \frac{d(r(x_0, y_0))}{dx_0} = 2 \text{Im} \left(r(x_0, y_0) \sum_{u, v} \frac{2 \pi u}{M} F^*(u, v) \times G(u, v) \text{exp} \left[-j 2 \pi \left( u \frac{x_0}{M} + v \frac{y_0}{N} \right) \right] \right)
-```
+$$
 
 With this partial derivative (and a similar for $y_0$) we can use standard conjugate descent to solve for $(x_0^{\ast}, y_0^*)$.
 
@@ -87,10 +89,10 @@ The paper then goes on to show that while phase-correlating the high resolution 
 
 i.e.
 
-```math
+$$
 \text{PC}_{HR}(x) = \text{IDFT}(\text{CPSD}_{HR}) = \delta(x - x_0) \\
 \text{PC}_{LR}(x) = \text{IDFT}(\text{CPSD}_{LR}) = \frac{\sin(\pi(Mx + x_0))}{\pi(Mx + x_0)}
-```
+$$
 
 where $PC_{HR}$ and $PC_{LR}$ are the high-resolution and downsampled phase-correlation results, respectively.  This is illustrated below.
 
@@ -101,9 +103,9 @@ where $PC_{HR}$ and $PC_{LR}$ are the high-resolution and downsampled phase-corr
 
 We can analytically solve for the subpixel offset by choosing two points $c_0$ and $c_1$ from the phase-correlation result and applying the $PC_{LR}$ equation.
 
-```math
+$$
 \frac{\sin(\pi x_0)}{\pi x_0} = c_0 \text{ and } \frac{\sin(\pi (M + x_0))}{\pi (M + x_0) = c_1} \Rightarrow \frac{x_0}{M} = \frac{c_1}{c_0 - c_1}
-```
+$$
 
 A good choice for $c_0$ and $c_1$ are the highest energy points of the phase-correlation result, shown below.
 
@@ -126,21 +128,21 @@ There are a number of variations of Prony's method, but I chose the one presente
 
 Prony's method is capable of recovering a signal of the form
 
-```math
+$$
 x(t) = \sum_{k=0}^{K-1} e^{j 2 \pi \omega_k t}
-```
+$$
 
 exactly given a finite number of samples.
 
 By solving the following system for the FIR filter $h$
 
-```math
+$$
 \begin{bmatrix}
 x[0] & \dots & x[K] \\ & \vdots & \\ x[N - K - 1] & \dots & x[N - 1]
 \end{bmatrix}
 \begin{bmatrix}h[K] \\ \vdots \\ h[0] \end{bmatrix} =
 \begin{bmatrix} 0 \\ \vdots \\ 0 \end{bmatrix}
-```
+$$
 
 then solving for the roots of the polynomial formed by $h$, we can find the exact $\omega_k$s that form $x$.
 
